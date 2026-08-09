@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FloodHelp</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>FloodHelp | Rescue & Assistance</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -19,21 +24,26 @@ body {
   color: #17324d;
 }
 
+/* HEADER */
+
 header {
-  background: linear-gradient(135deg, #006994, #00a6c7);
+  background: linear-gradient(135deg, #005f86, #00a6c7);
   color: white;
   text-align: center;
-  padding: 30px 15px;
+  padding: 32px 20px;
 }
 
 header h1 {
   margin: 0;
-  font-size: 40px;
+  font-size: 42px;
 }
 
 header p {
-  margin-top: 8px;
+  margin: 8px 0 0;
+  font-size: 17px;
 }
+
+/* CONTAINER */
 
 .container {
   max-width: 1100px;
@@ -41,544 +51,1320 @@ header p {
   padding: 20px;
 }
 
+/* HERO */
+
 .hero {
   text-align: center;
-  padding: 25px 10px;
+  padding: 35px 15px;
 }
 
-.help-button {
+.hero h2 {
+  font-size: 27px;
+}
+
+.sos-button {
   background: #d62828;
   color: white;
   border: none;
-  padding: 18px 35px;
-  border-radius: 50px;
-  font-size: 22px;
+  border-radius: 60px;
+  padding: 20px 45px;
+  font-size: 24px;
   font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(214,40,40,.25);
 }
+
+.sos-button:hover {
+  transform: scale(1.03);
+}
+
+/* CARDS */
 
 .card {
   background: white;
-  padding: 20px;
+  padding: 24px;
   margin: 20px 0;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-radius: 18px;
+  box-shadow: 0 5px 18px rgba(0,0,0,.08);
 }
 
-#emergencyPanel {
+.card h2 {
+  margin-top: 0;
+}
+
+/* SOS PANEL */
+
+#sosPanel {
   display: none;
 }
 
-.priority-buttons {
+/* EMERGENCY OPTIONS */
+
+.emergency-options {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 
-.priority-buttons button {
+.emergency-options button {
+  border: 1px solid #dbe7ee;
+  background: #f8fbfd;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.emergency-options button.selected {
+  background: #dff4fa;
+  border: 2px solid #008db2;
+}
+
+/* PEOPLE COUNTER */
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.counter button {
+  width: 45px;
+  height: 45px;
   border: none;
-  padding: 15px;
-  border-radius: 10px;
-  font-weight: bold;
+  border-radius: 50%;
+  background: #006994;
+  color: white;
+  font-size: 24px;
   cursor: pointer;
 }
 
-.critical {
-  background: #ffcccc;
+#peopleCount {
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.high {
-  background: #ffe0b2;
+/* CHECKBOXES */
+
+.checkbox-list {
+  display: grid;
+  gap: 10px;
 }
 
-.medium {
-  background: #fff3b0;
+.checkbox-list label {
+  background: #f7fafc;
+  padding: 12px;
+  border-radius: 10px;
 }
 
-.low {
-  background: #d9f2d9;
+/* PRIORITY */
+
+.priority-box {
+  padding: 18px;
+  border-radius: 14px;
+  margin-top: 20px;
+  display: none;
 }
 
-.cancel {
-  margin-top: 15px;
+.priority-critical {
+  background: #ffe0e0;
+  border-left: 6px solid #d62828;
+}
+
+.priority-high {
+  background: #fff0d5;
+  border-left: 6px solid #f28c28;
+}
+
+.priority-medium {
+  background: #fff9cf;
+  border-left: 6px solid #e6b800;
+}
+
+.priority-low {
+  background: #e1f5e5;
+  border-left: 6px solid #2e8b57;
+}
+
+.priority-title {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+/* LOCATION */
+
+.location-box {
+  background: #eef8ff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 18px;
+}
+
+/* BUTTONS */
+
+.primary-button {
+  background: #006994;
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-button {
   background: #555;
   color: white;
   border: none;
-  padding: 12px 22px;
-  border-radius: 8px;
+  padding: 13px 22px;
+  border-radius: 10px;
   cursor: pointer;
+  margin-top: 15px;
 }
 
-.status {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #eef7ff;
-}
+/* MAP */
 
 #map {
-  height: 420px;
-  width: 100%;
-  border-radius: 14px;
+  height: 430px;
+  border-radius: 15px;
 }
+
+/* CAMPS */
 
 .camps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
 .camp {
   border: 1px solid #dce7ef;
-  padding: 15px;
-  border-radius: 12px;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.camp.recommended {
+  border: 2px solid #00a6c7;
+  background: #f2fcff;
+}
+
+.recommended-label {
+  color: #007b9c;
+  font-weight: bold;
 }
 
 .available {
-  color: green;
+  color: #16803c;
   font-weight: bold;
 }
 
 .full {
-  color: red;
+  color: #c62828;
   font-weight: bold;
 }
 
-.route-btn {
+.route-button {
   background: #006994;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 11px 16px;
+  border-radius: 9px;
   cursor: pointer;
 }
+
+/* STATUS */
+
+.status {
+  background: #eef7ff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+/* FOOTER */
 
 footer {
   background: #17324d;
   color: white;
   text-align: center;
-  padding: 25px;
-  margin-top: 30px;
+  padding: 28px;
+  margin-top: 35px;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🌊 FloodHelp</h1>
-  <p>From Flood Information to Life-Saving Action</p>
+
+<h1>🌊 FloodHelp</h1>
+
+<p>
+From Flood Information to Life-Saving Action
+</p>
+
 </header>
+
 
 <div class="container">
 
+
+<!-- HERO -->
+
 <section class="hero">
-  <h2>Need help during a flood?</h2>
-  <p>Request emergency assistance and find available relief camps.</p>
 
-  <button class="help-button" id="helpButton">
-    🆘 I NEED HELP
-  </button>
-</section>
+<h2>
+When the flood is already here, what do you do?
+</h2>
 
+<p>
+FloodHelp helps you request assistance, understand your emergency,
+find available camps and reach safety.
+</p>
 
-<section id="emergencyPanel" class="card">
+<button
+class="sos-button"
+id="sosButton">
 
-  <h2>🚨 Select Emergency Priority</h2>
+🆘 I NEED HELP
 
-  <div class="priority-buttons">
-
-    <button class="critical" data-level="Critical">
-      🔴 CRITICAL
-    </button>
-
-    <button class="high" data-level="High">
-      🟠 HIGH
-    </button>
-
-    <button class="medium" data-level="Medium">
-      🟡 MEDIUM
-    </button>
-
-    <button class="low" data-level="Low">
-      🟢 LOW
-    </button>
-
-  </div>
-
-  <div id="status" class="status"></div>
-
-  <button class="cancel" id="cancelButton">
-    ❌ Cancel
-  </button>
+</button>
 
 </section>
 
+
+
+<!-- SOS PANEL -->
+
+<section
+id="sosPanel"
+class="card">
+
+<h2>
+🚨 Emergency Assistance
+</h2>
+
+<p>
+Tell us what is happening so FloodHelp can understand the urgency.
+</p>
+
+
+<!-- EMERGENCY TYPE -->
+
+<h3>
+🌊 What is happening?
+</h3>
+
+<div class="emergency-options">
+
+<button data-type="Trapped by flood">
+🌊 Trapped by flood
+</button>
+
+<button data-type="Medical emergency">
+🏥 Medical emergency
+</button>
+
+<button data-type="Family needs rescue">
+👨‍👩‍👧 Family needs rescue
+</button>
+
+<button data-type="House flooded">
+🏠 House flooded
+</button>
+
+<button data-type="Stranded">
+🚨 Stranded
+</button>
+
+<button data-type="Other emergency">
+⚠️ Other emergency
+</button>
+
+</div>
+
+
+<!-- PEOPLE -->
+
+<h3>
+👥 How many people need help?
+</h3>
+
+<div class="counter">
+
+<button id="minusPeople">
+−
+</button>
+
+<span id="peopleCount">
+1
+</span>
+
+<button id="plusPeople">
++
+</button>
+
+</div>
+
+
+<!-- SPECIAL ASSISTANCE -->
+
+<h3>
+❤️ Who needs special assistance?
+</h3>
+
+<div class="checkbox-list">
+
+<label>
+<input
+type="checkbox"
+id="children">
+👶 Children
+</label>
+
+<label>
+<input
+type="checkbox"
+id="elderly">
+👴 Elderly people
+</label>
+
+<label>
+<input
+type="checkbox"
+id="medical">
+🏥 Person needing medical assistance
+</label>
+
+<label>
+<input
+type="checkbox"
+id="disability">
+♿ Person needing special assistance
+</label>
+
+</div>
+
+
+<!-- PRIORITY -->
+
+<div
+id="priorityBox"
+class="priority-box">
+
+<div
+id="priorityTitle"
+class="priority-title">
+</div>
+
+<p id="priorityDescription"></p>
+
+</div>
+
+
+<!-- LOCATION -->
+
+<div class="location-box">
+
+<h3>
+📍 Your Location
+</h3>
+
+<p id="locationStatus">
+Location not detected yet.
+</p>
+
+<button
+class="primary-button"
+id="locationButton">
+
+📍 Share My Location
+
+</button>
+
+</div>
+
+
+<!-- SUBMIT -->
+
+<button
+class="primary-button"
+id="submitRequest"
+style="margin-top:20px;">
+
+🚑 Submit Emergency Request
+
+</button>
+
+
+<div
+id="requestStatus"
+class="status"
+style="display:none;">
+
+</div>
+
+
+<button
+class="cancel-button"
+id="cancelButton">
+
+❌ Cancel
+
+</button>
+
+</section>
+
+
+
+<!-- MAP -->
 
 <section class="card">
 
-  <h2>🗺️ Rescue Map</h2>
+<h2>
+🗺️ Smart Rescue Map
+</h2>
 
-  <p>
-    View your location and nearby relief camps.
-  </p>
+<p>
+See your location and nearby relief camps.
+</p>
 
-  <div id="map"></div>
+<div id="map"></div>
 
 </section>
 
+
+
+<!-- CAMPS -->
 
 <section class="card">
 
-  <h2>🏕️ Camps Near Me</h2>
+<h2>
+🏕️ Camp Near Me
+</h2>
 
-  <div id="campList" class="camps"></div>
+<p>
+Find nearby relief camps, vacancy and available resources.
+</p>
+
+<div
+id="campList"
+class="camps">
+</div>
 
 </section>
+
 
 </div>
 
 
 <footer>
-  <strong>FloodHelp</strong>
-  <br><br>
-  Don't just predict the disaster. Help people survive it.
+
+<strong>FloodHelp</strong>
+
+<br><br>
+
+Don't just predict the disaster. Help people survive it.
+
 </footer>
+
 
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+"DOMContentLoaded",
+function () {
 
-  /* =========================
-     EMERGENCY SYSTEM
-  ========================= */
 
-  const helpButton =
-    document.getElementById("helpButton");
+/* ==========================
+   VARIABLES
+========================== */
 
-  const emergencyPanel =
-    document.getElementById("emergencyPanel");
+let people = 1;
 
-  const cancelButton =
-    document.getElementById("cancelButton");
+let selectedEmergency = "";
 
-  const status =
-    document.getElementById("status");
+let userLat = null;
 
+let userLng = null;
 
-  helpButton.addEventListener("click", function () {
 
-    emergencyPanel.style.display = "block";
+/* ==========================
+   SOS OPEN
+========================== */
 
-    emergencyPanel.scrollIntoView({
-      behavior: "smooth"
-    });
+const sosButton =
+document.getElementById("sosButton");
 
-  });
+const sosPanel =
+document.getElementById("sosPanel");
 
+const cancelButton =
+document.getElementById("cancelButton");
 
-  document
-    .querySelectorAll(".priority-buttons button")
-    .forEach(function (button) {
 
-      button.addEventListener("click", function () {
+sosButton.addEventListener(
+"click",
+function () {
 
-        const level =
-          button.getAttribute("data-level");
+sosPanel.style.display = "block";
 
-        status.innerHTML =
-          "🚨 <strong>" +
-          level +
-          " priority emergency recorded.</strong><br>" +
-          "Your request has been prioritised for assistance.";
+sosPanel.scrollIntoView({
+behavior: "smooth"
+});
 
-      });
+}
+);
 
-    });
 
+/* ==========================
+   CANCEL
+========================== */
 
-  /* FIXED CANCEL BUTTON */
+cancelButton.addEventListener(
+"click",
+function () {
 
-  cancelButton.addEventListener("click", function () {
+sosPanel.style.display = "none";
 
-    emergencyPanel.style.display = "none";
+window.scrollTo({
+top: 0,
+behavior: "smooth"
+});
 
-    status.innerHTML = "";
+}
+);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
 
-  });
+/* ==========================
+   EMERGENCY TYPE
+========================== */
 
+const emergencyButtons =
+document.querySelectorAll(
+".emergency-options button"
+);
 
-  /* =========================
-     MAP
-  ========================= */
 
-  const map =
-    L.map("map").setView([11.073, 76.073], 13);
+emergencyButtons.forEach(
+function (button) {
 
+button.addEventListener(
+"click",
+function () {
 
-  L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      attribution:
-        "&copy; OpenStreetMap contributors"
-    }
-  ).addTo(map);
+emergencyButtons.forEach(
+function (b) {
 
+b.classList.remove(
+"selected"
+);
 
-  /* =========================
-     SAMPLE CAMPS
-  ========================= */
+}
+);
 
-  const camps = [
+button.classList.add(
+"selected"
+);
 
-    {
-      name: "Community Relief Camp",
-      lat: 11.073,
-      lng: 76.073,
-      vacancy: 65,
-      water: true,
-      food: true,
-      medicine: true
-    },
+selectedEmergency =
+button.getAttribute(
+"data-type"
+);
 
-    {
-      name: "Emergency Shelter Centre",
-      lat: 11.078,
-      lng: 76.080,
-      vacancy: 25,
-      water: true,
-      food: true,
-      medicine: false
-    },
+calculatePriority();
 
-    {
-      name: "Safe Haven Camp",
-      lat: 11.068,
-      lng: 76.065,
-      vacancy: 0,
-      water: true,
-      food: false,
-      medicine: true
-    }
+}
+);
 
-  ];
+}
+);
 
 
-  /* =========================
-     CAMP MARKERS
-  ========================= */
+/* ==========================
+   PEOPLE COUNTER
+========================== */
 
-  camps.forEach(function (camp) {
+const peopleDisplay =
+document.getElementById(
+"peopleCount"
+);
 
-    L.marker([
-      camp.lat,
-      camp.lng
-    ])
-    .addTo(map)
-    .bindPopup(
 
-      "<strong>🏕️ " +
-      camp.name +
-      "</strong><br><br>" +
+document
+.getElementById("plusPeople")
+.addEventListener(
+"click",
+function () {
 
-      "Vacancy: " +
-      camp.vacancy +
-      "%<br>" +
+people++;
 
-      "💧 Water: " +
-      (camp.water ? "Available" : "Unavailable") +
-      "<br>" +
+peopleDisplay.textContent =
+people;
 
-      "🍱 Food: " +
-      (camp.food ? "Available" : "Unavailable") +
-      "<br>" +
+calculatePriority();
 
-      "💊 Medicine: " +
-      (camp.medicine ? "Available" : "Unavailable")
+}
+);
 
-    );
 
-  });
+document
+.getElementById("minusPeople")
+.addEventListener(
+"click",
+function () {
 
+if (people > 1) {
 
-  /* =========================
-     USER LOCATION
-  ========================= */
+people--;
 
-  if (navigator.geolocation) {
+}
 
-    navigator.geolocation.getCurrentPosition(
+peopleDisplay.textContent =
+people;
 
-      function (position) {
+calculatePriority();
 
-        const lat =
-          position.coords.latitude;
+}
+);
 
-        const lng =
-          position.coords.longitude;
 
-        map.setView(
-          [lat, lng],
-          14
-        );
+/* ==========================
+   PRIORITY
+========================== */
 
-        L.marker([lat, lng])
-          .addTo(map)
-          .bindPopup("📍 You are here")
-          .openPopup();
+function calculatePriority() {
 
-      },
+const children =
+document.getElementById(
+"children"
+).checked;
 
-      function () {
+const elderly =
+document.getElementById(
+"elderly"
+).checked;
 
-        console.log(
-          "Location permission not granted."
-        );
+const medical =
+document.getElementById(
+"medical"
+).checked;
 
-      }
+const disability =
+document.getElementById(
+"disability"
+).checked;
 
-    );
 
-  }
+let priority =
+"Low";
 
+let description =
+"Non-urgent assistance request.";
 
-  /* =========================
-     CAMP CARDS
-  ========================= */
 
-  const campList =
-    document.getElementById("campList");
+/* Critical conditions */
 
+if (
+medical ||
+(people >= 5) ||
+(children && people >= 3)
+) {
 
-  camps.forEach(function (camp) {
+priority =
+"Critical";
 
-    const vacancy =
-      camp.vacancy > 0
-      ? "<span class='available'>✓ " +
-        camp.vacancy +
-        "% space available</span>"
-      : "<span class='full'>✕ Camp is full</span>";
+description =
+"Immediate assistance may be required.";
 
+}
 
-    const campCard =
-      document.createElement("div");
 
-    campCard.className = "camp";
+/* High conditions */
 
+else if (
+elderly ||
+disability ||
+people >= 3 ||
+selectedEmergency ===
+"Trapped by flood" ||
+selectedEmergency ===
+"Medical emergency"
+) {
 
-    campCard.innerHTML =
+priority =
+"High";
 
-      "<h3>🏕️ " +
-      camp.name +
-      "</h3>" +
+description =
+"Urgent assistance is recommended.";
 
-      "<p>" +
-      vacancy +
-      "</p>" +
+}
 
-      "<p>" +
 
-      "💧 Water: " +
-      (camp.water ? "Available" : "Unavailable") +
-      "<br>" +
+/* Medium */
 
-      "🍱 Food: " +
-      (camp.food ? "Available" : "Unavailable") +
-      "<br>" +
+else if (
+selectedEmergency !== ""
+) {
 
-      "💊 Medicine: " +
-      (camp.medicine ? "Available" : "Unavailable") +
+priority =
+"Medium";
 
-      "</p>" +
+description =
+"Assistance is required.";
 
-      "<button class='route-btn'>" +
-      "🛣️ Find Route" +
-      "</button>";
+}
 
 
-    campCard
-      .querySelector(".route-btn")
-      .addEventListener("click", function () {
+const box =
+document.getElementById(
+"priorityBox"
+);
 
-        if (!navigator.geolocation) {
+const title =
+document.getElementById(
+"priorityTitle"
+);
 
-          alert(
-            "Location is not supported by your browser."
-          );
+const text =
+document.getElementById(
+"priorityDescription"
+);
 
-          return;
 
-        }
+box.style.display =
+"block";
 
 
-        navigator.geolocation.getCurrentPosition(
+box.className =
+"priority-box";
 
-          function (position) {
 
-            const userLat =
-              position.coords.latitude;
+if (priority === "Critical") {
 
-            const userLng =
-              position.coords.longitude;
+box.classList.add(
+"priority-critical"
+);
 
+title.innerHTML =
+"🔴 CRITICAL — Immediate Rescue";
 
-            const url =
-              "https://www.google.com/maps/dir/?api=1" +
-              "&origin=" +
-              userLat +
-              "," +
-              userLng +
-              "&destination=" +
-              camp.lat +
-              "," +
-              camp.lng +
-              "&travelmode=walking";
+}
 
+else if (priority === "High") {
 
-            window.open(
-              url,
-              "_blank"
-            );
+box.classList.add(
+"priority-high"
+);
 
-          },
+title.innerHTML =
+"🟠 HIGH — Urgent Assistance";
 
-          function () {
+}
 
-            alert(
-              "Please allow location access."
-            );
+else if (priority === "Medium") {
 
-          }
+box.classList.add(
+"priority-medium"
+);
 
-        );
+title.innerHTML =
+"🟡 MEDIUM — Assistance Required";
 
-      });
+}
 
+else {
 
-    campList.appendChild(campCard);
+box.classList.add(
+"priority-low"
+);
 
-  });
+title.innerHTML =
+"🟢 LOW — Non-Urgent Request";
 
+}
 
-  /* Fix map size after page loads */
 
-  setTimeout(function () {
+text.textContent =
+description;
 
-    map.invalidateSize();
+}
 
-  }, 500);
 
+/* ==========================
+   CHECKBOX LISTENERS
+========================== */
+
+[
+"children",
+"elderly",
+"medical",
+"disability"
+].forEach(
+function (id) {
+
+document
+.getElementById(id)
+.addEventListener(
+"change",
+calculatePriority
+);
+
+}
+);
+
+
+/* ==========================
+   LOCATION
+========================== */
+
+document
+.getElementById("locationButton")
+.addEventListener(
+"click",
+function () {
+
+const status =
+document.getElementById(
+"locationStatus"
+);
+
+
+if (!navigator.geolocation) {
+
+status.textContent =
+"Location is not supported.";
+
+return;
+
+}
+
+
+status.textContent =
+"📍 Detecting your location...";
+
+
+navigator.geolocation.getCurrentPosition(
+
+function (position) {
+
+userLat =
+position.coords.latitude;
+
+userLng =
+position.coords.longitude;
+
+
+status.innerHTML =
+"✅ Location detected.<br>" +
+"Your location can be shared with rescuers.";
+
+map.setView(
+[
+userLat,
+userLng
+],
+14
+);
+
+
+L.marker([
+userLat,
+userLng
+])
+.addTo(map)
+.bindPopup(
+"📍 You are here"
+)
+.openPopup();
+
+},
+
+function () {
+
+status.textContent =
+"❌ Location permission was not granted.";
+
+}
+
+);
+
+}
+);
+
+
+/* ==========================
+   SUBMIT REQUEST
+========================== */
+
+document
+.getElementById("submitRequest")
+.addEventListener(
+"click",
+function () {
+
+const requestStatus =
+document.getElementById(
+"requestStatus"
+);
+
+
+if (selectedEmergency === "") {
+
+alert(
+"Please select what is happening first."
+);
+
+return;
+
+}
+
+
+let priorityText =
+document.getElementById(
+"priorityTitle"
+).textContent;
+
+
+requestStatus.style.display =
+"block";
+
+
+requestStatus.innerHTML =
+
+"<strong>🚑 Emergency Request Recorded</strong><br><br>" +
+
+"🌊 Situation: " +
+selectedEmergency +
+"<br>" +
+
+"👥 People: " +
+people +
+"<br>" +
+
+"⚠️ " +
+priorityText +
+"<br>" +
+
+"📍 Location: " +
+(userLat !== null
+? "Shared"
+: "Not shared yet") +
+"<br><br>" +
+
+"<strong>Prototype status:</strong> " +
+"Your request has been organised according to priority.";
+
+}
+);
+
+
+/* ==========================
+   MAP
+========================== */
+
+const map =
+L.map("map")
+.setView(
+[11.073, 76.073],
+13
+);
+
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+
+attribution:
+"&copy; OpenStreetMap contributors"
+
+}
+).addTo(map);
+
+
+/* ==========================
+   SAMPLE CAMPS
+========================== */
+
+const camps = [
+
+{
+name:
+"Community Relief Camp",
+
+lat:
+11.073,
+
+lng:
+76.073,
+
+vacancy:
+65,
+
+water:
+true,
+
+food:
+true,
+
+medicine:
+true
+},
+
+{
+name:
+"Emergency Shelter Centre",
+
+lat:
+11.078,
+
+lng:
+76.080,
+
+vacancy:
+25,
+
+water:
+true,
+
+food:
+true,
+
+medicine:
+false
+},
+
+{
+name:
+"Safe Haven Camp",
+
+lat:
+11.068,
+
+lng:
+76.065,
+
+vacancy:
+0,
+
+water:
+true,
+
+food:
+false,
+
+medicine:
+true
+}
+
+];
+
+
+/* ==========================
+   MAP CAMP MARKERS
+========================== */
+
+camps.forEach(
+function (camp) {
+
+L.marker([
+camp.lat,
+camp.lng
+])
+.addTo(map)
+.bindPopup(
+
+"<strong>🏕️ " +
+camp.name +
+"</strong><br><br>" +
+
+"Vacancy: " +
+camp.vacancy +
+"%<br>" +
+
+"💧 Water: " +
+(camp.water
+? "Available"
+: "Unavailable") +
+"<br>" +
+
+"🍱 Food: " +
+(camp.food
+? "Available"
+: "Unavailable") +
+"<br>" +
+
+"💊 Medicine: " +
+(camp.medicine
+? "Available"
+: "Unavailable")
+
+);
+
+}
+);
+
+
+/* ==========================
+   CAMP CARDS
+========================== */
+
+const campList =
+document.getElementById(
+"campList"
+);
+
+
+camps.forEach(
+function (camp, index) {
+
+const card =
+document.createElement(
+"div"
+);
+
+card.className =
+"camp";
+
+
+if (index === 0) {
+
+card.classList.add(
+"recommended"
+);
+
+}
+
+
+card.innerHTML =
+
+(index === 0
+? "<div class='recommended-label'>⭐ RECOMMENDED</div>"
+: "") +
+
+"<h3>🏕️ " +
+camp.name +
+"</h3>" +
+
+(
+camp.vacancy > 0
+
+?
+
+"<p class='available'>" +
+"✓ " +
+camp.vacancy +
+"% space available" +
+"</p>"
+
+:
+
+"<p class='full'>" +
+"✕ Camp is full" +
+"</p>"
+
+) +
+
+"<p>" +
+
+"💧 Water: " +
+(camp.water
+? "Available"
+: "Unavailable") +
+
+"<br>" +
+
+"🍱 Food: " +
+(camp.food
+? "Available"
+: "Unavailable") +
+
+"<br>" +
+
+"💊 Medicine: " +
+(camp.medicine
+? "Available"
+: "Unavailable") +
+
+"</p>" +
+
+"<button class='route-button'>" +
+"🛣️ Find Route" +
+"</button>";
+
+
+card
+.querySelector(
+".route-button"
+)
+.addEventListener(
+"click",
+function () {
+
+if (
+userLat === null ||
+userLng === null
+) {
+
+alert(
+"Please share your location first."
+);
+
+return;
+
+}
+
+
+const routeURL =
+"https://www.google.com/maps/dir/?api=1" +
+"&origin=" +
+userLat +
+"," +
+userLng +
+"&destination=" +
+camp.lat +
+"," +
+camp.lng +
+"&travelmode=walking";
+
+
+window.open(
+routeURL,
+"_blank"
+);
+
+}
+);
+
+
+campList.appendChild(
+card
+);
 
 });
 
+
+/* ==========================
+   MAP FIX
+========================== */
+
+setTimeout(
+function () {
+
+map.invalidateSize();
+
+},
+500
+);
+
+
+});
 </script>
 
 </body>
