@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FloodHelp</title>
+
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f8fb;
+  color: #17324d;
+}
+
+header {
+  background: linear-gradient(135deg, #006994, #00a6c7);
+  color: white;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 38px;
+}
+
+header p {
+  margin: 8px 0 0;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.hero {
+  text-align: center;
+  padding: 25px 10px;
+}
+
+.help-button {
+  border: none;
+  background: #d62828;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 18px 35px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+.help-button:hover {
+  transform: scale(1.03);
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 18px 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+#map {
+  height: 420px;
+  border-radius: 14px;
+}
+
+.camps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.camp {
+  border: 1px solid #dce7ef;
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.camp h3 {
+  margin-top: 0;
+}
+
+.available {
+  color: #16803c;
+  font-weight: bold;
+}
+
+.full {
+  color: #c62828;
+  font-weight: bold;
+}
+
+.route-btn {
+  background: #006994;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#emergencyPanel {
+  display: none;
+}
+
+.priority-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.priority-buttons button {
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.critical { background: #ffcccc; }
+.high { background: #ffe0b2; }
+.medium { background: #fff3b0; }
+.low { background: #d9f2d9; }
+
+.cancel {
+  margin-top: 15px;
+  background: #555;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.status {
+  padding: 12px;
+  background: #eef7ff;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  background: #17324d;
+  color: white;
+  margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌊 FloodHelp</h1>
+  <p>From Flood Information to Life-Saving Action</p>
+</header>
+
+<div class="container">
+
+  <section class="hero">
+    <h2>Need help during a flood?</h2>
+    <p>Tell us your emergency level and find the safest available help.</p>
+
+    <button class="help-button" onclick="openEmergency()">
+      🆘 I NEED HELP
+    </button>
+  </section>
+
+  <section id="emergencyPanel" class="card">
+    <h2>🚨 What is your emergency level?</h2>
+
+    <div class="priority-buttons">
+      <button class="critical" onclick="requestHelp('Critical')">
+        🔴 CRITICAL
+      </button>
+
+      <button class="high" onclick="requestHelp('High')">
+        🟠 HIGH
+      </button>
+
+      <button class="medium" onclick="requestHelp('Medium')">
+        🟡 MEDIUM
+      </button>
+
+      <button class="low" onclick="requestHelp('Low')">
+        🟢 LOW
+      </button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <button class="cancel" onclick="cancelRequest()">
+      ❌ Cancel
+    </button>
+  </section>
+
+  <section class="card">
+    <h2>🗺️ Rescue Map</h2>
+    <p>Your location and nearby relief camps are shown here.</p>
+
+    <div id="map"></div>
+  </section>
+
+  <section class="card">
+    <h2>🏕️ Camps Near Me</h2>
+
+    <div id="campList" class="camps"></div>
+  </section>
+
+</div>
+
+<footer>
+  <strong>FloodHelp</strong><br>
+  Don't just predict the disaster. Help people survive it.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+/* -----------------------------
+   SAMPLE RELIEF CAMP DATA
+------------------------------ */
+
+const camps = [
+  {
+    name: "Community Relief Camp",
+    lat: 11.073,
+    lng: 76.073,
+    vacancy: 65,
+    water: true,
+    food: true,
+    medicine: true
+  },
+  {
+    name: "Emergency Shelter Centre",
+    lat: 11.078,
+    lng: 76.080,
+    vacancy: 25,
+    water: true,
+    food: true,
+    medicine: false
+  },
+  {
+    name: "Safe Haven Camp",
+    lat: 11.068,
+    lng: 76.065,
+    vacancy: 0,
+    water: true,
+    food: false,
+    medicine: true
+  }
+];
+
+
+/* -----------------------------
+   MAP
+------------------------------ */
+
+let map = L.map("map").setView([11.073, 76.073], 13);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution: "&copy; OpenStreetMap contributors"
+  }
+).addTo(map);
+
+
+/* Add camps to map */
+
+camps.forEach(camp => {
+
+  let marker = L.marker([camp.lat, camp.lng]).addTo(map);
+
+  marker.bindPopup(`
+    <strong>${camp.name}</strong><br>
+    Vacancy: ${camp.vacancy}%<br>
+    Food: ${camp.food ? "Available" : "Unavailable"}<br>
+    Water: ${camp.water ? "Available" : "Unavailable"}<br>
+    Medicine: ${camp.medicine ? "Available" : "Unavailable"}
+  `);
+
+});
+
+
+/* -----------------------------
+   USER LOCATION
+------------------------------ */
+
+if (navigator.geolocation) {
+
+  navigator.geolocation.getCurrentPosition(
+
+    position => {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      map.setView([lat, lng], 14);
+
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup("📍 You are here")
+        .openPopup();
+
+    },
+
+    () => {
+      console.log("Location permission not granted.");
+    }
+
+  );
+
+}
+
+
+/* -----------------------------
+   CAMP LIST
+------------------------------ */
+
+const campList = document.getElementById("campList");
+
+camps.forEach((camp, index) => {
+
+  let vacancyText =
+    camp.vacancy > 0
+      ? `<span class="available">✓ ${camp.vacancy}% space available</span>`
+      : `<span class="full">✕ Camp is full</span>`;
+
+  campList.innerHTML += `
+
+    <div class="camp">
+
+      <h3>🏕️ ${camp.name}</h3>
+
+      <p>${vacancyText}</p>
+
+      <p>
+        💧 Water: ${camp.water ? "Available" : "Not available"}<br>
+        🍱 Food: ${camp.food ? "Available" : "Not available"}<br>
+        💊 Medicine: ${camp.medicine ? "Available" : "Not available"}
+      </p>
+
+      <button
+        class="route-btn"
+        onclick="showRoute(${camp.lat}, ${camp.lng})">
+        🛣️ Safest Route
+      </button>
+
+    </div>
+
+  `;
+
+});
+
+
+/* -----------------------------
+   EMERGENCY SYSTEM
+------------------------------ */
+
+function openEmergency() {
+
+  document.getElementById("emergencyPanel").style.display = "block";
+
+  document.getElementById("emergencyPanel")
+    .scrollIntoView({ behavior: "smooth" });
+
+}
+
+
+function requestHelp(level) {
+
+  const status = document.getElementById("status");
+
+  let message = "";
+
+  if (level === "Critical") {
+    message =
+      "🔴 CRITICAL emergency recorded. Your request should receive the highest rescue priority.";
+  }
+
+  else if (level === "High") {
+    message =
+      "🟠 HIGH priority emergency recorded. Rescue assistance is urgently required.";
+  }
+
+  else if (level === "Medium") {
+    message =
+      "🟡 MEDIUM priority emergency recorded.";
+  }
+
+  else {
+    message =
+      "🟢 LOW priority request recorded.";
+  }
+
+  status.innerHTML = message;
+}
+
+
+function cancelRequest() {
+
+  document.getElementById("emergencyPanel").style.display = "none";
+
+  document.getElementById("status").innerHTML = "";
+
+}
+
+
+/* -----------------------------
+   ROUTE
+------------------------------ */
+
+function showRoute(lat, lng) {
+
+  if (!navigator.geolocation) {
+
+    alert("Your browser does not support location.");
+
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    position => {
+
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+
+      const routeURL =
+        `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}&travelmode=walking`;
+
+      window.open(routeURL, "_blank");
+
+    },
+
+    () => {
+
+      alert(
+        "Please allow location access to find a route."
+      );
+
+    }
+
+  );
+
+}
+
+</script>
+
+</body>
+</html>
