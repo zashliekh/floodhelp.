@@ -6,762 +6,586 @@
 
 <title>FloodHelp — Emergency Rescue</title>
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
+*{box-sizing:border-box}
 
-/* ================================
-   GLOBAL
-================================ */
-
-* {
-  box-sizing: border-box;
+body{
+margin:0;
+background:#061820;
+color:#f5fbff;
+font-family:Arial,Helvetica,sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+button{
+font:inherit;
+cursor:pointer;
 }
 
-body {
-  margin: 0;
-  background: #071923;
-  color: #f5fbff;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+button:active{
+transform:scale(.97);
 }
 
-button {
-  font: inherit;
+.app{
+min-height:100vh;
+max-width:520px;
+margin:auto;
+background:
+radial-gradient(circle at 50% -10%,#164451,#061820 48%);
+position:relative;
+overflow:hidden;
 }
 
-button:active {
-  transform: scale(.97);
+.header{
+padding:22px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
-
-
-/* ================================
-   APP
-================================ */
 
-.app {
-  min-height: 100vh;
-  max-width: 520px;
-  margin: auto;
-  background:
-    radial-gradient(
-      circle at 50% -10%,
-      #123d4b 0,
-      #071923 45%
-    );
-
-  position: relative;
-  overflow: hidden;
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:800;
+font-size:18px;
 }
-
-
-/* ================================
-   HEADER
-================================ */
 
-.header {
-  padding: 24px 22px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.logo-icon{
+width:38px;
+height:38px;
+border-radius:12px;
+background:#079cbd;
+display:grid;
+place-items:center;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.status{
+font-size:11px;
+color:#9bb3bc;
 }
 
-.logo-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: #0d9fc1;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
+.status-dot{
+display:inline-block;
+width:7px;
+height:7px;
+background:#39dc8d;
+border-radius:50%;
+margin-right:5px;
+box-shadow:0 0 9px #39dc8d;
 }
 
-.logo-text {
-  font-weight: 800;
-  letter-spacing: -.5px;
+.screen{
+display:none;
+padding:10px 20px 110px;
+animation:appear .3s ease;
 }
 
-.status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #9db4bd;
+.screen.active{
+display:block;
 }
 
-.status-dot {
-  width: 7px;
-  height: 7px;
-  background: #36d98b;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #36d98b;
+@keyframes appear{
+from{
+opacity:0;
+transform:translateY(10px);
 }
-
-
-/* ================================
-   SCREENS
-================================ */
-
-.screen {
-  display: none;
-  padding: 15px 20px 110px;
-  animation: screenIn .3s ease;
+to{
+opacity:1;
+transform:translateY(0);
 }
-
-.screen.active {
-  display: block;
 }
-
-@keyframes screenIn {
-
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+.greeting{
+margin-top:25px;
 }
-
-
-/* ================================
-   HOME
-================================ */
 
-.greeting {
-  margin-top: 28px;
+.greeting small{
+color:#72a6b5;
+letter-spacing:1px;
 }
 
-.greeting small {
-  color: #87a6b2;
+.greeting h1{
+font-size:30px;
+line-height:1.12;
+margin:8px 0;
+letter-spacing:-1px;
 }
 
-.greeting h1 {
-  font-size: 31px;
-  line-height: 1.1;
-  margin: 7px 0;
-  letter-spacing: -1.2px;
+.greeting p{
+color:#91aab4;
+line-height:1.5;
 }
 
-.greeting p {
-  color: #91aab4;
-  line-height: 1.5;
-  margin-bottom: 28px;
+.sos-area{
+display:flex;
+justify-content:center;
+margin:28px 0;
 }
 
-
-/* ================================
-   SOS
-================================ */
-
-.sos-area {
-  display: flex;
-  justify-content: center;
-  margin: 15px 0 30px;
+.sos-button{
+width:205px;
+height:205px;
+border-radius:50%;
+border:8px solid rgba(255,255,255,.07);
+background:radial-gradient(circle at 35% 25%,#ff6262,#d62e3d 65%,#9d1e2b);
+color:white;
+box-shadow:
+0 0 0 12px rgba(220,45,61,.08),
+0 25px 55px rgba(0,0,0,.45);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+transition:.2s;
 }
-
-.sos-button {
-  width: 205px;
-  height: 205px;
-
-  border-radius: 50%;
-  border: 8px solid rgba(255,255,255,.07);
-
-  background:
-    radial-gradient(
-      circle at 35% 30%,
-      #ff5d5d,
-      #d72d3d 65%,
-      #a91f2c
-    );
-
-  color: white;
-
-  box-shadow:
-    0 0 0 12px rgba(215,45,61,.08),
-    0 25px 55px rgba(0,0,0,.4);
-
-  cursor: pointer;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 
-  transition: .2s;
+.sos-button:hover{
+transform:scale(1.03);
 }
 
-.sos-button:hover {
-  transform: scale(1.025);
+.sos-button strong{
+font-size:31px;
+letter-spacing:1px;
 }
 
-.sos-button strong {
-  font-size: 30px;
-  letter-spacing: 1px;
+.sos-button span{
+font-size:11px;
+margin-top:7px;
+opacity:.9;
 }
 
-.sos-button span {
-  font-size: 12px;
-  opacity: .85;
-  margin-top: 6px;
+.quick-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 }
 
-
-/* ================================
-   QUICK ACTIONS
-================================ */
-
-.quick-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.quick-card{
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.08);
+border-radius:18px;
+padding:18px 15px;
+color:white;
+text-align:left;
+transition:.2s;
 }
-
-.quick-card {
-  background: rgba(255,255,255,.055);
-  border: 1px solid rgba(255,255,255,.08);
-
-  color: white;
-
-  padding: 20px 16px;
-
-  border-radius: 18px;
 
-  text-align: left;
-
-  cursor: pointer;
-
-  transition: .2s;
+.quick-card:hover{
+background:rgba(255,255,255,.09);
 }
 
-.quick-card:hover {
-  background: rgba(255,255,255,.09);
+.quick-icon{
+font-size:27px;
+margin-bottom:11px;
 }
 
-.quick-icon {
-  font-size: 27px;
-  margin-bottom: 12px;
+.quick-card strong{
+display:block;
+font-size:14px;
 }
 
-.quick-card strong {
-  display: block;
-  font-size: 15px;
+.quick-card small{
+display:block;
+color:#8fa8b2;
+margin-top:6px;
+line-height:1.4;
 }
 
-.quick-card small {
-  display: block;
-  color: #8fa9b3;
-  margin-top: 5px;
-  line-height: 1.35;
+.section-title{
+margin:26px 0 12px;
 }
-
 
-/* ================================
-   SECTION TITLE
-================================ */
-
-.section-title {
-  margin-top: 28px;
-  margin-bottom: 12px;
+.section-title h2{
+font-size:18px;
+margin:0;
 }
 
-.section-title h2 {
-  font-size: 18px;
-  margin: 0;
+.section-title p{
+font-size:12px;
+color:#829da7;
+margin:5px 0;
 }
 
-.section-title p {
-  color: #819ba5;
-  font-size: 12px;
-  margin: 5px 0;
+.location-status{
+padding:13px;
+border-radius:13px;
+background:#102a34;
+color:#9db5be;
+font-size:12px;
+margin-top:12px;
 }
-
-
-/* ================================
-   EMERGENCY OPTIONS
-================================ */
 
-.back {
-  background: none;
-  border: none;
-  color: #8ecbd8;
-  cursor: pointer;
-  padding: 5px 0 15px;
+.location-status.success{
+color:#6be6a1;
 }
 
-.emergency-title {
-  margin-bottom: 22px;
+.back{
+background:none;
+border:0;
+color:#75c9d8;
+padding:7px 0 17px;
 }
 
-.emergency-title h1 {
-  margin: 0;
-  font-size: 28px;
+.emergency-title h1{
+font-size:28px;
+margin:0;
 }
 
-.emergency-title p {
-  color: #91aab4;
+.emergency-title p{
+color:#91aab4;
 }
 
-.emergency-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 11px;
+.emergency-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:11px;
 }
 
-.emergency-option {
-  background: #102934;
-  border: 1px solid #1c414e;
-  color: white;
-
-  border-radius: 16px;
-
-  padding: 19px 14px;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition: .2s;
+.emergency-option{
+background:#102934;
+border:1px solid #1b414e;
+border-radius:16px;
+color:white;
+padding:19px 14px;
+text-align:left;
+transition:.2s;
 }
 
-.emergency-option:hover,
-.emergency-option.selected {
-  background: #124252;
-  border-color: #20b7d3;
+.emergency-option.selected{
+background:#124554;
+border-color:#25b9d5;
 }
 
-.emergency-option .emoji {
-  font-size: 25px;
-  display: block;
-  margin-bottom: 10px;
+.emergency-option .emoji{
+font-size:25px;
+display:block;
+margin-bottom:10px;
 }
 
-.emergency-option strong {
-  font-size: 14px;
+.optional{
+margin-top:20px;
 }
-
 
-/* ================================
-   PRIORITY RESULT
-================================ */
-
-.priority-result {
-  margin-top: 20px;
-
-  background: #102832;
-
-  border: 1px solid #264652;
-
-  border-radius: 20px;
-
-  padding: 20px;
-
-  display: none;
+.counter{
+display:flex;
+align-items:center;
+background:#102832;
+border-radius:15px;
+padding:8px;
+border:1px solid #1b404c;
 }
 
-.priority-result.show {
-  display: block;
-  animation: screenIn .25s ease;
+.counter button{
+width:45px;
+height:42px;
+border:0;
+border-radius:10px;
+background:#173943;
+color:white;
+font-size:24px;
 }
 
-.priority-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.counter-number{
+flex:1;
+text-align:center;
 }
 
-.priority-badge {
-  padding: 7px 11px;
-  border-radius: 9px;
-  font-size: 11px;
-  font-weight: 800;
+.counter-number strong{
+font-size:24px;
 }
 
-.critical {
-  background: #5b2028;
-  color: #ff7f88;
+.counter-number small{
+color:#819ba5;
 }
 
-.high {
-  background: #563c19;
-  color: #ffca67;
+.priority-result{
+display:none;
+margin-top:18px;
+background:#102832;
+border:1px solid #294752;
+border-radius:20px;
+padding:20px;
 }
 
-.medium {
-  background: #4f4818;
-  color: #ffe568;
+.priority-result.show{
+display:block;
+animation:appear .3s ease;
 }
 
-.low {
-  background: #17472e;
-  color: #69e6a1;
+.priority-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
 }
 
-.priority-number {
-  font-size: 12px;
-  color: #8ba4ad;
+.priority-badge{
+padding:7px 11px;
+border-radius:9px;
+font-size:11px;
+font-weight:800;
 }
 
-.priority-result h2 {
-  margin: 17px 0 6px;
+.critical{
+background:#5a2029;
+color:#ff7d87;
 }
 
-.priority-result p {
-  color: #9db4bd;
-  margin: 0;
-  line-height: 1.5;
+.high{
+background:#563d1b;
+color:#ffcb68;
 }
 
-.priority-stats {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 8px;
-  margin-top: 17px;
+.medium{
+background:#514a19;
+color:#ffe66b;
 }
 
-.stat {
-  background: rgba(255,255,255,.045);
-  padding: 12px 8px;
-  border-radius: 12px;
-  text-align: center;
+.low{
+background:#17472f;
+color:#6de8a3;
 }
 
-.stat strong {
-  display: block;
-  font-size: 17px;
+.priority-result h2{
+margin:17px 0 6px;
 }
 
-.stat small {
-  color: #829da7;
-  font-size: 10px;
+.priority-result p{
+color:#9db5be;
+line-height:1.5;
 }
-
 
-/* ================================
-   ACTION BUTTON
-================================ */
-
-.main-action {
-  width: 100%;
-
-  margin-top: 15px;
-
-  padding: 16px;
-
-  border: none;
-
-  border-radius: 14px;
-
-  background: #0ca3c4;
-
-  color: white;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 10px 25px rgba(12,163,196,.18);
+.priority-stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin-top:17px;
 }
 
-.secondary-action {
-  width: 100%;
-  margin-top: 10px;
-  padding: 14px;
-  border: 1px solid #254653;
-  border-radius: 14px;
-  background: transparent;
-  color: #a6c3cc;
-  cursor: pointer;
+.stat{
+background:rgba(255,255,255,.045);
+border-radius:12px;
+padding:12px 5px;
+text-align:center;
 }
-
-
-/* ================================
-   CAMP
-================================ */
 
-.camp-feature {
-  background:
-    linear-gradient(
-      145deg,
-      #103a45,
-      #0d2731
-    );
-
-  border: 1px solid #1e515e;
-
-  border-radius: 22px;
-
-  padding: 21px;
-
-  margin-top: 20px;
+.stat strong{
+display:block;
+font-size:17px;
 }
 
-.camp-label {
-  color: #69d5e6;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
+.stat small{
+color:#829da7;
+font-size:10px;
 }
 
-.camp-feature h2 {
-  margin: 10px 0 5px;
+.main-action{
+width:100%;
+margin-top:14px;
+padding:16px;
+border:0;
+border-radius:14px;
+background:#0aa4c5;
+color:white;
+font-weight:800;
+box-shadow:0 10px 25px rgba(10,164,197,.18);
 }
 
-.camp-distance {
-  color: #9bb3bc;
+.secondary-action{
+width:100%;
+margin-top:10px;
+padding:14px;
+border:1px solid #254653;
+border-radius:14px;
+background:transparent;
+color:#a7c4cd;
 }
 
-.camp-data {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 8px;
-  margin: 18px 0;
+.camp-feature{
+background:linear-gradient(145deg,#103c47,#0c2731);
+border:1px solid #20535f;
+border-radius:22px;
+padding:21px;
+margin-top:18px;
 }
 
-.camp-data div {
-  background: rgba(255,255,255,.05);
-  border-radius: 11px;
-  padding: 11px 7px;
-  text-align: center;
-  font-size: 12px;
+.camp-label{
+font-size:10px;
+font-weight:800;
+letter-spacing:1px;
+color:#67d8e8;
 }
 
-.camp-data strong {
-  display: block;
-  margin-bottom: 3px;
+.camp-feature h2{
+margin:10px 0 5px;
 }
-
-
-/* ================================
-   MAP
-================================ */
 
-#map {
-  width: 100%;
-  height: 450px;
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  margin-top: 15px;
+.camp-distance{
+color:#9cb5be;
 }
 
-.map-info {
-  background: #102832;
-  padding: 14px;
-  border-radius: 14px;
-  margin-top: 12px;
-  color: #a6bdc5;
-  font-size: 12px;
+.camp-data{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin:18px 0;
 }
 
-
-/* ================================
-   CAMP LIST
-================================ */
-
-.camp-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 15px;
+.camp-data div{
+background:rgba(255,255,255,.05);
+border-radius:11px;
+padding:11px 5px;
+text-align:center;
+font-size:11px;
 }
 
-.camp-card {
-  background: #102832;
-  border: 1px solid #1d3f4b;
-  padding: 17px;
-  border-radius: 17px;
+.camp-data strong{
+display:block;
+font-size:15px;
+margin-bottom:4px;
 }
 
-.camp-card h3 {
-  margin: 0 0 5px;
+.camp-list{
+display:grid;
+gap:12px;
 }
 
-.camp-card p {
-  color: #8fa8b1;
-  font-size: 12px;
-  line-height: 1.6;
+.camp-card{
+background:#102832;
+border:1px solid #1d414d;
+padding:17px;
+border-radius:17px;
 }
 
-.camp-card button {
-  width: 100%;
-  padding: 11px;
-  background: #0d8da9;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+.camp-card h3{
+margin:0 0 6px;
 }
-
-
-/* ================================
-   BOTTOM NAV
-================================ */
 
-.bottom-nav {
-  position: fixed;
-
-  bottom: 0;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: min(520px, 100%);
-
-  height: 76px;
-
-  background: rgba(6,22,30,.95);
-
-  backdrop-filter: blur(18px);
-
-  border-top: 1px solid rgba(255,255,255,.07);
-
-  display: grid;
-
-  grid-template-columns: repeat(3,1fr);
-
-  z-index: 1000;
+.camp-card p{
+color:#8fa8b2;
+font-size:12px;
+line-height:1.7;
 }
-
-.nav-button {
-  border: none;
-  background: none;
-  color: #718b95;
-  cursor: pointer;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 5px;
+.camp-card button{
+width:100%;
+padding:12px;
+background:#0d91ae;
+border:0;
+border-radius:10px;
+color:white;
 }
 
-.nav-button.active {
-  color: #55cde1;
+#map{
+width:100%;
+height:440px;
+border-radius:18px;
+overflow:hidden;
+margin-top:15px;
+background:#102832;
 }
 
-.nav-button span {
-  font-size: 21px;
+.map-info{
+background:#102832;
+padding:14px;
+border-radius:14px;
+margin-top:12px;
+color:#9db6bf;
+font-size:12px;
+line-height:1.8;
 }
 
-.nav-button small {
-  font-size: 10px;
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:min(520px,100%);
+height:76px;
+background:rgba(5,21,28,.96);
+backdrop-filter:blur(18px);
+border-top:1px solid rgba(255,255,255,.07);
+display:grid;
+grid-template-columns:repeat(3,1fr);
+z-index:9999;
 }
-
-
-/* ================================
-   LOCATION STATUS
-================================ */
-
-.location-status {
-  padding: 13px;
-
-  background: #102832;
-
-  border-radius: 13px;
 
-  margin-top: 12px;
+.nav-button{
+border:0;
+background:none;
+color:#718b95;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:5px;
+}
 
-  font-size: 12px;
+.nav-button.active{
+color:#55cde1;
+}
 
-  color: #9db4bd;
+.nav-button span{
+font-size:21px;
 }
 
-.location-status.success {
-  color: #69e6a1;
+.nav-button small{
+font-size:10px;
 }
 
+.complete{
+text-align:center;
+padding-top:65px;
+}
 
-/* ================================
-   RESPONSIVE
-================================ */
+.complete-icon{
+font-size:70px;
+}
 
-@media (max-width: 360px) {
+.complete p{
+color:#91aab4;
+line-height:1.6;
+}
 
-  .sos-button {
-    width: 175px;
-    height: 175px;
-  }
+@media(max-width:360px){
 
-  .sos-button strong {
-    font-size: 26px;
-  }
+.sos-button{
+width:175px;
+height:175px;
+}
 
+.sos-button strong{
+font-size:26px;
 }
 
+}
 </style>
 </head>
 
-
 <body>
 
-
 <div class="app">
-
-
-<!-- =================================
-     HEADER
-================================= -->
 
 <header class="header">
 
 <div class="logo">
-
-<div class="logo-icon">
-🌊
-</div>
-
-<div class="logo-text">
+<div class="logo-icon">🌊</div>
 FloodHelp
 </div>
 
-</div>
-
-
 <div class="status">
-
 <span class="status-dot"></span>
-
 System ready
-
 </div>
 
 </header>
 
 
+<!-- HOME -->
 
-<!-- =================================
-     HOME SCREEN
-================================= -->
-
-<section
-id="homeScreen"
-class="screen active">
+<section id="homeScreen" class="screen active">
 
 <div class="greeting">
 
@@ -773,7 +597,7 @@ help should be simple.
 </h1>
 
 <p>
-One tap to request help.
+One tap to request help.<br>
 One place to find safety.
 </p>
 
@@ -782,12 +606,9 @@ One place to find safety.
 
 <div class="sos-area">
 
-<button
-class="sos-button"
-id="sosButton">
+<button id="sosButton" class="sos-button">
 
 <strong>SOS</strong>
-
 <span>I NEED HELP</span>
 
 </button>
@@ -795,252 +616,158 @@ id="sosButton">
 </div>
 
 
-
 <div class="quick-grid">
 
+<button id="campButton" class="quick-card">
 
-<button
-class="quick-card"
-id="campButton">
+<div class="quick-icon">🏕️</div>
 
-<div class="quick-icon">
-🏕️
-</div>
-
-<strong>
-Safest Camp Near Me
-</strong>
+<strong>Safest Camp Near Me</strong>
 
 <small>
-Find nearby safety, vacancy and resources
+Distance, vacancy and resources
 </small>
 
 </button>
 
 
-<button
-class="quick-card"
-id="mapButton">
+<button id="mapButton" class="quick-card">
 
-<div class="quick-icon">
-🗺️
-</div>
+<div class="quick-icon">🗺️</div>
 
-<strong>
-Map & Routes
-</strong>
+<strong>Map & Routes</strong>
 
 <small>
-View camps and available routes
+View camps and routes
 </small>
 
 </button>
-
 
 </div>
 
 
 <div class="section-title">
 
-<h2>
-Emergency status
-</h2>
+<h2>Emergency status</h2>
 
-<p>
-Your active rescue requests will appear here.
-</p>
+<p>Your active emergency information appears here.</p>
 
 </div>
 
-
-<div
-class="location-status"
-id="homeLocation">
-
+<div id="homeLocation" class="location-status">
 📍 Location not shared
 </div>
-
 
 </section>
 
 
 
-<!-- =================================
-     SOS SCREEN
-================================= -->
+<!-- SOS -->
 
-<section
-id="sosScreen"
-class="screen">
+<section id="sosScreen" class="screen">
 
-<button
-class="back"
-data-back>
+<button class="back" id="backFromSos">
 ← Back
 </button>
 
-
 <div class="emergency-title">
 
-<h1>
-🆘 What's happening?
-</h1>
+<h1>🆘 What's happening?</h1>
 
-<p>
-Choose one option. You can add details later.
-</p>
+<p>Choose one. Extra information is optional.</p>
 
 </div>
 
 
 <div class="emergency-grid">
 
-
-<button
-class="emergency-option"
-data-emergency="Trapped by flood">
+<button class="emergency-option"
+data-type="trapped">
 
 <span class="emoji">🌊</span>
-
-<strong>
-Trapped
-</strong>
+<strong>Trapped</strong>
 
 </button>
 
-
-<button
-class="emergency-option"
-data-emergency="Medical emergency">
+<button class="emergency-option"
+data-type="medical">
 
 <span class="emoji">🏥</span>
-
-<strong>
-Medical
-</strong>
+<strong>Medical</strong>
 
 </button>
 
-
-<button
-class="emergency-option"
-data-emergency="People need rescue">
+<button class="emergency-option"
+data-type="rescue">
 
 <span class="emoji">👥</span>
-
-<strong>
-Rescue people
-</strong>
+<strong>Rescue People</strong>
 
 </button>
 
-
-<button
-class="emergency-option"
-data-emergency="Flooded home">
+<button class="emergency-option"
+data-type="home">
 
 <span class="emoji">🏠</span>
-
-<strong>
-Flooded home
-</strong>
+<strong>Flooded Home</strong>
 
 </button>
-
 
 </div>
 
 
+<div class="section-title optional">
 
-<!-- OPTIONAL DETAILS -->
+<h2>Optional</h2>
 
-<div
-class="section-title">
-
-<h2>
-Optional details
-</h2>
-
-<p>
-Only add these if you have time.
-</p>
+<p>Add only if you have time.</p>
 
 </div>
 
 
 <div class="counter">
 
-<button
-id="minusPeople"
-class="secondary-action"
-style="width:45px;margin:0;padding:8px;">
-−
-</button>
+<button id="minusPeople">−</button>
 
-<div
-style="flex:1;text-align:center;">
+<div class="counter-number">
 
-<strong
-id="peopleCount"
-style="font-size:25px;">
-1
-</strong>
+<strong id="peopleCount">1</strong>
 
 <br>
 
-<small style="color:#819ba5;">
-people affected
-</small>
+<small>people affected</small>
 
 </div>
 
-<button
-id="plusPeople"
-class="secondary-action"
-style="width:45px;margin:0;padding:8px;">
-+
-</button>
+<button id="plusPeople">+</button>
 
 </div>
 
 
-<div
-class="quick-grid"
-style="margin-top:10px;">
+<div class="quick-grid" style="margin-top:10px">
 
-<button
-class="quick-card optional-toggle"
+<button class="quick-card optionalButton"
 data-option="children">
 
 👶 Children
 
 </button>
 
-<button
-class="quick-card optional-toggle"
+<button class="quick-card optionalButton"
 data-option="elderly">
 
 👴 Elderly
 
 </button>
 
-</div>
-
-
-<div
-class="quick-grid"
-style="margin-top:10px;">
-
-<button
-class="quick-card optional-toggle"
+<button class="quick-card optionalButton"
 data-option="medical">
 
 🏥 Medical need
 
 </button>
 
-<button
-class="quick-card optional-toggle"
+<button class="quick-card optionalButton"
 data-option="special">
 
 ♿ Special assistance
@@ -1050,47 +777,28 @@ data-option="special">
 </div>
 
 
-
-<!-- PRIORITY -->
-
-<div
-id="priorityResult"
-class="priority-result">
-
+<div id="priorityResult" class="priority-result">
 
 <div class="priority-top">
 
-<span
-id="priorityBadge"
+<span id="priorityBadge"
 class="priority-badge critical">
-
 CRITICAL
-
 </span>
 
-<span
-id="priorityRank"
-class="priority-number">
-
-Priority assessment
-
+<span style="font-size:11px;color:#829ca6">
+AUTOMATIC
 </span>
 
 </div>
 
 
-<h2
-id="priorityHeading">
-
-Immediate assistance
-
+<h2 id="priorityTitle">
+Immediate rescue recommended
 </h2>
 
-
-<p
-id="priorityText">
-
-Your situation has been assessed.
+<p id="priorityDescription">
+Your situation has been automatically prioritised.
 </p>
 
 
@@ -1098,128 +806,94 @@ Your situation has been assessed.
 
 <div class="stat">
 
-<strong
-id="statPeople">
-1
-</strong>
-
+<strong id="statPeople">1</strong>
 <small>People</small>
 
 </div>
 
+<div class="stat">
+
+<strong id="statCritical">1</strong>
+<small>Critical</small>
+
+</div>
 
 <div class="stat">
 
-<strong
-id="statVulnerable">
-0
-</strong>
-
+<strong id="statVulnerable">0</strong>
 <small>Vulnerable</small>
 
 </div>
 
-
-<div class="stat">
-
-<strong>
-📍
-</strong>
-
-<small>Location</small>
-
-</div>
-
 </div>
 
 
-<button
-class="main-action"
-id="requestButton">
+<button id="requestRescue"
+class="main-action">
 
-🚑 Request Rescue
+🚑 REQUEST RESCUE
 
 </button>
 
 
-<button
-class="secondary-action"
-id="findCampFromSOS">
+<button id="sosFindCamp"
+class="secondary-action">
 
 🏕️ Find Safest Camp
 
 </button>
 
-
 </div>
 
 
-<div
-class="location-status"
-id="sosLocation">
+<div id="sosLocation"
+class="location-status">
 
-📍 Location will be detected automatically when needed.
+📍 Location will be detected automatically.
 
 </div>
-
 
 </section>
 
 
 
-<!-- =================================
-     CAMP SCREEN
-================================= -->
+<!-- CAMP -->
 
-<section
-id="campScreen"
-class="screen">
+<section id="campScreen" class="screen">
 
-<button
-class="back"
-data-back>
+<button class="back" id="backFromCamp">
 ← Back
 </button>
 
-
 <div class="emergency-title">
 
-<h1>
-🏕️ Safest Camp
-</h1>
+<h1>🏕️ Safest Camp Near Me</h1>
 
-<p>
-Finding the best available option near you.
-</p>
+<p>Choose a camp with space and essential resources.</p>
 
 </div>
 
 
-<div
-class="location-status"
-id="campLocation">
+<div id="campLocation"
+class="location-status">
 
-📍 Detecting location...
+📍 Detecting your location...
+
 </div>
 
 
-<div
-class="camp-feature">
+<div class="camp-feature">
 
 <div class="camp-label">
 BEST AVAILABLE OPTION
 </div>
 
-
 <h2 id="bestCampName">
 Community Relief Camp
 </h2>
 
-
-<div
-class="camp-distance"
-id="bestCampDistance">
-
+<div id="bestCampDistance"
+class="camp-distance">
 📏 Calculating distance...
 </div>
 
@@ -1227,186 +901,128 @@ id="bestCampDistance">
 <div class="camp-data">
 
 <div>
-
-<strong
-id="bestVacancy">
-65%
-</strong>
-
+<strong id="bestVacancy">65%</strong>
 Space
-
 </div>
 
-
 <div>
-
-<strong>
-💧
-</strong>
-
+<strong>💧</strong>
 Water
-
 </div>
-
 
 <div>
-
-<strong>
-🍱
-</strong>
-
+<strong>🍱</strong>
 Food
-
 </div>
 
 </div>
 
 
-<button
-class="main-action"
-id="bestRoute">
+<button id="bestRoute"
+class="main-action">
 
-🛣️ Navigate to Camp
+🛣️ SAFEST ROUTE
 
 </button>
 
 </div>
-
 
 
 <div class="section-title">
 
-<h2>
-Other nearby camps
-</h2>
+<h2>Nearby camps</h2>
 
 </div>
 
-
-<div
-id="campList"
-class="camp-list">
-</div>
-
+<div id="campList" class="camp-list"></div>
 
 </section>
 
 
 
-<!-- =================================
-     MAP SCREEN
-================================= -->
+<!-- MAP -->
 
-<section
-id="mapScreen"
-class="screen">
+<section id="mapScreen" class="screen">
 
-<button
-class="back"
-data-back>
+<button class="back" id="backFromMap">
 ← Back
 </button>
 
-
 <div class="emergency-title">
 
-<h1>
-🗺️ Map & Routes
-</h1>
+<h1>🗺️ Map & Routes</h1>
 
-<p>
-Your location, relief camps and available routes.
-</p>
+<p>Your location and relief camps.</p>
 
 </div>
-
 
 <div id="map"></div>
 
-
 <div class="map-info">
 
-📍 <strong>You</strong><br>
+📍 <strong>Your location</strong><br>
 🏕️ Relief camp<br>
-🛣️ Route to safety
+🛣️ Tap a camp to see information and route
 
 </div>
-
 
 </section>
 
 
 
-<!-- =================================
-     REQUEST COMPLETE SCREEN
-================================= -->
+<!-- COMPLETE -->
 
-<section
-id="completeScreen"
-class="screen">
+<section id="completeScreen" class="screen">
 
-<div
-style="text-align:center;padding-top:70px;">
+<div class="complete">
 
-<div
-style="font-size:65px;">
+<div class="complete-icon">✅</div>
 
-✓
+<h1>Help Request Sent</h1>
 
-</div>
-
-
-<h1>
-Help request recorded
-</h1>
-
-
-<p
-style="color:#91aab4;line-height:1.6;">
-
-Your emergency has been prioritised.
-Your location can be used to guide assistance.
-
+<p>
+Your emergency has been automatically prioritised.
+Your location can be used by the rescue system.
 </p>
 
 
-<div
-class="priority-result show"
-style="text-align:left;">
+<div class="priority-result show"
+style="text-align:left">
 
-<strong>
-🚨 Emergency priority
-</strong>
+<div class="priority-top">
 
-<h2
-id="completePriority">
+<span id="completePriority"
+class="priority-badge critical">
 
 CRITICAL
+
+</span>
+
+</div>
+
+<h2 id="completeSummary">
+Emergency request recorded
 </h2>
 
-<p
-id="completeSummary">
-
-Emergency request submitted.
+<p>
+Stay in a safe visible location if possible.
 </p>
 
 </div>
 
 
-<button
-class="main-action"
-data-screen="campScreen">
+<button id="completeCamp"
+class="main-action">
 
-🏕️ Find Safest Camp
+🏕️ FIND SAFEST CAMP
 
 </button>
 
 
-<button
-class="secondary-action"
-data-screen="homeScreen">
+<button id="completeHome"
+class="secondary-action">
 
-Return Home
+RETURN HOME
 
 </button>
 
@@ -1416,68 +1032,50 @@ Return Home
 
 
 
-<!-- =================================
-     BOTTOM NAV
-================================= -->
+<!-- NAV -->
 
 <nav class="bottom-nav">
 
-
-<button
-class="nav-button active"
-data-screen="homeScreen">
+<button class="nav-button active"
+id="navHome">
 
 <span>⌂</span>
-
 <small>Home</small>
 
 </button>
 
-
-<button
-class="nav-button"
-data-screen="campScreen">
+<button class="nav-button"
+id="navCamp">
 
 <span>🏕️</span>
-
 <small>Camp</small>
 
 </button>
 
-
-<button
-class="nav-button"
-data-screen="mapScreen">
+<button class="nav-button"
+id="navMap">
 
 <span>🗺️</span>
-
 <small>Map</small>
 
 </button>
 
-
 </nav>
-
 
 </div>
 
 
 
-<script
-src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-/* ============================================
-   FLOODHELP APP
-============================================ */
+/* ==========================================
+   FLOODHELP
+========================================== */
 
 
-/* --------------------------------------------
-   SCREEN NAVIGATION
--------------------------------------------- */
+/* ---------- SCREEN SYSTEM ---------- */
 
 const screens =
 document.querySelectorAll(".screen");
@@ -1486,445 +1084,386 @@ const navButtons =
 document.querySelectorAll(".nav-button");
 
 
-function showScreen(id) {
+function showScreen(id){
 
-screens.forEach(screen => {
-
-screen.classList.remove("active");
-
+screens.forEach(s=>{
+s.classList.remove("active");
 });
-
 
 const target =
 document.getElementById(id);
 
-if (target) {
-
+if(target){
 target.classList.add("active");
-
 }
 
-
-navButtons.forEach(button => {
-
-button.classList.remove("active");
-
-if (
-button.dataset.screen === id
-) {
-
-button.classList.add("active");
-
-}
-
+navButtons.forEach(b=>{
+b.classList.remove("active");
 });
 
+if(id==="homeScreen")
+document.getElementById("navHome")
+.classList.add("active");
+
+if(id==="campScreen")
+document.getElementById("navCamp")
+.classList.add("active");
+
+if(id==="mapScreen")
+document.getElementById("navMap")
+.classList.add("active");
 
 window.scrollTo({
-top: 0,
-behavior: "smooth"
+top:0,
+behavior:"smooth"
 });
 
-
-if (id === "mapScreen") {
-
-setTimeout(() => {
-
+if(id==="mapScreen"){
+setTimeout(()=>{
+if(map){
 map.invalidateSize();
-
-}, 250);
-
+}
+},300);
 }
 
 }
 
 
-/* --------------------------------------------
-   NAV BUTTONS
--------------------------------------------- */
+/* ---------- HOME ---------- */
 
-navButtons.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-showScreen(
-button.dataset.screen
-);
-
-});
-
-});
-
-
-document
-.querySelectorAll("[data-screen]")
-.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-showScreen(
-button.dataset.screen
-);
-
-});
-
-});
-
-
-document
-.querySelectorAll("[data-back]")
-.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-showScreen("homeScreen");
-
-});
-
-});
-
-
-/* --------------------------------------------
-   SOS
--------------------------------------------- */
-
-document
-.getElementById("sosButton")
-.addEventListener(
-"click",
-() => {
-
+document.getElementById("sosButton")
+.onclick=()=>{
 showScreen("sosScreen");
+};
 
-});
+document.getElementById("campButton")
+.onclick=()=>{
+showScreen("campScreen");
+startLocation();
+};
+
+document.getElementById("mapButton")
+.onclick=()=>{
+showScreen("mapScreen");
+initializeMap();
+startLocation();
+};
 
 
+/* ---------- NAV ---------- */
 
-/* --------------------------------------------
-   EMERGENCY SELECTION
--------------------------------------------- */
+document.getElementById("navHome")
+.onclick=()=>{
+showScreen("homeScreen");
+};
 
-let emergency =
-"";
+document.getElementById("navCamp")
+.onclick=()=>{
+showScreen("campScreen");
+startLocation();
+};
 
-let people =
-1;
+document.getElementById("navMap")
+.onclick=()=>{
+showScreen("mapScreen");
+initializeMap();
+startLocation();
+};
+
+
+/* ---------- BACK ---------- */
+
+document.getElementById("backFromSos")
+.onclick=()=>{
+showScreen("homeScreen");
+};
+
+document.getElementById("backFromCamp")
+.onclick=()=>{
+showScreen("homeScreen");
+};
+
+document.getElementById("backFromMap")
+.onclick=()=>{
+showScreen("homeScreen");
+};
+
+
+/* ==========================================
+   SOS SYSTEM
+========================================== */
+
+let emergencyType = null;
+
+let people = 1;
 
 let options = {
+children:false,
+elderly:false,
+medical:false,
+special:false
+};
 
-children: false,
 
-elderly: false,
+document.querySelectorAll(".emergency-option")
+.forEach(button=>{
 
-medical: false,
+button.onclick=()=>{
 
-special: false
+document.querySelectorAll(".emergency-option")
+.forEach(b=>{
+b.classList.remove("selected");
+});
+
+button.classList.add("selected");
+
+emergencyType =
+button.dataset.type;
+
+calculatePriority();
+
+};
+
+});
+
+
+/* ---------- PEOPLE ---------- */
+
+document.getElementById("plusPeople")
+.onclick=()=>{
+
+if(people<20)
+people++;
+
+document.getElementById("peopleCount")
+.textContent=people;
+
+calculatePriority();
 
 };
 
 
-const emergencyButtons =
-document.querySelectorAll(
-".emergency-option"
-);
+document.getElementById("minusPeople")
+.onclick=()=>{
 
-
-emergencyButtons.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-emergencyButtons.forEach(
-b => b.classList.remove("selected")
-);
-
-button.classList.add("selected");
-
-emergency =
-button.dataset.emergency;
-
-calculatePriority();
-
-});
-
-});
-
-
-
-/* --------------------------------------------
-   PEOPLE
--------------------------------------------- */
-
-document
-.getElementById("plusPeople")
-.addEventListener(
-"click",
-() => {
-
-people++;
-
-document
-.getElementById("peopleCount")
-.textContent =
-people;
-
-calculatePriority();
-
-});
-
-
-document
-.getElementById("minusPeople")
-.addEventListener(
-"click",
-() => {
-
-if (people > 1) {
-
+if(people>1)
 people--;
 
-}
-
-document
-.getElementById("peopleCount")
-.textContent =
-people;
+document.getElementById("peopleCount")
+.textContent=people;
 
 calculatePriority();
 
-});
+};
 
 
+/* ---------- OPTIONAL ---------- */
 
-/* --------------------------------------------
-   OPTIONAL DETAILS
--------------------------------------------- */
+document.querySelectorAll(".optionalButton")
+.forEach(button=>{
 
-document
-.querySelectorAll(".optional-toggle")
-.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
+button.onclick=()=>{
 
 const key =
 button.dataset.option;
 
-options[key] =
-!options[key];
+options[key]=!options[key];
 
-if (options[key]) {
+if(options[key]){
 
-button.style.borderColor =
-"#20b7d3";
+button.style.borderColor="#20b7d3";
+button.style.background="#124554";
 
-button.style.background =
-"#124252";
+}else{
 
-} else {
-
-button.style.borderColor =
-"rgba(255,255,255,.08)";
-
-button.style.background =
-"rgba(255,255,255,.055)";
+button.style.borderColor="rgba(255,255,255,.08)";
+button.style.background="rgba(255,255,255,.055)";
 
 }
 
 calculatePriority();
 
-});
+};
 
 });
 
 
+/* ==========================================
+   AUTOMATIC PRIORITY
+========================================== */
 
-/* --------------------------------------------
-   PRIORITY ENGINE
--------------------------------------------- */
+function calculatePriority(){
 
-function calculatePriority() {
-
-if (!emergency) {
-
+if(!emergencyType)
 return;
 
-}
 
+let vulnerable=0;
 
-let vulnerable = 0;
-
-if (options.children)
+if(options.children)
 vulnerable++;
 
-if (options.elderly)
+if(options.elderly)
 vulnerable++;
 
-if (options.medical)
+if(options.medical)
 vulnerable++;
 
-if (options.special)
+if(options.special)
 vulnerable++;
 
 
-let priority =
-"LOW";
+let priority="LOW";
 
-let heading =
-"Assistance required";
+let title="Assistance required";
 
-let description =
-"Your request has been recorded.";
+let description=
+"Your emergency has been assessed.";
 
 
-/* Critical */
+/*
+CRITICAL
+*/
 
-if (
+if(
 options.medical ||
 options.special ||
-people >= 6 ||
+people>=6 ||
 (
-emergency === "Trapped by flood" &&
-vulnerable >= 1
+emergencyType==="trapped" &&
+vulnerable>=1
 )
-) {
+){
 
-priority =
-"CRITICAL";
+priority="CRITICAL";
 
-heading =
-"Immediate rescue recommended";
+title="Immediate rescue recommended";
 
-description =
-"Your situation may require immediate assistance.";
+description=
+"Your situation requires the highest priority.";
 
 }
 
 
-/* High */
+/*
+HIGH
+*/
 
-else if (
-people >= 4 ||
+else if(
+people>=4 ||
 options.children ||
 options.elderly ||
-emergency === "Trapped by flood" ||
-emergency === "Medical emergency"
-) {
+emergencyType==="trapped" ||
+emergencyType==="medical"
+){
 
-priority =
-"HIGH";
+priority="HIGH";
 
-heading =
-"Urgent assistance recommended";
+title="Urgent assistance recommended";
 
-description =
-"Your situation has been prioritised for urgent response.";
+description=
+"Your emergency has been prioritised for urgent response.";
 
 }
 
 
-/* Medium */
+/*
+MEDIUM
+*/
 
-else if (emergency) {
+else{
 
-priority =
-"MEDIUM";
+priority="MEDIUM";
 
-heading =
-"Assistance required";
+title="Assistance required";
 
-description =
-"Your request has been assessed and prioritised.";
+description=
+"Your request has been automatically prioritised.";
 
 }
 
+
+/* ---------- CRITICAL COUNT ---------- */
+
+let criticalCount=0;
+
+
+/*
+The system estimates how many
+people require immediate attention.
+*/
+
+if(priority==="CRITICAL"){
+
+criticalCount=people;
+
+}else if(
+options.medical ||
+options.special
+){
+
+criticalCount=1;
+
+}else if(
+options.children ||
+options.elderly
+){
+
+criticalCount=1;
+
+}
+
+
+/* ---------- UI ---------- */
 
 const result =
-document.getElementById(
-"priorityResult"
-);
-
-const badge =
-document.getElementById(
-"priorityBadge"
-);
-
-const title =
-document.getElementById(
-"priorityHeading"
-);
-
-const text =
-document.getElementById(
-"priorityText"
-);
-
-const vulnerableStat =
-document.getElementById(
-"statVulnerable"
-);
-
-const peopleStat =
-document.getElementById(
-"statPeople"
-);
-
+document.getElementById("priorityResult");
 
 result.classList.add("show");
 
 
-badge.className =
-"priority-badge";
+const badge =
+document.getElementById("priorityBadge");
 
+badge.className=
+"priority-badge "+
+priority.toLowerCase();
 
-badge.classList.add(
-priority.toLowerCase()
-);
-
-badge.textContent =
+badge.textContent=
 priority;
 
 
-title.textContent =
-heading;
+document.getElementById("priorityTitle")
+.textContent=title;
 
-text.textContent =
-description;
+document.getElementById("priorityDescription")
+.textContent=description;
 
-peopleStat.textContent =
-people;
+document.getElementById("statPeople")
+.textContent=people;
 
-vulnerableStat.textContent =
-vulnerable;
+document.getElementById("statCritical")
+.textContent=criticalCount;
+
+document.getElementById("statVulnerable")
+.textContent=vulnerable;
 
 }
 
 
-
-/* --------------------------------------------
+/* ==========================================
    LOCATION
--------------------------------------------- */
+========================================== */
 
-let userLat =
-null;
-
-let userLng =
-null;
+let userLat=null;
+let userLng=null;
 
 
-function getLocation(callback) {
+function startLocation(){
 
-if (!navigator.geolocation) {
+if(!navigator.geolocation){
 
-callback(false);
+setLocationError();
 
 return;
 
@@ -1933,89 +1472,77 @@ return;
 
 navigator.geolocation.getCurrentPosition(
 
-position => {
+position=>{
 
-userLat =
+userLat=
 position.coords.latitude;
 
-userLng =
+userLng=
 position.coords.longitude;
 
 
-document
-.getElementById("homeLocation")
-.innerHTML =
+document.getElementById("homeLocation")
+.textContent=
 "📍 Location ready";
 
-document
-.getElementById("homeLocation")
+document.getElementById("homeLocation")
 .classList.add("success");
 
 
-document
-.getElementById("sosLocation")
-.innerHTML =
+document.getElementById("sosLocation")
+.textContent=
 "📍 Location detected";
 
-document
-.getElementById("sosLocation")
+
+document.getElementById("sosLocation")
 .classList.add("success");
 
 
-document
-.getElementById("campLocation")
-.innerHTML =
+document.getElementById("campLocation")
+.textContent=
 "📍 Your location detected";
 
 
-if (mapUserMarker) {
+document.getElementById("campLocation")
+.classList.add("success");
+
+
+if(map){
+
+if(mapUserMarker){
 
 mapUserMarker.setLatLng([
 userLat,
 userLng
 ]);
 
-} else {
+}else{
 
-mapUserMarker =
+mapUserMarker=
 L.marker([
 userLat,
 userLng
 ])
 .addTo(map)
-.bindPopup(
-"📍 You are here"
-);
+.bindPopup("📍 You are here");
 
 }
-
 
 map.setView([
 userLat,
 userLng
-], 14);
-
-
-if (callback) {
-
-callback(true);
+],14);
 
 }
+
+
+updateCamp();
 
 },
 
-() => {
+error=>{
 
-document
-.getElementById("campLocation")
-.innerHTML =
-"📍 Location permission not granted";
-
-if (callback) {
-
-callback(false);
-
-}
+setLocationError();
 
 }
 
@@ -2024,155 +1551,102 @@ callback(false);
 }
 
 
+function setLocationError(){
 
-/* Automatically request location when needed */
+document.getElementById("homeLocation")
+.textContent=
+"📍 Location permission not available";
 
-document
-.getElementById("campButton")
-.addEventListener(
-"click",
-() => {
+document.getElementById("campLocation")
+.textContent=
+"📍 Allow location access to calculate distance";
 
-showScreen("campScreen");
-
-getLocation(() => {
-
-updateCampDistance();
-
-});
-
-});
+}
 
 
-/* --------------------------------------------
+/* ==========================================
    CAMP DATA
--------------------------------------------- */
+========================================== */
 
-const camps = [
+
+/*
+DEMO CAMP DATA
+
+For a real deployment these should come
+from a live emergency database.
+*/
+
+const camps=[
 
 {
-
-name:
-"Community Relief Camp",
-
-lat:
-11.073,
-
-lng:
-76.073,
-
-vacancy:
-65,
-
-water:
-true,
-
-food:
-true,
-
-medicine:
-true
-
+name:"Community Relief Camp",
+lat:11.073,
+lng:76.073,
+vacancy:65,
+water:true,
+food:true,
+medicine:true
 },
 
 {
-
-name:
-"Emergency Shelter Centre",
-
-lat:
-11.078,
-
-lng:
-76.080,
-
-vacancy:
-25,
-
-water:
-true,
-
-food:
-true,
-
-medicine:
-false
-
+name:"Emergency Shelter Centre",
+lat:11.079,
+lng:76.080,
+vacancy:42,
+water:true,
+food:true,
+medicine:false
 },
 
 {
-
-name:
-"Safe Haven Camp",
-
-lat:
-11.068,
-
-lng:
-76.065,
-
-vacancy:
-0,
-
-water:
-true,
-
-food:
-false,
-
-medicine:
-true
-
+name:"Safe Haven Camp",
+lat:11.067,
+lng:76.064,
+vacancy:25,
+water:true,
+food:false,
+medicine:true
 }
 
 ];
 
 
-
-/* --------------------------------------------
+/* ==========================================
    DISTANCE
--------------------------------------------- */
+========================================== */
 
 function distanceKm(
 lat1,
 lon1,
 lat2,
 lon2
-) {
+){
 
-const R =
-6371;
+const R=6371;
 
-const dLat =
-(lat2-lat1)
-*
-Math.PI / 180;
+const dLat=
+(lat2-lat1)*
+Math.PI/180;
 
-const dLon =
-(lon2-lon1)
-*
-Math.PI / 180;
+const dLon=
+(lon2-lon1)*
+Math.PI/180;
 
-const a =
-Math.sin(dLat/2) *
-Math.sin(dLat/2) +
+const a=
+Math.sin(dLat/2)*
+Math.sin(dLat/2)+
 
 Math.cos(
-lat1 *
-Math.PI/180
-) *
-
+lat1*Math.PI/180
+)*
 Math.cos(
-lat2 *
-Math.PI/180
-) *
-
-Math.sin(dLon/2) *
+lat2*Math.PI/180
+)*
+Math.sin(dLon/2)*
 Math.sin(dLon/2);
 
-const c =
-2 *
-Math.atan2(
+const c=
+2*Math.atan2(
 Math.sqrt(a),
 Math.sqrt(1-a)
 );
@@ -2182,41 +1656,33 @@ return R*c;
 }
 
 
+/* ==========================================
+   UPDATE CAMP
+========================================== */
 
-/* --------------------------------------------
-   CAMP DISTANCE
--------------------------------------------- */
+function updateCamp(){
 
-function updateCampDistance() {
+if(
+userLat===null ||
+userLng===null
+){
 
-if (
-userLat === null ||
-userLng === null
-) {
-
-document
-.getElementById(
-"bestCampDistance"
-)
-.textContent =
-"📏 Location required";
+renderCampList(camps);
 
 return;
 
 }
 
 
-let available =
+let available=
 camps.filter(
-camp =>
-camp.vacancy > 0
+camp=>camp.vacancy>0
 );
 
 
 available.sort(
-(a,b) => {
-
-return distanceKm(
+(a,b)=>
+distanceKm(
 userLat,
 userLng,
 a.lat,
@@ -2228,23 +1694,17 @@ userLat,
 userLng,
 b.lat,
 b.lng
+)
 );
 
-});
 
-
-if (!available.length) {
-
+if(available.length===0)
 return;
 
-}
 
+const best=available[0];
 
-const best =
-available[0];
-
-
-const distance =
+const distance=
 distanceKm(
 userLat,
 userLng,
@@ -2253,200 +1713,135 @@ best.lng
 );
 
 
-document
-.getElementById(
-"bestCampName"
-)
-.textContent =
-best.name;
+document.getElementById("bestCampName")
+.textContent=best.name;
+
+document.getElementById("bestVacancy")
+.textContent=
+best.vacancy+"%";
+
+document.getElementById("bestCampDistance")
+.textContent=
+"📏 "+distance.toFixed(1)+" km away";
 
 
-document
-.getElementById(
-"bestVacancy"
-)
-.textContent =
-best.vacancy + "%";
-
-
-document
-.getElementById(
-"bestCampDistance"
-)
-.textContent =
-"📏 " +
-distance.toFixed(1) +
-" km away";
-
-
-renderCampList(
-available
-);
+renderCampList(available);
 
 }
 
 
-
-/* --------------------------------------------
+/* ==========================================
    CAMP LIST
--------------------------------------------- */
+========================================== */
 
-function renderCampList(list) {
+function renderCampList(list){
 
-const container =
-document.getElementById(
-"campList"
-);
+const container=
+document.getElementById("campList");
 
-container.innerHTML =
-"";
+container.innerHTML="";
 
 
-list.forEach(camp => {
+list.forEach(camp=>{
 
-let distanceText =
-"Distance unavailable";
+let distance="Distance unavailable";
 
+if(
+userLat!==null &&
+userLng!==null
+){
 
-if (
-userLat !== null
-) {
-
-distanceText =
+distance=
 distanceKm(
 userLat,
 userLng,
 camp.lat,
 camp.lng
 ).toFixed(1)
-+
-" km away";
++" km";
 
 }
 
 
-const card =
+const card=
 document.createElement("div");
 
-card.className =
-"camp-card";
+card.className="camp-card";
 
 
-card.innerHTML =
+card.innerHTML=`
 
-"<h3>🏕️ " +
-camp.name +
-"</h3>" +
+<h3>🏕️ ${camp.name}</h3>
 
-"<p>" +
+<p>
 
-"📏 " +
-distanceText +
+📏 ${distance}<br>
 
-"<br>" +
+👥 ${camp.vacancy}% space available<br>
 
-"👥 " +
-camp.vacancy +
-"% space available" +
+💧 Water:
+${camp.water?"Available":"Unavailable"}<br>
 
-"<br>" +
+🍱 Food:
+${camp.food?"Available":"Unavailable"}<br>
 
-"💧 Water: " +
-(
-camp.water
-? "Available"
-: "Unavailable"
-) +
+💊 Medicine:
+${camp.medicine?"Available":"Unavailable"}
 
-"<br>" +
+</p>
 
-"🍱 Food: " +
-(
-camp.food
-? "Available"
-: "Unavailable"
-) +
+<button>
+🛣️ ROUTE TO CAMP
+</button>
 
-"<br>" +
-
-"💊 Medicine: " +
-(
-camp.medicine
-? "Available"
-: "Unavailable"
-) +
-
-"</p>" +
-
-"<button>
-🛣️ Navigate
-</button>";
+`;
 
 
-card
-.querySelector("button")
-.addEventListener(
-"click",
-() => {
-
-navigateTo(
-camp
-);
-
-});
+card.querySelector("button")
+.onclick=()=>{
+routeToCamp(camp);
+};
 
 
-container.appendChild(
-card
-);
+container.appendChild(card);
 
 });
 
 }
 
 
+/* ==========================================
+   ROUTE
+========================================== */
 
-/* --------------------------------------------
-   NAVIGATION
--------------------------------------------- */
+function routeToCamp(camp){
 
-function navigateTo(camp) {
+if(
+userLat===null ||
+userLng===null
+){
 
-if (
-userLat === null
-) {
+startLocation();
 
-getLocation(
-success => {
-
-if (success) {
-
-navigateTo(
-camp
+alert(
+"Please allow location access first."
 );
-
-}
-
-});
 
 return;
 
 }
 
 
-const url =
-"https://www.google.com/maps/dir/?api=1" +
-
-"&origin=" +
-userLat +
-"," +
-userLng +
-
-"&destination=" +
-camp.lat +
-"," +
-camp.lng +
-
+const url=
+"https://www.google.com/maps/dir/?api=1"+
+"&origin="+
+userLat+
+","+
+userLng+
+"&destination="+
+camp.lat+
+","+
+camp.lng+
 "&travelmode=walking";
 
 
@@ -2458,23 +1853,20 @@ url,
 }
 
 
-document
-.getElementById("bestRoute")
-.addEventListener(
-"click",
-() => {
+document.getElementById("bestRoute")
+.onclick=()=>{
 
-let best =
-camps
-.filter(c => c.vacancy > 0)
-.sort(
-(a,b) => {
+let available=
+camps.filter(
+c=>c.vacancy>0
+);
 
-if (
-userLat === null
-) return 0;
 
-return distanceKm(
+if(userLat!==null){
+
+available.sort(
+(a,b)=>
+distanceKm(
 userLat,
 userLng,
 a.lat,
@@ -2486,115 +1878,150 @@ userLat,
 userLng,
 b.lat,
 b.lng
+)
 );
 
 }
-)[0];
 
 
-navigateTo(
-best
+if(available.length)
+routeToCamp(available[0]);
+
+};
+
+
+/* ==========================================
+   SOS → CAMP
+========================================== */
+
+document.getElementById("sosFindCamp")
+.onclick=()=>{
+
+showScreen("campScreen");
+
+startLocation();
+
+};
+
+
+/* ==========================================
+   RESCUE REQUEST
+========================================== */
+
+document.getElementById("requestRescue")
+.onclick=()=>{
+
+if(!emergencyType){
+
+alert(
+"Please select the emergency type first."
 );
 
-});
+return;
+
+}
 
 
-
-/* --------------------------------------------
-   SOS REQUEST
--------------------------------------------- */
-
-document
-.getElementById("requestButton")
-.addEventListener(
-"click",
-() => {
-
-getLocation();
+startLocation();
 
 
-let priority =
-document
-.getElementById(
-"priorityBadge"
-)
+const priority=
+document.getElementById("priorityBadge")
 .textContent;
 
 
-document
-.getElementById(
-"completePriority"
-)
-.textContent =
-priority;
+const critical=
+document.getElementById("statCritical")
+.textContent;
 
 
-document
-.getElementById(
-"completeSummary"
-)
-.innerHTML =
-
-"Situation: " +
-emergency +
-
-"<br>" +
-
-"People affected: " +
-people +
-
-"<br>" +
-
-"Location: " +
-(
-userLat !== null
-? "Detected"
-: "Pending"
-);
+document.getElementById("completePriority").textContent=priority;
 
 
-showScreen(
-"completeScreen"
-);
+document.getElementById("completeSummary")
+textContent=
+priority+
+" priority • "+
+people+
+" people affected • "+
+critical+
+" critical";
 
-});
+
+showScreen("completeScreen");
+
+};
 
 
+/* ==========================================
+   COMPLETE SCREEN
+========================================== */
 
-/* --------------------------------------------
-   FIND CAMP FROM SOS
--------------------------------------------- */
+document.getElementById("completeCamp")
+.onclick=()=>{
 
-document
-.getElementById("findCampFromSOS")
-.addEventListener(
-"click",
-() => {
+showScreen("campScreen");
 
-showScreen(
-"campScreen"
-);
+startLocation();
 
-getLocation(
-success => {
+};
 
-if (success) {
 
-updateCampDistance();
+document.getElementById("completeHome")
+.onclick=()=>{
+
+showScreen("homeScreen");
+
+};
+
+
+/* ==========================================
+   MAP
+========================================== */
+
+let map=null;
+
+let mapUserMarker=null;
+
+
+function initializeMap(){
+
+if(map){
+
+setTimeout(()=>{
+map.invalidateSize();
+},200);
+
+return;
 
 }
 
-});
 
-});
+if(typeof L==="undefined"){
+
+document.getElementById("map")
+.innerHTML=`
+
+<div style="
+padding:50px 20px;
+text-align:center;
+color:white;
+">
+
+🗺️ Map temporarily unavailable.<br><br>
+
+Please check your internet connection.
+
+</div>
+
+`;
+
+return;
+
+}
 
 
-
-/* --------------------------------------------
-   MAP
--------------------------------------------- */
-
-const map =
+map=
 L.map("map")
 .setView(
 [11.073,76.073],
@@ -2605,101 +2032,121 @@ L.map("map")
 L.tileLayer(
 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 {
-
 attribution:
 "&copy; OpenStreetMap contributors"
-
 }
 ).addTo(map);
 
 
-let mapUserMarker =
-null;
+/* CAMP MARKERS */
 
+camps.forEach(camp=>{
 
-camps.forEach(camp => {
-
+const marker=
 L.marker([
 camp.lat,
 camp.lng
 ])
+.addTo(map);
+
+
+marker.bindPopup(`
+
+<strong>🏕️ ${camp.name}</strong>
+
+<br><br>
+
+👥 Vacancy:
+${camp.vacancy}%
+
+<br>
+
+💧 Water:
+${camp.water?"Available":"Unavailable"}
+
+<br>
+
+🍱 Food:
+${camp.food?"Available":"Unavailable"}
+
+<br>
+
+💊 Medicine:
+${camp.medicine?"Available":"Unavailable"}
+
+<br><br>
+
+<button
+onclick="routeToCampById('${camp.name}')"
+style="
+padding:9px;
+border:0;
+border-radius:8px;
+background:#0d91ae;
+color:white;
+">
+
+🛣️ Route
+
+</button>
+
+`);
+
+});
+
+
+/* USER MARKER */
+
+if(
+userLat!==null &&
+userLng!==null
+){
+
+mapUserMarker=
+L.marker([
+userLat,
+userLng
+])
 .addTo(map)
 .bindPopup(
-
-"<strong>🏕️ " +
-camp.name +
-"</strong><br><br>" +
-
-"👥 Vacancy: " +
-camp.vacancy +
-"%<br>" +
-
-"💧 Water: " +
-(
-camp.water
-? "Available"
-: "Unavailable"
-) +
-
-"<br>" +
-
-"🍱 Food: " +
-(
-camp.food
-? "Available"
-: "Unavailable"
-) +
-
-"<br>" +
-
-"💊 Medicine: " +
-(
-camp.medicine
-? "Available"
-: "Unavailable"
-)
-
+"📍 You are here"
 );
 
-});
+map.setView([
+userLat,
+userLng
+],14);
+
+}
+
+}
 
 
+/* Route from popup */
 
-/* --------------------------------------------
-   MAP BUTTON
--------------------------------------------- */
+function routeToCampById(name){
 
-document
-.getElementById("mapButton")
-.addEventListener(
-"click",
-() => {
-
-showScreen(
-"mapScreen"
+const camp=
+camps.find(
+c=>c.name===name
 );
 
-getLocation();
+if(camp)
+routeToCamp(camp);
 
-setTimeout(
-() => {
-
-map.invalidateSize();
-
-},
-300
-);
-
-});
+}
 
 
-/* --------------------------------------------
-   INITIAL CAMPS
--------------------------------------------- */
+/* ==========================================
+   INITIAL CAMP LIST
+========================================== */
 
-renderCampList(
-camps
-);
+renderCampList(camps);
+
+
+/* ==========================================
+   END
+========================================== */
 
 </script>
 
