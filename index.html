@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>FloodHelp</title>
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
-*{box-sizing:border-box}
 
-body{
+*{
+box-sizing:border-box;
+}
+
+html,body{
 margin:0;
-font-family:Arial,Helvetica,sans-serif;
+padding:0;
 background:#061820;
 color:white;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+min-height:100vh;
 }
 
 .app{
@@ -23,12 +33,14 @@ max-width:520px;
 min-height:100vh;
 margin:auto;
 background:linear-gradient(180deg,#0b2630,#061820);
-padding-bottom:82px;
+padding-bottom:85px;
 }
+
+/* HEADER */
 
 .header{
 height:75px;
-padding:18px 20px;
+padding:15px 20px;
 display:flex;
 align-items:center;
 justify-content:space-between;
@@ -36,7 +48,7 @@ border-bottom:1px solid rgba(255,255,255,.07);
 }
 
 .logo{
-font-size:19px;
+font-size:20px;
 font-weight:bold;
 display:flex;
 align-items:center;
@@ -50,6 +62,7 @@ border-radius:12px;
 display:grid;
 place-items:center;
 background:#079dbc;
+font-size:21px;
 }
 
 .status{
@@ -66,6 +79,8 @@ background:#3de394;
 margin-right:5px;
 }
 
+/* SCREENS */
+
 .screen{
 display:none;
 padding:22px 20px 30px;
@@ -79,11 +94,11 @@ animation:fade .25s ease;
 @keyframes fade{
 from{
 opacity:0;
-transform:translateY(7px)
+transform:translateY(7px);
 }
 to{
 opacity:1;
-transform:translateY(0)
+transform:translateY(0);
 }
 }
 
@@ -107,6 +122,40 @@ button:active{
 transform:scale(.97);
 }
 
+/* BUTTONS */
+
+.back{
+border:0;
+background:none;
+color:#62c9db;
+padding:0;
+margin-bottom:20px;
+font-size:14px;
+}
+
+.primary{
+width:100%;
+border:0;
+border-radius:13px;
+padding:15px;
+margin-top:14px;
+background:#08a2c2;
+color:white;
+font-weight:bold;
+}
+
+.secondary{
+width:100%;
+border:1px solid #254753;
+border-radius:13px;
+padding:14px;
+margin-top:10px;
+background:transparent;
+color:#a5c0c8;
+}
+
+/* HOME */
+
 .sosWrap{
 display:flex;
 justify-content:center;
@@ -118,15 +167,9 @@ width:205px;
 height:205px;
 border-radius:50%;
 border:8px solid rgba(255,255,255,.06);
-background:radial-gradient(
-circle,
-#ff646d,
-#d62d3c 65%,
-#971d2a
-);
-color:#fff;
+background:radial-gradient(circle,#ff646d,#d62d3c 65%,#971d2a);
+color:white;
 box-shadow:0 20px 50px rgba(0,0,0,.45);
-
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -157,6 +200,10 @@ color:white;
 text-align:left;
 }
 
+.card:hover{
+background:rgba(255,255,255,.09);
+}
+
 .cardIcon{
 font-size:26px;
 margin-bottom:10px;
@@ -169,14 +216,20 @@ margin-top:6px;
 line-height:1.4;
 }
 
-.back{
-border:0;
-background:none;
-color:#62c9db;
-padding:0;
-margin-bottom:20px;
-font-size:14px;
+.location{
+margin-top:15px;
+padding:13px;
+border-radius:13px;
+background:#102832;
+color:#92abb4;
+font-size:12px;
 }
+
+.location.ok{
+color:#69e3a0;
+}
+
+/* SOS */
 
 .emergencyGrid{
 display:grid;
@@ -194,8 +247,7 @@ padding:18px 13px;
 text-align:left;
 }
 
-.emergency.selected,
-.optional.selected{
+.emergency.selected{
 border-color:#18bad5;
 background:#124654;
 }
@@ -238,6 +290,13 @@ font-size:23px;
 .count small{
 color:#849da6;
 }
+
+.optional.selected{
+border-color:#1bb8d2;
+background:#124654;
+}
+
+/* PRIORITY */
 
 .priority{
 display:none;
@@ -296,46 +355,12 @@ text-align:center;
 
 .stat strong{
 display:block;
-font-size:18px;
+font-size:17px;
 }
 
 .stat small{
 font-size:10px;
 color:#829ca6;
-}
-
-.primary{
-width:100%;
-border:0;
-border-radius:13px;
-padding:15px;
-margin-top:14px;
-background:#08a2c2;
-color:white;
-font-weight:bold;
-}
-
-.secondary{
-width:100%;
-border:1px solid #254753;
-border-radius:13px;
-padding:14px;
-margin-top:10px;
-background:transparent;
-color:#a5c0c8;
-}
-
-.location{
-margin-top:15px;
-padding:13px;
-border-radius:13px;
-background:#102832;
-color:#92abb4;
-font-size:12px;
-}
-
-.location.ok{
-color:#69e3a0;
 }
 
 /* CAMP */
@@ -414,6 +439,25 @@ color:white;
 
 /* MAP */
 
+.mapIntro{
+background:#102832;
+border:1px solid #1d414c;
+border-radius:15px;
+padding:14px;
+margin-top:16px;
+}
+
+.mapIntro strong{
+font-size:13px;
+}
+
+.mapIntro small{
+display:block;
+color:#8fa9b2;
+margin-top:5px;
+line-height:1.5;
+}
+
 #map{
 height:440px;
 width:100%;
@@ -421,6 +465,46 @@ border-radius:18px;
 overflow:hidden;
 margin-top:15px;
 background:#102832;
+}
+
+.mapLegend{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+margin-top:12px;
+}
+
+.legendItem{
+background:#102832;
+border:1px solid #1d414c;
+border-radius:11px;
+padding:10px;
+font-size:11px;
+color:#a9c0c7;
+}
+
+.legendDot{
+display:inline-block;
+width:10px;
+height:10px;
+border-radius:50%;
+margin-right:6px;
+}
+
+.youDot{
+background:#168dd0;
+}
+
+.sosDot{
+background:#ef4050;
+}
+
+.campDot{
+background:#32c779;
+}
+
+.routeDot{
+background:#e8bd48;
 }
 
 .mapInfo{
@@ -448,6 +532,18 @@ color:#62e5a0;
 background:#123a2c;
 padding:7px 9px;
 border-radius:8px;
+}
+
+.live.alert{
+background:#5b202a;
+color:#ff7782;
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+50%{
+transform:scale(1.05);
+}
 }
 
 .priorityGrid{
@@ -508,16 +604,16 @@ margin-bottom:11px;
 }
 
 .request.newRequest{
-animation:newSOS 1s ease 4;
+animation:newSOS 1s ease 3;
 border-color:#ff5868;
 }
 
 @keyframes newSOS{
 0%,100%{
-box-shadow:0 0 0 rgba(255,70,85,0)
+box-shadow:0 0 0 rgba(255,70,85,0);
 }
 50%{
-box-shadow:0 0 25px rgba(255,70,85,.6)
+box-shadow:0 0 25px rgba(255,70,85,.6);
 }
 }
 
@@ -527,6 +623,13 @@ font-weight:bold;
 color:#ff6978;
 letter-spacing:1px;
 margin-bottom:10px;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{
+opacity:.35;
+}
 }
 
 .requestTop{
@@ -552,6 +655,17 @@ color:#8fa8b0;
 line-height:1.8;
 }
 
+.requestLocation{
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:#0c222b;
+border:1px solid #1c414c;
+color:#79cddd;
+font-size:10px;
+line-height:1.6;
+}
+
 .requestButtons{
 display:grid;
 grid-template-columns:1fr 1fr;
@@ -563,13 +677,18 @@ margin-top:13px;
 padding:11px 5px;
 border-radius:9px;
 border:0;
-font-size:11px;
+font-size:10px;
 font-weight:bold;
 }
 
 .viewBtn{
 background:#183c47;
 color:#9fd5df;
+}
+
+.mapRequestBtn{
+background:#164653;
+color:#71d4e6;
 }
 
 .assignBtn{
@@ -580,59 +699,6 @@ color:white;
 .assigned{
 background:#17472f!important;
 color:#70e6a0!important;
-}
-
-.locationBtn{
-width:100%;
-padding:12px;
-margin-top:9px;
-border-radius:10px;
-border:1px solid #245766;
-background:#123944;
-color:#6dd9ea;
-font-weight:bold;
-}
-
-.empty{
-text-align:center;
-padding:22px;
-border:1px dashed #28505b;
-border-radius:16px;
-color:#829da6;
-font-size:12px;
-}
-
-/* TOAST */
-
-.toast{
-position:fixed;
-top:88px;
-left:50%;
-transform:translate(-50%,-20px);
-width:min(470px,calc(100% - 30px));
-padding:15px;
-background:#152d35;
-border:1px solid #ff5868;
-border-radius:15px;
-z-index:20000;
-opacity:0;
-transition:.25s;
-pointer-events:none;
-}
-
-.toast.show{
-opacity:1;
-transform:translate(-50%,0);
-}
-
-.toast strong{
-display:block;
-color:#ff6978;
-font-size:12px;
-}
-
-.toast small{
-color:#a6bdc4;
 }
 
 /* NAV */
@@ -660,6 +726,7 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 gap:5px;
+position:relative;
 }
 
 .nav button.active{
@@ -674,6 +741,49 @@ font-size:20px;
 font-size:9px;
 }
 
+.navAlert{
+position:absolute;
+top:9px;
+right:25%;
+width:8px;
+height:8px;
+border-radius:50%;
+background:#ff5362;
+display:none;
+}
+
+.navAlert.show{
+display:block;
+animation:pulse 1s infinite;
+}
+
+/* LEAFLET */
+
+.leaflet-popup-content-wrapper{
+border-radius:15px;
+}
+
+.leaflet-popup-content{
+font-family:Arial,sans-serif;
+line-height:1.5;
+}
+
+.mapPopupButton{
+border:0;
+border-radius:8px;
+padding:8px 12px;
+background:#079dbc;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.sosPopupButton{
+background:#d93647;
+}
+
+/* MOBILE */
+
 @media(max-width:360px){
 
 .sos{
@@ -681,13 +791,21 @@ width:175px;
 height:175px;
 }
 
+.priorityGrid{
+gap:4px;
 }
+
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="app">
+
+<!-- HEADER -->
 
 <header class="header">
 
@@ -742,7 +860,7 @@ One place to find safety.
 <button class="card" id="mapBtn">
 <div class="cardIcon">🗺️</div>
 <strong>Map & Routes</strong>
-<small>View camps and routes</small>
+<small>My location, SOS locations and camps</small>
 </button>
 
 </div>
@@ -758,14 +876,13 @@ One place to find safety.
 
 <section id="sos" class="screen">
 
-<button class="back" id="backSOS">
-← Back
-</button>
+<button class="back" id="backSOS">← Back</button>
 
 <h1>🆘 What's happening?</h1>
 
 <p>
-Choose the emergency. Everything else is optional.
+Choose the emergency.
+Everything else is optional.
 </p>
 
 <div class="emergencyGrid">
@@ -792,7 +909,7 @@ Choose the emergency. Everything else is optional.
 
 </div>
 
-<p>
+<p style="margin-top:25px">
 <strong style="color:white">
 People affected
 </strong>
@@ -802,31 +919,19 @@ People affected
 
 <div class="counter">
 
-<button id="minus">
-−
-</button>
+<button id="minus">−</button>
 
 <div class="count">
-
-<strong id="people">
-1
-</strong>
-
+<strong id="people">1</strong>
 <br>
+<small>people</small>
+</div>
 
-<small>
-people
-</small>
+<button id="plus">+</button>
 
 </div>
 
-<button id="plus">
-+
-</button>
-
-</div>
-
-<p>
+<p style="margin-top:22px">
 <strong style="color:white">
 Optional needs
 </strong>
@@ -854,12 +959,12 @@ Optional needs
 
 <div id="priority" class="priority">
 
-<span id="badge" class="badge medium">
-MEDIUM
+<span id="badge" class="badge critical">
+CRITICAL
 </span>
 
-<h2>
-Emergency automatically prioritised
+<h2 id="priorityTitle" style="margin-top:15px">
+Automatic Priority
 </h2>
 
 <p id="priorityText">
@@ -869,23 +974,17 @@ Your emergency has been automatically prioritised.
 <div class="stats">
 
 <div class="stat">
-<strong id="peopleStat">
-1
-</strong>
+<strong id="peopleStat">1</strong>
 <small>People</small>
 </div>
 
 <div class="stat">
-<strong id="criticalStat">
-0
-</strong>
+<strong id="criticalStat">1</strong>
 <small>Critical</small>
 </div>
 
 <div class="stat">
-<strong id="vulnerableStat">
-0
-</strong>
+<strong id="vulnerableStat">0</strong>
 <small>Vulnerable</small>
 </div>
 
@@ -902,7 +1001,7 @@ Your emergency has been automatically prioritised.
 </div>
 
 <div class="location" id="sosLocation">
-📍 Location will be detected automatically when SOS is sent.
+📍 Location will be detected automatically.
 </div>
 
 </section>
@@ -916,9 +1015,7 @@ Your emergency has been automatically prioritised.
 ← Back
 </button>
 
-<h1>
-🏕️ Safest Camp Near Me
-</h1>
+<h1>🏕️ Safest Camp Near Me</h1>
 
 <p>
 Find a nearby camp with space and essential resources.
@@ -934,7 +1031,7 @@ Find a nearby camp with space and essential resources.
 BEST AVAILABLE CAMP
 </div>
 
-<h2 id="bestName">
+<h2 id="bestName" style="margin-top:10px">
 Community Relief Camp
 </h2>
 
@@ -945,9 +1042,7 @@ Community Relief Camp
 <div class="campStats">
 
 <div>
-<strong id="bestVacancy">
-65%
-</strong>
+<strong id="bestVacancy">65%</strong>
 Space
 </div>
 
@@ -969,12 +1064,11 @@ Food
 
 </div>
 
-<h2>
+<h2 style="margin-top:28px">
 Nearby camps
 </h2>
 
-<div id="campList" class="campList">
-</div>
+<div id="campList" class="campList"></div>
 
 </section>
 
@@ -995,22 +1089,49 @@ Nearby camps
 See your location, SOS locations and relief camps.
 </p>
 
-<div id="map">
+<div class="mapIntro">
+
+<strong>
+LIVE EMERGENCY MAP
+</strong>
+
+<small>
+Your location, active SOS requests and relief camps are shown separately so rescuers can understand the situation quickly.
+</small>
+
+</div>
+
+<div id="map"></div>
+
+<div class="mapLegend">
+
+<div class="legendItem">
+<span class="legendDot youDot"></span>
+Your location
+</div>
+
+<div class="legendItem">
+<span class="legendDot sosDot"></span>
+SOS location
+</div>
+
+<div class="legendItem">
+<span class="legendDot campDot"></span>
+Relief camp
+</div>
+
+<div class="legendItem">
+<span class="legendDot routeDot"></span>
+Safest route
+</div>
+
 </div>
 
 <div class="mapInfo">
-
-📍 Your location
-<br>
-
-🚨 SOS location
-<br>
-
-🏕️ Relief camp
-<br>
-
-🛣️ Select a camp to get a route
-
+📍 Blue = You<br>
+🚨 Red = Active SOS<br>
+🏕️ Green = Relief camp<br>
+🛣️ Select a marker for details and route
 </div>
 
 </section>
@@ -1028,70 +1149,42 @@ See your location, SOS locations and relief camps.
 RESCUE CONTROL
 </p>
 
-<h1 style="font-size:28px">
+<h1 style="font-size:28px;margin:5px 0">
 🚑 Rescue
 </h1>
 
 </div>
 
-<div class="live">
+<div class="live" id="liveStatus">
 ● LIVE
 </div>
 
 </div>
 
 <p>
-SOS requests appear here instantly and are automatically prioritised.
+Live SOS requests are automatically prioritised and linked to their location.
 </p>
 
 <div class="priorityGrid">
 
 <div class="priorityCard">
-
-<strong id="criticalCount" class="criticalNumber">
-0
-</strong>
-
-<small>
-CRITICAL
-</small>
-
+<strong id="criticalCount" class="criticalNumber">0</strong>
+<small>CRITICAL</small>
 </div>
 
 <div class="priorityCard">
-
-<strong id="highCount">
-0
-</strong>
-
-<small>
-HIGH
-</small>
-
+<strong id="highCount" class="highNumber">0</strong>
+<small>HIGH</small>
 </div>
 
 <div class="priorityCard">
-
-<strong id="mediumCount">
-0
-</strong>
-
-<small>
-MEDIUM
-</small>
-
+<strong id="mediumCount" class="mediumNumber">0</strong>
+<small>MEDIUM</small>
 </div>
 
 <div class="priorityCard">
-
-<strong id="lowCount">
-0
-</strong>
-
-<small>
-LOW
-</small>
-
+<strong id="lowCount" class="lowNumber">0</strong>
+<small>LOW</small>
 </div>
 
 </div>
@@ -1100,17 +1193,7 @@ LOW
 PRIORITISED SOS REQUESTS
 </div>
 
-<div id="requestList">
-
-<div id="emptyRequests" class="empty">
-
-No new SOS requests yet.
-<br>
-New emergency requests will appear here instantly.
-
-</div>
-
-</div>
+<div id="requestList"></div>
 
 </section>
 
@@ -1137,23 +1220,10 @@ New emergency requests will appear here instantly.
 <button id="navRescue">
 <span>🚑</span>
 <small>Rescue</small>
+<span class="navAlert" id="navAlert"></span>
 </button>
 
 </nav>
-
-</div>
-
-
-<!-- LIVE SOS NOTIFICATION -->
-
-<div id="toast" class="toast">
-
-<strong id="toastTitle">
-🚨 NEW SOS
-</strong>
-
-<small id="toastText">
-</small>
 
 </div>
 
@@ -1162,23 +1232,156 @@ New emergency requests will appear here instantly.
 
 <script>
 
-/* =========================
-VARIABLES
-========================= */
+/* =====================================================
+   FLOODHELP
+   MAIN APPLICATION
+===================================================== */
+
+
+/* SCREEN CONTROL */
 
 const screens=document.querySelectorAll(".screen");
 
-let userLat=null;
-let userLng=null;
+function openScreen(id){
 
-let map=null;
-let userMarker=null;
-let sosMarkers=[];
+screens.forEach(screen=>{
+screen.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+updateNav(id);
+
+if(id==="mapScreen"){
+
+initializeMap();
+
+setTimeout(()=>{
+if(map){
+map.invalidateSize();
+}
+},350);
+
+}
+
+}
+
+
+/* NAVIGATION STATE */
+
+function updateNav(id){
+
+document.querySelectorAll(".nav button")
+.forEach(button=>{
+button.classList.remove("active");
+});
+
+if(id==="home"){
+document.getElementById("navHome")
+.classList.add("active");
+}
+
+if(id==="camp"){
+document.getElementById("navCamp")
+.classList.add("active");
+}
+
+if(id==="mapScreen"){
+document.getElementById("navMap")
+.classList.add("active");
+}
+
+if(id==="rescue"){
+document.getElementById("navRescue")
+.classList.add("active");
+
+document.getElementById("navAlert")
+.classList.remove("show");
+}
+
+}
+
+
+/* HOME BUTTONS */
+
+document.getElementById("sosBtn").onclick=()=>{
+
+openScreen("sos");
+
+getLocation();
+
+};
+
+document.getElementById("campBtn").onclick=()=>{
+
+openScreen("camp");
+
+getLocation();
+
+};
+
+document.getElementById("mapBtn").onclick=()=>{
+
+openScreen("mapScreen");
+
+getLocation();
+
+};
+
+document.getElementById("navHome").onclick=()=>{
+openScreen("home");
+};
+
+document.getElementById("navCamp").onclick=()=>{
+
+openScreen("camp");
+
+getLocation();
+
+};
+
+document.getElementById("navMap").onclick=()=>{
+
+openScreen("mapScreen");
+
+getLocation();
+
+};
+
+document.getElementById("navRescue").onclick=()=>{
+
+openScreen("rescue");
+
+};
+
+
+/* BACK */
+
+document.getElementById("backSOS").onclick=()=>{
+openScreen("home");
+};
+
+document.getElementById("backCamp").onclick=()=>{
+openScreen("home");
+};
+
+document.getElementById("backMap").onclick=()=>{
+openScreen("home");
+};
+
+
+/* =====================================================
+   SOS DATA
+===================================================== */
 
 let emergencyType="";
-let peopleCount=1;
 
-let sosNumber=1042;
+let peopleCount=1;
 
 let needs={
 children:false,
@@ -1188,9 +1391,277 @@ special:false
 };
 
 
-/* =========================
-CAMPS
-========================= */
+/* EMERGENCY SELECTION */
+
+document.querySelectorAll(".emergency")
+.forEach(button=>{
+
+button.onclick=()=>{
+
+document.querySelectorAll(".emergency")
+.forEach(item=>{
+item.classList.remove("selected");
+});
+
+button.classList.add("selected");
+
+emergencyType=button.dataset.type;
+
+calculatePriority();
+
+};
+
+});
+
+
+/* PEOPLE */
+
+document.getElementById("plus").onclick=()=>{
+
+if(peopleCount<20){
+peopleCount++;
+}
+
+document.getElementById("people").textContent=
+peopleCount;
+
+calculatePriority();
+
+};
+
+document.getElementById("minus").onclick=()=>{
+
+if(peopleCount>1){
+peopleCount--;
+}
+
+document.getElementById("people").textContent=
+peopleCount;
+
+calculatePriority();
+
+};
+
+
+/* OPTIONAL NEEDS */
+
+document.querySelectorAll(".optional")
+.forEach(button=>{
+
+button.onclick=()=>{
+
+const option=button.dataset.opt;
+
+needs[option]=!needs[option];
+
+button.classList.toggle(
+"selected",
+needs[option]
+);
+
+calculatePriority();
+
+};
+
+});
+
+
+/* =====================================================
+   AUTOMATIC PRIORITY
+===================================================== */
+
+function getPriorityData(){
+
+let vulnerable=0;
+
+if(needs.children)vulnerable++;
+if(needs.elderly)vulnerable++;
+if(needs.medical)vulnerable++;
+if(needs.special)vulnerable++;
+
+let priority="MEDIUM";
+
+if(
+needs.medical ||
+needs.special ||
+peopleCount>=6 ||
+(
+emergencyType==="trapped" &&
+vulnerable>0
+)
+){
+
+priority="CRITICAL";
+
+}
+
+else if(
+emergencyType==="trapped" ||
+emergencyType==="medical" ||
+peopleCount>=4 ||
+needs.children ||
+needs.elderly
+){
+
+priority="HIGH";
+
+}
+
+let critical=0;
+
+if(priority==="CRITICAL"){
+
+critical=peopleCount;
+
+}
+
+else if(
+needs.medical ||
+needs.special ||
+needs.children ||
+needs.elderly
+){
+
+critical=1;
+
+}
+
+return{
+priority,
+vulnerable,
+critical
+};
+
+}
+
+
+function calculatePriority(){
+
+if(!emergencyType){
+return;
+}
+
+const data=getPriorityData();
+
+const priority=data.priority;
+
+document.getElementById("priority")
+.classList.add("show");
+
+const badge=document.getElementById("badge");
+
+badge.className=
+"badge "+
+priority.toLowerCase();
+
+badge.textContent=priority;
+
+document.getElementById("peopleStat")
+.textContent=peopleCount;
+
+document.getElementById("criticalStat")
+.textContent=data.critical;
+
+document.getElementById("vulnerableStat")
+.textContent=data.vulnerable;
+
+document.getElementById("priorityTitle")
+.textContent=
+priority==="CRITICAL"
+?"Immediate rescue recommended"
+:
+priority==="HIGH"
+?"High priority rescue"
+:
+priority==="MEDIUM"
+?"Response required"
+:
+"Low priority response";
+
+}
+
+
+/* =====================================================
+   LOCATION
+===================================================== */
+
+let userLat=null;
+let userLng=null;
+
+let locationReady=false;
+
+
+function getLocation(){
+
+if(!navigator.geolocation){
+
+document.getElementById("homeLocation")
+.textContent=
+"📍 Location unavailable";
+
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+position=>{
+
+userLat=
+position.coords.latitude;
+
+userLng=
+position.coords.longitude;
+
+locationReady=true;
+
+document.getElementById("homeLocation")
+.textContent=
+"📍 Location detected";
+
+document.getElementById("homeLocation")
+.classList.add("ok");
+
+document.getElementById("sosLocation")
+.textContent=
+"📍 Location detected";
+
+document.getElementById("sosLocation")
+.classList.add("ok");
+
+document.getElementById("campLocation")
+.textContent=
+"📍 Your location detected";
+
+document.getElementById("campLocation")
+.classList.add("ok");
+
+updateCamps();
+
+if(map){
+updateMapLocation();
+}
+
+},
+
+error=>{
+
+console.log("Location permission unavailable",error);
+
+document.getElementById("sosLocation")
+.textContent=
+"📍 Location permission needed for exact SOS location.";
+
+}
+
+);
+
+}
+
+
+/* =====================================================
+   CAMP DATA
+===================================================== */
 
 const camps=[
 
@@ -1227,402 +1698,17 @@ medicine:true
 ];
 
 
-/* =========================
-SCREEN CONTROL
-========================= */
-
-function openScreen(id){
-
-screens.forEach(screen=>{
-screen.classList.remove("active");
-});
-
-document.getElementById(id).classList.add("active");
-
-document.querySelectorAll(".nav button")
-.forEach(button=>{
-button.classList.remove("active");
-});
-
-const navMap={
-home:"navHome",
-camp:"navCamp",
-mapScreen:"navMap",
-rescue:"navRescue"
-};
-
-if(navMap[id]){
-document.getElementById(navMap[id])
-.classList.add("active");
-}
-
-window.scrollTo(0,0);
-
-if(id==="mapScreen"){
-
-initializeMap();
-
-setTimeout(()=>{
-if(map){
-map.invalidateSize();
-}
-},300);
-
-}
-
-}
-
-
-/* =========================
-NAVIGATION
-========================= */
-
-document.getElementById("sosBtn").onclick=()=>{
-openScreen("sos");
-};
-
-document.getElementById("campBtn").onclick=()=>{
-openScreen("camp");
-getLocation(false);
-};
-
-document.getElementById("mapBtn").onclick=()=>{
-openScreen("mapScreen");
-getLocation(false);
-};
-
-document.getElementById("navHome").onclick=()=>{
-openScreen("home");
-};
-
-document.getElementById("navCamp").onclick=()=>{
-openScreen("camp");
-getLocation(false);
-};
-
-document.getElementById("navMap").onclick=()=>{
-openScreen("mapScreen");
-getLocation(false);
-};
-
-document.getElementById("navRescue").onclick=()=>{
-openScreen("rescue");
-};
-
-
-/* =========================
-BACK
-========================= */
-
-document.getElementById("backSOS").onclick=()=>{
-openScreen("home");
-};
-
-document.getElementById("backCamp").onclick=()=>{
-openScreen("home");
-};
-
-document.getElementById("backMap").onclick=()=>{
-openScreen("home");
-};
-
-
-/* =========================
-EMERGENCY TYPE
-========================= */
-
-document.querySelectorAll(".emergency")
-.forEach(button=>{
-
-button.onclick=()=>{
-
-document.querySelectorAll(".emergency")
-.forEach(x=>{
-x.classList.remove("selected");
-});
-
-button.classList.add("selected");
-
-emergencyType=button.dataset.type;
-
-calculatePriority();
-
-};
-
-});
-
-
-/* =========================
-PEOPLE
-========================= */
-
-document.getElementById("plus").onclick=()=>{
-
-if(peopleCount<20){
-peopleCount++;
-}
-
-document.getElementById("people")
-.textContent=peopleCount;
-
-calculatePriority();
-
-};
-
-document.getElementById("minus").onclick=()=>{
-
-if(peopleCount>1){
-peopleCount--;
-}
-
-document.getElementById("people")
-.textContent=peopleCount;
-
-calculatePriority();
-
-};
-
-
-/* =========================
-OPTIONAL NEEDS
-========================= */
-
-document.querySelectorAll(".optional")
-.forEach(button=>{
-
-button.onclick=()=>{
-
-let option=button.dataset.opt;
-
-needs[option]=!needs[option];
-
-button.classList.toggle(
-"selected",
-needs[option]
-);
-
-calculatePriority();
-
-};
-
-});
-
-
-/* =========================
-PRIORITY
-========================= */
-
-function calculatePriority(){
-
-if(!emergencyType){
-return;
-}
-
-let vulnerable=0;
-
-if(needs.children)vulnerable++;
-if(needs.elderly)vulnerable++;
-if(needs.medical)vulnerable++;
-if(needs.special)vulnerable++;
-
-let priority="MEDIUM";
-
-if(
-needs.medical ||
-needs.special ||
-peopleCount>=6 ||
-(
-emergencyType==="trapped" &&
-vulnerable>0
-)
-){
-
-priority="CRITICAL";
-
-}
-
-else if(
-
-emergencyType==="trapped" ||
-emergencyType==="medical" ||
-peopleCount>=4 ||
-needs.children ||
-needs.elderly
-
-){
-
-priority="HIGH";
-
-}
-
-let critical=0;
-
-if(priority==="CRITICAL"){
-
-critical=peopleCount;
-
-}
-
-else if(
-needs.medical ||
-needs.special ||
-needs.children ||
-needs.elderly
-){
-
-critical=1;
-
-}
-
-document.getElementById("priority")
-.classList.add("show");
-
-const badge=document.getElementById("badge");
-
-badge.className=
-"badge "+
-priority.toLowerCase();
-
-badge.textContent=priority;
-
-document.getElementById("peopleStat")
-.textContent=peopleCount;
-
-document.getElementById("criticalStat")
-.textContent=critical;
-
-document.getElementById("vulnerableStat")
-.textContent=vulnerable;
-
-if(priority==="CRITICAL"){
-
-document.getElementById("priorityText")
-.textContent=
-"Immediate rescue recommended.";
-
-}
-
-else if(priority==="HIGH"){
-
-document.getElementById("priorityText")
-.textContent=
-"High-priority rescue recommended.";
-
-}
-
-else{
-
-document.getElementById("priorityText")
-.textContent=
-"Emergency has been automatically prioritised.";
-
-}
-
-}
-
-
-/* =========================
-LOCATION
-========================= */
-
-function getLocation(required){
-
-return new Promise(resolve=>{
-
-if(!navigator.geolocation){
-
-if(required){
-
-document.getElementById("sosLocation")
-.textContent=
-"⚠️ GPS is not supported.";
-
-}
-
-resolve(false);
-
-return;
-
-}
-
-navigator.geolocation.getCurrentPosition(
-
-position=>{
-
-userLat=
-position.coords.latitude;
-
-userLng=
-position.coords.longitude;
-
-document.getElementById("homeLocation")
-.textContent=
-"📍 Location detected";
-
-document.getElementById("homeLocation")
-.classList.add("ok");
-
-document.getElementById("sosLocation")
-.textContent=
-"📍 Exact GPS location ready";
-
-document.getElementById("campLocation")
-.textContent=
-"📍 Your location detected";
-
-document.getElementById("campLocation")
-.classList.add("ok");
-
-updateCamps();
-
-if(map){
-
-updateMapLocation();
-
-}
-
-resolve(true);
-
-},
-
-()=>{
-
-if(required){
-
-document.getElementById("sosLocation")
-.textContent=
-"⚠️ Location permission denied. SOS will be sent without GPS.";
-
-}
-
-resolve(false);
-
-},
-
-{
-enableHighAccuracy:true,
-timeout:10000,
-maximumAge:0
-}
-
-);
-
-});
-
-}
-
-
-/* =========================
-DISTANCE
-========================= */
+/* DISTANCE */
 
 function distanceKm(a,b,c,d){
 
 const R=6371;
 
-const dLat=(c-a)*Math.PI/180;
+const dLat=
+(c-a)*Math.PI/180;
 
-const dLon=(d-b)*Math.PI/180;
+const dLon=
+(d-b)*Math.PI/180;
 
 const x=
 Math.sin(dLat/2)**2+
@@ -1630,9 +1716,7 @@ Math.cos(a*Math.PI/180)*
 Math.cos(c*Math.PI/180)*
 Math.sin(dLon/2)**2;
 
-return R*
-2*
-Math.atan2(
+return R*2*Math.atan2(
 Math.sqrt(x),
 Math.sqrt(1-x)
 );
@@ -1640,9 +1724,7 @@ Math.sqrt(1-x)
 }
 
 
-/* =========================
-CAMPS
-========================= */
+/* UPDATE CAMPS */
 
 function updateCamps(){
 
@@ -1672,7 +1754,7 @@ b.lng
 
 }
 
-let best=list[0];
+const best=list[0];
 
 document.getElementById("bestName")
 .textContent=best.name;
@@ -1683,16 +1765,17 @@ best.vacancy+"%";
 
 if(userLat!==null){
 
-document.getElementById("bestDistance")
-.textContent=
-"📏 "+
+const d=
 distanceKm(
 userLat,
 userLng,
 best.lat,
 best.lng
-).toFixed(1)+
-" km away";
+);
+
+document.getElementById("bestDistance")
+.textContent=
+"📏 "+d.toFixed(1)+" km away";
 
 }
 
@@ -1701,9 +1784,7 @@ renderCamps(list);
 }
 
 
-/* =========================
-CAMP LIST
-========================= */
+/* CAMP LIST */
 
 function renderCamps(list){
 
@@ -1724,12 +1805,12 @@ userLat,
 userLng,
 camp.lat,
 camp.lng
-).toFixed(1)+
-" km";
+).toFixed(1)+" km";
 
 }
 
-let div=document.createElement("div");
+const div=
+document.createElement("div");
 
 div.className="camp";
 
@@ -1741,21 +1822,15 @@ div.innerHTML=`
 
 <p>
 
-📏 ${distance}
-<br>
+📏 ${distance}<br>
 
-👥 Vacancy: ${camp.vacancy}%
-<br>
+👥 Vacancy: ${camp.vacancy}%<br>
 
 💧 Water:
-${camp.water?"Available":"Unavailable"}
-
-<br>
+${camp.water?"Available":"Unavailable"}<br>
 
 🍱 Food:
-${camp.food?"Available":"Unavailable"}
-
-<br>
+${camp.food?"Available":"Unavailable"}<br>
 
 💊 Medicine:
 ${camp.medicine?"Available":"Unavailable"}
@@ -1769,9 +1844,7 @@ ${camp.medicine?"Available":"Unavailable"}
 `;
 
 div.querySelector("button")
-.onclick=()=>{
-routeToCamp(camp);
-};
+.onclick=()=>routeToCamp(camp);
 
 container.appendChild(div);
 
@@ -1782,9 +1855,9 @@ container.appendChild(div);
 renderCamps(camps);
 
 
-/* =========================
-ROUTE
-========================= */
+/* =====================================================
+   ROUTE
+===================================================== */
 
 function routeToCamp(camp){
 
@@ -1794,7 +1867,7 @@ alert(
 "Please allow location access first."
 );
 
-getLocation(false);
+getLocation();
 
 return;
 
@@ -1803,16 +1876,15 @@ return;
 const url=
 "https://www.google.com/maps/dir/?api=1"+
 "&origin="+
-userLat+
-","+
-userLng+
+userLat+","+userLng+
 "&destination="+
-camp.lat+
-","+
-camp.lng+
+camp.lat+","+camp.lng+
 "&travelmode=walking";
 
-window.open(url,"_blank");
+window.open(
+url,
+"_blank"
+);
 
 }
 
@@ -1824,9 +1896,8 @@ let best=camps[0];
 
 if(userLat!==null){
 
-best=[...camps].sort(
-
-(a,b)=>
+best=
+[...camps].sort((a,b)=>
 
 distanceKm(
 userLat,
@@ -1853,108 +1924,325 @@ routeToCamp(best);
 };
 
 
-/* =========================
-TOAST
-========================= */
+/* =====================================================
+   LIVE SOS DATA
+===================================================== */
 
-function showToast(title,text){
+let sosNumber=1043;
 
-document.getElementById("toastTitle")
-.textContent=title;
+let sosRequests=[];
 
-document.getElementById("toastText")
-.textContent=text;
 
-document.getElementById("toast")
-.classList.add("show");
+/* =====================================================
+   MAP
+===================================================== */
 
-setTimeout(()=>{
+let map=null;
 
-document.getElementById("toast")
-.classList.remove("show");
+let userMarker=null;
 
-},5000);
+let campMarkers=[];
+
+let sosMarkers=[];
+
+
+/* CUSTOM MARKERS */
+
+function createCircleIcon(type){
+
+let background="#168dd0";
+
+if(type==="sos"){
+background="#ef4050";
+}
+
+if(type==="camp"){
+background="#32c779";
+}
+
+return L.divIcon({
+
+className:"customMarker",
+
+html:`
+
+<div style="
+width:30px;
+height:30px;
+border-radius:50%;
+background:${background};
+border:4px solid white;
+box-shadow:0 2px 8px rgba(0,0,0,.45);
+">
+</div>
+
+`,
+
+iconSize:[30,30],
+
+iconAnchor:[15,15]
+
+});
 
 }
 
 
-/* =========================
-SEND SOS
-========================= */
+/* INITIALIZE MAP */
 
-async function sendSOS(){
+function initializeMap(){
 
-if(!emergencyType){
+if(map){
 
-alert(
-"Please select the emergency type."
-);
+setTimeout(()=>{
+map.invalidateSize();
+updateAllSOSMarkers();
+},300);
 
 return;
 
 }
 
-const button=
-document.getElementById("requestBtn");
+if(typeof L==="undefined"){
 
-button.disabled=true;
+alert("Map library could not load.");
 
-button.textContent=
-"📍 GETTING LOCATION...";
+return;
 
+}
 
-const locationFound=
-await getLocation(true);
-
-
-button.disabled=false;
-
-button.textContent=
-"🚑 REQUEST RESCUE";
-
-
-const priority=
-document.getElementById("badge")
-.textContent;
-
-
-addLiveSOS(
-priority,
-locationFound
+map=L.map("map")
+.setView(
+[11.073,76.073],
+13
 );
 
-openScreen("rescue");
 
-showToast(
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+attribution:
+"&copy; OpenStreetMap contributors"
+}
+).addTo(map);
 
-"🚨 NEW SOS RECEIVED",
 
-priority+
-" priority • "+
-peopleCount+
-" people"+
-(
-locationFound
-?
-" • GPS location attached"
-:
-" • GPS unavailable"
+/* CAMP MARKERS */
+
+camps.forEach(camp=>{
+
+const marker=
+L.marker(
+[camp.lat,camp.lng],
+{
+icon:createCircleIcon("camp")
+}
+).addTo(map);
+
+marker.bindPopup(`
+
+<strong>
+🏕️ ${camp.name}
+</strong>
+
+<br><br>
+
+👥 Vacancy:
+${camp.vacancy}%
+
+<br>
+
+💧 Water:
+${camp.water?"Available":"Unavailable"}
+
+<br>
+
+🍱 Food:
+${camp.food?"Available":"Unavailable"}
+
+<br>
+
+💊 Medicine:
+${camp.medicine?"Available":"Unavailable"}
+
+<br><br>
+
+<button
+class="mapPopupButton"
+onclick="openRoute('${camp.name}')"
+>
+🛣️ Route
+</button>
+
+`);
+
+campMarkers.push(marker);
+
+});
+
+
+if(userLat!==null){
+
+updateMapLocation();
+
+}
+
+updateAllSOSMarkers();
+
+}
+
+
+/* USER MARKER */
+
+function updateMapLocation(){
+
+if(!map || userLat===null){
+return;
+}
+
+if(userMarker){
+
+userMarker.setLatLng([
+userLat,
+userLng
+]);
+
+}
+
+else{
+
+userMarker=
+L.marker(
+[userLat,userLng],
+{
+icon:createCircleIcon("you")
+}
 )
+.addTo(map)
+.bindPopup(
+"<strong>📍 You are here</strong>"
+);
 
+}
+
+}
+
+
+/* =====================================================
+   SOS MARKERS
+===================================================== */
+
+function updateAllSOSMarkers(){
+
+if(!map){
+return;
+}
+
+
+/* REMOVE OLD SOS MARKERS */
+
+sosMarkers.forEach(marker=>{
+map.removeLayer(marker);
+});
+
+sosMarkers=[];
+
+
+/* ADD CURRENT SOS */
+
+sosRequests.forEach(request=>{
+
+if(
+request.lat===null ||
+request.lng===null
+){
+return;
+}
+
+const marker=
+L.marker(
+[request.lat,request.lng],
+{
+icon:createCircleIcon("sos")
+}
+).addTo(map);
+
+marker.bindPopup(`
+
+<strong style="color:#d93647">
+🚨 ${request.id}
+</strong>
+
+<br><br>
+
+<strong>
+${request.title}
+</strong>
+
+<br>
+
+⚡ Priority:
+${request.priority}
+
+<br>
+
+👥 People:
+${request.people}
+
+<br><br>
+
+<button
+class="mapPopupButton sosPopupButton"
+onclick="routeToSOS(${request.lat},${request.lng})"
+>
+📍 Route to SOS
+</button>
+
+`);
+
+sosMarkers.push(marker);
+
+});
+
+}
+
+
+/* ROUTE TO SOS */
+
+function routeToSOS(lat,lng){
+
+if(userLat===null){
+
+alert(
+"Your location is not available yet."
+);
+
+getLocation();
+
+return;
+
+}
+
+const url=
+"https://www.google.com/maps/dir/?api=1"+
+"&origin="+
+userLat+","+userLng+
+"&destination="+
+lat+","+lng+
+"&travelmode=walking";
+
+window.open(
+url,
+"_blank"
 );
 
 }
 
 
-document.getElementById("requestBtn")
-.onclick=sendSOS;
+/* =====================================================
+   ADD LIVE SOS
+===================================================== */
 
-
-/* =========================
-ADD LIVE SOS
-========================= */
-
-function addLiveSOS(priority,locationFound){
+function addLiveSOS(priority){
 
 sosNumber++;
 
@@ -1974,6 +2262,11 @@ home:
 
 };
 
+const title=
+emergencyNames[emergencyType] ||
+"🆘 Emergency assistance required";
+
+
 let vulnerable=[];
 
 if(needs.children)
@@ -1989,9 +2282,49 @@ if(needs.special)
 vulnerable.push("♿ Special assistance");
 
 
-document.getElementById("emptyRequests")
-?.remove();
+const vulnerableText=
+vulnerable.length
+?
+" • "+vulnerable.join(", ")
+:
+"";
 
+
+const lat=userLat;
+
+const lng=userLng;
+
+
+/* SAVE REQUEST */
+
+const request={
+
+id:"SOS #"+sosNumber,
+
+priority:priority,
+
+priorityLower:
+priority.toLowerCase(),
+
+title:title,
+
+people:peopleCount,
+
+vulnerable:
+vulnerableText,
+
+lat:lat,
+
+lng:lng,
+
+time:new Date().toLocaleTimeString()
+
+};
+
+sosRequests.unshift(request);
+
+
+/* CREATE CARD */
 
 const card=
 document.createElement("div");
@@ -1999,470 +2332,517 @@ document.createElement("div");
 card.className=
 "request newRequest";
 
+card.dataset.priority=
+priority.toLowerCase();
+
+
+let locationHTML="";
+
+if(lat!==null && lng!==null){
+
+locationHTML=`
+
+<div class="requestLocation">
+
+📍 SOS LOCATION ATTACHED<br>
+
+${lat.toFixed(5)},
+${lng.toFixed(5)}
+
+</div>
+
+`;
+
+}
+else{
+
+locationHTML=`
+
+<div class="requestLocation">
+
+⚠️ Exact location unavailable.<br>
+User did not provide GPS access.
+
+</div>
+
+`;
+
+}
+
 
 card.innerHTML=`
 
 <div class="newLabel">
-
 🚨 NEW SOS RECEIVED JUST NOW
-
 </div>
 
 <div class="requestTop">
 
 <span class="badge ${priority.toLowerCase()}">
-
 ${priority}
-
 </span>
 
 <span class="requestId">
-
 SOS #${sosNumber}
-
 </span>
 
 </div>
 
-
 <h3>
-
-${emergencyNames[emergencyType]}
-
+${title}
 </h3>
-
 
 <div class="requestInfo">
 
-${
-locationFound
-?
-"📍 GPS: "+
-userLat.toFixed(5)+
-", "+
-userLng.toFixed(5)
-:
-"⚠️ GPS location unavailable"
-}
-
-<br>
-
 👥 ${peopleCount} people
-
-${
-vulnerable.length
-?
-" • "+
-vulnerable.join(", ")
-:
-""
-}
-
+${vulnerableText}
 <br>
 
 ⚡ Automatically prioritised
+<br>
+
+🕐 ${request.time}
 
 </div>
 
+${locationHTML}
 
 <div class="requestButtons">
 
-<button class="viewBtn">
+<button
+class="viewBtn"
+onclick="viewRequest('${request.id}')"
+>
 VIEW
 </button>
 
-<button class="assignBtn">
+<button
+class="mapRequestBtn"
+onclick="showSOSOnMap('${request.id}')"
+>
+🗺️ VIEW ON MAP
+</button>
+
+</div>
+
+<div class="requestButtons">
+
+<button
+class="assignBtn"
+onclick="assignRequest(this)"
+>
 ASSIGN RESCUE
 </button>
 
 </div>
 
-
-${
-locationFound
-?
-`
-<button class="locationBtn">
-🗺️ VIEW PERSON'S LOCATION
-</button>
-`
-:
-""
-}
-
 `;
 
+
+/* ADD TO RESCUE */
 
 document
 .getElementById("requestList")
 .prepend(card);
 
 
-/* VIEW */
+/* UPDATE COUNTS */
 
-card.querySelector(".viewBtn")
-.onclick=()=>{
-
-viewRequest({
-
-id:"SOS #"+sosNumber,
-
-priority:priority,
-
-type:emergencyType,
-
-people:peopleCount,
-
-lat:userLat,
-
-lng:userLng
-
-});
-
-};
+updateRescueCounts();
 
 
-/* ASSIGN */
+/* UPDATE MAP */
 
-card.querySelector(".assignBtn")
-.onclick=function(){
+if(map){
 
-this.textContent=
-"✓ ASSIGNED";
-
-this.classList.add("assigned");
-
-this.disabled=true;
-
-};
-
-
-/* LOCATION */
-
-if(locationFound){
-
-card.querySelector(".locationBtn")
-.onclick=()=>{
-
-viewSOSLocation({
-
-id:"SOS #"+sosNumber,
-
-priority:priority,
-
-people:peopleCount,
-
-lat:userLat,
-
-lng:userLng
-
-});
-
-};
+updateAllSOSMarkers();
 
 }
 
 
-/* UPDATE COUNTER */
-
-const counter=
-document.getElementById(
-priority.toLowerCase()+"Count"
-);
-
-if(counter){
-
-counter.textContent=
-parseInt(counter.textContent)+1;
-
-}
-
-
-/* RESCUE NAV ALERT */
+/* ALERT RESCUE TAB */
 
 const rescueButton=
 document.getElementById("navRescue");
 
-rescueButton.style.color=
-"#ff6878";
+const alertDot=
+document.getElementById("navAlert");
+
+const liveStatus=
+document.getElementById("liveStatus");
+
+rescueButton.style.color="#ff6878";
+
+alertDot.classList.add("show");
+
+liveStatus.classList.add("alert");
+
+liveStatus.textContent=
+"● NEW SOS";
+
 
 setTimeout(()=>{
 
 rescueButton.style.color="";
 
-},5000);
+liveStatus.classList.remove("alert");
+
+liveStatus.textContent="● LIVE";
+
+},7000);
 
 }
 
 
-/* =========================
-VIEW REQUEST
-========================= */
+/* =====================================================
+   RESCUE COUNTS
+===================================================== */
 
-function viewRequest(request){
+function updateRescueCounts(){
+
+let critical=0;
+
+let high=0;
+
+let medium=0;
+
+let low=0;
+
+sosRequests.forEach(request=>{
+
+if(request.priority==="CRITICAL"){
+critical++;
+}
+
+else if(request.priority==="HIGH"){
+high++;
+}
+
+else if(request.priority==="MEDIUM"){
+medium++;
+}
+
+else if(request.priority==="LOW"){
+low++;
+}
+
+});
+
+
+document.getElementById("criticalCount")
+.textContent=critical;
+
+document.getElementById("highCount")
+.textContent=high;
+
+document.getElementById("mediumCount")
+.textContent=medium;
+
+document.getElementById("lowCount")
+.textContent=low;
+
+}
+
+
+/* =====================================================
+   REQUEST RESCUE
+===================================================== */
+
+document.getElementById("requestBtn")
+.onclick=()=>{
+
+if(!emergencyType){
 
 alert(
+"Please select the emergency type."
+);
 
-request.id+
-"\n\n"+
-"Priority: "+
-request.priority+
-"\n"+
-"Emergency: "+
-request.type+
-"\n"+
-"People: "+
-request.people+
-"\n\n"+
-(
-request.lat!==null
+return;
+
+}
+
+
+/*
+IMPORTANT:
+Try to get GPS first.
+If GPS is already available,
+use it immediately.
+*/
+
+if(userLat===null){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(
+
+position=>{
+
+userLat=
+position.coords.latitude;
+
+userLng=
+position.coords.longitude;
+
+locationReady=true;
+
+sendSOS();
+
+},
+
+()=>{
+
+sendSOS();
+
+}
+
+);
+
+return;
+
+}
+
+}
+
+sendSOS();
+
+};
+
+
+function sendSOS(){
+
+const data=
+getPriorityData();
+
+const priority=
+data.priority;
+
+addLiveSOS(priority);
+
+
+/* CONFIRMATION */
+
+let locationMessage=
+(userLat!==null)
 ?
-"GPS: "+
-request.lat.toFixed(6)+
-", "+
-request.lng.toFixed(6)
+"📍 Your GPS location was attached."
 :
-"GPS unavailable"
-)
+"⚠️ GPS location was unavailable.";
 
-);
-
-}
-
-
-/* =========================
-VIEW SOS LOCATION
-========================= */
-
-function viewSOSLocation(request){
-
-if(request.lat===null){
 
 alert(
-"GPS location unavailable."
-);
 
-return;
+"🚨 SOS SENT!\n\n"+
+"Priority: "+priority+
+"\nPeople: "+peopleCount+
+"\n\n"+
+locationMessage+
+"\n\nRescue dashboard updated."
 
-}
-
-openScreen("mapScreen");
-
-initializeMap();
-
-setTimeout(()=>{
-
-map.setView(
-[
-request.lat,
-request.lng
-],
-17
 );
 
 
-/* Remove previous SOS markers */
+/* OPEN RESCUE */
 
-sosMarkers.forEach(marker=>{
-map.removeLayer(marker);
-});
-
-sosMarkers=[];
-
-
-/* Create new SOS marker */
-
-const marker=
-L.marker(
-[
-request.lat,
-request.lng
-]
-)
-.addTo(map)
-.bindPopup(
-
-"<strong>🚨 "+
-request.id+
-"</strong>"+
-"<br><br>"+
-"Priority: "+
-request.priority+
-"<br>"+
-"👥 "+
-request.people+
-" people"
-
-)
-.openPopup();
-
-
-sosMarkers.push(marker);
-
-},400);
+openScreen("rescue");
 
 }
 
 
-/* =========================
-MAP
-========================= */
-
-function initializeMap(){
-
-if(map){
-
-setTimeout(()=>{
-
-map.invalidateSize();
-
-},200);
-
-return;
-
-}
-
-if(typeof L==="undefined"){
-return;
-}
-
-
-map=
-L.map("map")
-.setView(
-[
-11.073,
-76.073
-],
-13
-);
-
-
-L.tileLayer(
-
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-{
-
-attribution:
-"© OpenStreetMap contributors"
-
-}
-
-).addTo(map);
-
-
-/* CAMP MARKERS */
-
-camps.forEach((camp,index)=>{
-
-const marker=
-L.marker(
-[
-camp.lat,
-camp.lng
-]
-)
-.addTo(map);
-
-
-marker.bindPopup(`
-
-<strong>
-🏕️ ${camp.name}
-</strong>
-
-<br><br>
-
-👥 Vacancy:
-${camp.vacancy}%
-
-<br><br>
-
-<button
-onclick="routeToCamp(camps[${index}])"
-style="
-padding:8px 12px;
-border:0;
-border-radius:8px;
-background:#0d91ae;
-color:white;
-">
-
-🛣️ Route
-
-</button>
-
-`);
-
-});
-
-
-if(userLat!==null){
-
-updateMapLocation();
-
-}
-
-}
-
-
-/* =========================
-USER MAP LOCATION
-========================= */
-
-function updateMapLocation(){
-
-if(!map ||
-userLat===null){
-
-return;
-
-}
-
-
-if(userMarker){
-
-userMarker.setLatLng(
-[
-userLat,
-userLng
-]
-);
-
-}
-
-else{
-
-userMarker=
-L.marker(
-[
-userLat,
-userLng
-]
-)
-.addTo(map)
-.bindPopup(
-"📍 You are here"
-);
-
-}
-
-}
-
-
-/* =========================
-FIND CAMP
-========================= */
+/* =====================================================
+   FIND CAMP
+===================================================== */
 
 document.getElementById("findCampBtn")
 .onclick=()=>{
 
 openScreen("camp");
 
-getLocation(false);
+getLocation();
 
 };
+
+
+/* =====================================================
+   RESCUE BUTTONS
+===================================================== */
+
+function assignRequest(button){
+
+button.textContent=
+"✓ ASSIGNED";
+
+button.classList.add(
+"assigned"
+);
+
+button.disabled=true;
+
+}
+
+
+function viewRequest(id){
+
+const request=
+sosRequests.find(
+item=>item.id===id
+);
+
+if(!request){
+
+alert(
+id+
+"\n\nEmergency details available."
+);
+
+return;
+
+}
+
+let location=
+
+request.lat!==null
+?
+"\n📍 Location attached"
+:
+"\n⚠️ Location unavailable";
+
+alert(
+
+request.id+
+"\n\n"+
+request.title+
+"\n\n"+
+"Priority: "+
+request.priority+
+"\n"+
+"People: "+
+request.people+
+location
+
+);
+
+}
+
+
+/* =====================================================
+   SHOW SOS ON MAP
+===================================================== */
+
+function showSOSOnMap(id){
+
+const request=
+sosRequests.find(
+item=>item.id===id
+);
+
+if(!request){
+return;
+}
+
+if(
+request.lat===null ||
+request.lng===null
+){
+
+alert(
+"Exact GPS location was not available for this SOS."
+);
+
+return;
+
+}
+
+
+/* OPEN MAP */
+
+openScreen("mapScreen");
+
+initializeMap();
+
+
+setTimeout(()=>{
+
+if(!map){
+return;
+}
+
+
+/* CENTER */
+
+map.setView(
+[request.lat,request.lng],
+16
+);
+
+
+/* FIND MARKER */
+
+const marker=
+sosMarkers.find(marker=>{
+
+const position=
+marker.getLatLng();
+
+return(
+
+Math.abs(
+position.lat-request.lat
+)<0.000001 &&
+
+Math.abs(
+position.lng-request.lng
+)<0.000001
+
+);
+
+});
+
+
+if(marker){
+
+marker.openPopup();
+
+}
+
+},500);
+
+}
+
+
+/* =====================================================
+   CAMP ROUTE FROM MAP
+===================================================== */
+
+function openRoute(name){
+
+const camp=
+camps.find(
+item=>item.name===name
+);
+
+if(camp){
+
+routeToCamp(camp);
+
+}
+
+}
+
+
+/* =====================================================
+   INITIAL STARTUP
+===================================================== */
+
+updateRescueCounts();
+
+renderCamps(camps);
+
+
+/*
+Ask for location only when needed.
+No forced popup on startup.
+*/
+
 
 </script>
 
