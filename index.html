@@ -4,7 +4,6 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <meta name="theme-color" content="#061820">
 
 <title>FloodHelp – Emergency Flood Rescue</title>
@@ -12,33 +11,31 @@
 <meta name="description"
 content="FloodHelp is an emergency flood rescue system that helps people find nearby relief camps, request rescue assistance and find safer routes.">
 
-<meta name="google-site-verification" content="gbqwrLTEzVfSZR8WCf-Gb36rchKIL5DlRERiTQW67CY" /><link rel="stylesheet"
+<meta name="google-site-verification" content="gbqwrLTEzVfSZR8WCf-Gb36rchKIL5DlRERiTQW67CY">
+
+<link rel="stylesheet"
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
 margin:0;
 padding:0;
 background:#061820;
 color:white;
-font-family:Arial,Helvetica,sans-serif;
+font-family:Arial,Helvetica,sans-serif
 }
 
-body{
-min-height:100vh;
-}
+body{min-height:100vh}
 
 .app{
 max-width:520px;
 min-height:100vh;
 margin:auto;
 background:linear-gradient(180deg,#0b2630,#061820);
-padding-bottom:90px;
+padding-bottom:90px
 }
 
 /* HEADER */
@@ -49,7 +46,7 @@ padding:15px 20px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-border-bottom:1px solid rgba(255,255,255,.07);
+border-bottom:1px solid rgba(255,255,255,.07)
 }
 
 .logo{
@@ -57,7 +54,7 @@ font-size:20px;
 font-weight:bold;
 display:flex;
 align-items:center;
-gap:9px;
+gap:9px
 }
 
 .logoIcon{
@@ -67,12 +64,12 @@ border-radius:12px;
 display:grid;
 place-items:center;
 background:#079dbc;
-font-size:21px;
+font-size:21px
 }
 
 .status{
 font-size:10px;
-color:#89a4ae;
+color:#89a4ae
 }
 
 .dot{
@@ -81,55 +78,45 @@ width:7px;
 height:7px;
 border-radius:50%;
 background:#3de394;
-margin-right:5px;
+margin-right:5px
 }
 
 /* SCREENS */
 
 .screen{
 display:none;
-padding:22px 20px 30px;
+padding:22px 20px 30px
 }
 
 .screen.active{
 display:block;
-animation:fade .25s ease;
+animation:fade .25s ease
 }
 
 @keyframes fade{
-from{
-opacity:0;
-transform:translateY(7px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
+from{opacity:0;transform:translateY(7px)}
+to{opacity:1;transform:translateY(0)}
 }
 
 h1{
 font-size:29px;
 line-height:1.15;
-margin:8px 0;
+margin:8px 0
 }
 
-h2{
-margin:12px 0;
-}
+h2{margin:12px 0}
 
 p{
 color:#91aab3;
-line-height:1.5;
+line-height:1.5
 }
 
 button{
 font-family:inherit;
-cursor:pointer;
+cursor:pointer
 }
 
-button:active{
-transform:scale(.97);
-}
+button:active{transform:scale(.97)}
 
 /* BUTTONS */
 
@@ -139,7 +126,7 @@ background:none;
 color:#62c9db;
 padding:0;
 margin-bottom:20px;
-font-size:14px;
+font-size:14px
 }
 
 .primary{
@@ -150,7 +137,7 @@ padding:15px;
 margin-top:14px;
 background:#08a2c2;
 color:white;
-font-weight:bold;
+font-weight:bold
 }
 
 .secondary{
@@ -160,7 +147,7 @@ border-radius:13px;
 padding:14px;
 margin-top:10px;
 background:transparent;
-color:#a5c0c8;
+color:#a5c0c8
 }
 
 /* HOME */
@@ -168,7 +155,7 @@ color:#a5c0c8;
 .sosWrap{
 display:flex;
 justify-content:center;
-margin:35px 0;
+margin:35px 0
 }
 
 .sos{
@@ -182,22 +169,20 @@ box-shadow:0 20px 50px rgba(0,0,0,.45);
 display:flex;
 flex-direction:column;
 align-items:center;
-justify-content:center;
+justify-content:center
 }
 
-.sos strong{
-font-size:34px;
-}
+.sos strong{font-size:34px}
 
 .sos span{
 font-size:11px;
-margin-top:7px;
+margin-top:7px
 }
 
 .grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:12px;
+gap:12px
 }
 
 .card{
@@ -206,23 +191,23 @@ background:rgba(255,255,255,.055);
 border-radius:17px;
 padding:18px;
 color:white;
-text-align:left;
+text-align:left
 }
 
 .card:hover{
-background:rgba(255,255,255,.09);
+background:rgba(255,255,255,.09)
 }
 
 .cardIcon{
 font-size:26px;
-margin-bottom:10px;
+margin-bottom:10px
 }
 
 .card small{
 display:block;
 color:#8ca5ae;
 margin-top:6px;
-line-height:1.4;
+line-height:1.4
 }
 
 .location{
@@ -231,12 +216,10 @@ padding:13px;
 border-radius:13px;
 background:#102832;
 color:#92abb4;
-font-size:12px;
+font-size:12px
 }
 
-.location.ok{
-color:#69e3a0;
-}
+.location.ok{color:#69e3a0}
 
 .offline{
 margin-top:10px;
@@ -244,20 +227,18 @@ padding:12px;
 border-radius:13px;
 background:#102832;
 color:#91aab3;
-font-size:11px;
+font-size:11px
 }
 
 /* EMERGENCY NUMBERS */
 
-.numbers{
-margin-top:25px;
-}
+.numbers{margin-top:25px}
 
 .numberGrid{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
-margin-top:10px;
+margin-top:10px
 }
 
 .number{
@@ -268,19 +249,19 @@ padding:12px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-gap:8px;
+gap:8px
 }
 
 .numberInfo strong{
 display:block;
-font-size:15px;
+font-size:15px
 }
 
 .numberInfo small{
 display:block;
 color:#8fa9b2;
 margin-top:3px;
-font-size:9px;
+font-size:9px
 }
 
 .call{
@@ -290,7 +271,7 @@ text-decoration:none;
 border-radius:9px;
 padding:9px;
 font-size:9px;
-font-weight:bold;
+font-weight:bold
 }
 
 /* SOS */
@@ -299,7 +280,7 @@ font-weight:bold;
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:11px;
-margin-top:22px;
+margin-top:22px
 }
 
 .emergency{
@@ -308,18 +289,18 @@ background:#102a34;
 color:white;
 border-radius:16px;
 padding:18px 13px;
-text-align:left;
+text-align:left
 }
 
 .emergency.selected{
 border-color:#18bad5;
-background:#124654;
+background:#124654
 }
 
 .emergency span{
 font-size:25px;
 display:block;
-margin-bottom:9px;
+margin-bottom:9px
 }
 
 .counter{
@@ -329,7 +310,7 @@ align-items:center;
 background:#102a34;
 border:1px solid #1c414d;
 border-radius:15px;
-padding:7px;
+padding:7px
 }
 
 .counter button{
@@ -339,25 +320,21 @@ border:0;
 border-radius:10px;
 background:#183c47;
 color:white;
-font-size:24px;
+font-size:24px
 }
 
 .count{
 flex:1;
-text-align:center;
+text-align:center
 }
 
-.count strong{
-font-size:23px;
-}
+.count strong{font-size:23px}
 
-.count small{
-color:#849da6;
-}
+.count small{color:#849da6}
 
 .optional.selected{
 border-color:#1bb8d2;
-background:#124654;
+background:#124654
 }
 
 /* PRIORITY */
@@ -368,63 +345,61 @@ margin-top:18px;
 padding:19px;
 border-radius:19px;
 background:#102832;
-border:1px solid #274651;
+border:1px solid #274651
 }
 
-.priority.show{
-display:block;
-}
+.priority.show{display:block}
 
 .badge{
 display:inline-block;
 padding:7px 11px;
 border-radius:8px;
 font-size:11px;
-font-weight:bold;
+font-weight:bold
 }
 
 .badge.critical{
 background:#5b202a;
-color:#ff7d88;
+color:#ff7d88
 }
 
 .badge.high{
 background:#5b401b;
-color:#ffd06c;
+color:#ffd06c
 }
 
 .badge.medium{
 background:#504a19;
-color:#ffe86c;
+color:#ffe86c
 }
 
 .badge.low{
 background:#17472f;
-color:#6de7a2;
+color:#6de7a2
 }
 
 .stats{
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:8px;
-margin-top:15px;
+margin-top:15px
 }
 
 .stat{
 background:rgba(255,255,255,.05);
 border-radius:11px;
 padding:11px 4px;
-text-align:center;
+text-align:center
 }
 
 .stat strong{
 display:block;
-font-size:17px;
+font-size:17px
 }
 
 .stat small{
 font-size:10px;
-color:#829ca6;
+color:#829ca6
 }
 
 /* CAMPS */
@@ -434,26 +409,26 @@ margin-top:20px;
 padding:20px;
 border-radius:20px;
 background:linear-gradient(145deg,#10404b,#0b2933);
-border:1px solid #22515d;
+border:1px solid #22515d
 }
 
 .label{
 font-size:10px;
 letter-spacing:1px;
 font-weight:bold;
-color:#6bd7e7;
+color:#6bd7e7
 }
 
 .distance{
 color:#9bb4bd;
-margin-top:7px;
+margin-top:7px
 }
 
 .campStats{
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:8px;
-margin:17px 0;
+margin:17px 0
 }
 
 .campStats div{
@@ -461,35 +436,33 @@ background:rgba(255,255,255,.05);
 padding:10px 3px;
 border-radius:10px;
 text-align:center;
-font-size:10px;
+font-size:10px
 }
 
 .campStats strong{
 display:block;
 font-size:15px;
-margin-bottom:3px;
+margin-bottom:3px
 }
 
 .campList{
 display:grid;
 gap:12px;
-margin-top:15px;
+margin-top:15px
 }
 
 .camp{
 background:#102832;
 border:1px solid #1c414d;
 border-radius:16px;
-padding:17px;
+padding:17px
 }
 
-.camp h3{
-margin:0 0 7px;
-}
+.camp h3{margin:0 0 7px}
 
 .camp p{
 font-size:12px;
-line-height:1.8;
+line-height:1.8
 }
 
 .camp button{
@@ -498,7 +471,7 @@ padding:12px;
 border:0;
 border-radius:10px;
 background:#0d91ae;
-color:white;
+color:white
 }
 
 /* MAP */
@@ -508,18 +481,16 @@ background:#102832;
 border:1px solid #1d414c;
 border-radius:15px;
 padding:14px;
-margin-top:16px;
+margin-top:16px
 }
 
-.mapIntro strong{
-font-size:13px;
-}
+.mapIntro strong{font-size:13px}
 
 .mapIntro small{
 display:block;
 color:#8fa9b2;
 margin-top:5px;
-line-height:1.5;
+line-height:1.5
 }
 
 #map{
@@ -528,14 +499,14 @@ width:100%;
 border-radius:18px;
 overflow:hidden;
 margin-top:15px;
-background:#102832;
+background:#102832
 }
 
 .mapLegend{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:8px;
-margin-top:12px;
+margin-top:12px
 }
 
 .legendItem{
@@ -544,7 +515,7 @@ border:1px solid #1d414c;
 border-radius:11px;
 padding:10px;
 font-size:11px;
-color:#a9c0c7;
+color:#a9c0c7
 }
 
 .legendDot{
@@ -552,20 +523,12 @@ display:inline-block;
 width:10px;
 height:10px;
 border-radius:50%;
-margin-right:6px;
+margin-right:6px
 }
 
-.youDot{
-background:#168dd0;
-}
-
-.sosDot{
-background:#ef4050;
-}
-
-.campDot{
-background:#32c779;
-}
+.youDot{background:#168dd0}
+.sosDot{background:#ef4050}
+.campDot{background:#32c779}
 
 .mapInfo{
 margin-top:12px;
@@ -574,7 +537,7 @@ border-radius:14px;
 background:#102832;
 color:#91abb4;
 font-size:12px;
-line-height:1.8;
+line-height:1.8
 }
 
 /* RESCUE */
@@ -583,7 +546,7 @@ line-height:1.8;
 display:flex;
 align-items:center;
 justify-content:space-between;
-margin-bottom:20px;
+margin-bottom:20px
 }
 
 .live{
@@ -591,26 +554,24 @@ font-size:10px;
 color:#62e5a0;
 background:#123a2c;
 padding:7px 9px;
-border-radius:8px;
+border-radius:8px
 }
 
 .live.alert{
 background:#5b202a;
 color:#ff7782;
-animation:pulse 1s infinite;
+animation:pulse 1s infinite
 }
 
 @keyframes pulse{
-50%{
-transform:scale(1.05);
-}
+50%{transform:scale(1.05)}
 }
 
 .priorityGrid{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:7px;
-margin:20px 0;
+margin:20px 0
 }
 
 .priorityCard{
@@ -618,47 +579,34 @@ background:#102832;
 border:1px solid #1d414c;
 border-radius:13px;
 padding:12px 5px;
-text-align:center;
+text-align:center
 }
 
 .priorityCard strong{
 display:block;
 font-size:22px;
-margin-bottom:4px;
+margin-bottom:4px
 }
 
 .priorityCard small{
 font-size:9px;
-color:#8ba5ae;
+color:#8ba5ae
 }
 
-.criticalNumber{
-color:#ff6876;
-}
-
-.highNumber{
-color:#ffc75c;
-}
-
-.mediumNumber{
-color:#ffe768;
-}
-
-.lowNumber{
-color:#63e59c;
-}
+.criticalNumber{color:#ff6876}
+.highNumber{color:#ffc75c}
+.mediumNumber{color:#ffe768}
+.lowNumber{color:#63e59c}
 
 /* DASHBOARD */
 
-.dashboardTools{
-margin-top:20px;
-}
+.dashboardTools{margin-top:20px}
 
 .dashboardSummary{
 display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:10px;
-margin-top:12px;
+margin-top:12px
 }
 
 .dashboardSummary .summaryCard{
@@ -666,47 +614,43 @@ background:#102832;
 border:1px solid #214550;
 border-radius:14px;
 padding:14px;
-text-align:center;
+text-align:center
 }
 
 .dashboardSummary strong{
 display:block;
-font-size:24px;
+font-size:24px
 }
 
 .dashboardSummary small{
 font-size:9px;
-color:#8ba5ae;
+color:#8ba5ae
 }
 
 /* RESCUERS */
 
-.rescuerSection{
-margin-top:24px;
-}
+.rescuerSection{margin-top:24px}
 
-.rescuerSection h2{
-margin-bottom:10px;
-}
+.rescuerSection h2{margin-bottom:10px}
 
 .rescuerCard{
 background:#102832;
 border:1px solid #214550;
 border-radius:15px;
 padding:14px;
-margin-bottom:10px;
+margin-bottom:10px
 }
 
 .rescuerTop{
 display:flex;
 justify-content:space-between;
 align-items:center;
-gap:8px;
+gap:8px
 }
 
 .rescuerName{
 font-size:14px;
-font-weight:bold;
+font-weight:bold
 }
 
 .rescuerStatus{
@@ -714,21 +658,21 @@ font-size:9px;
 padding:6px 8px;
 border-radius:7px;
 background:#17472f;
-color:#70e6a0;
+color:#70e6a0
 }
 
 .rescuerInfo{
 margin-top:9px;
 font-size:11px;
 color:#8fa8b0;
-line-height:1.7;
+line-height:1.7
 }
 
 .rescuerActions{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:8px;
-margin-top:11px;
+margin-top:11px
 }
 
 .rescuerActions a,
@@ -739,17 +683,17 @@ padding:10px;
 text-align:center;
 font-size:10px;
 font-weight:bold;
-text-decoration:none;
+text-decoration:none
 }
 
 .callRescuer{
 background:#079dbc;
-color:white;
+color:white
 }
 
 .locateRescuer{
 background:#183c47;
-color:#9fd5df;
+color:#9fd5df
 }
 
 /* REQUESTS */
@@ -758,7 +702,7 @@ color:#9fd5df;
 font-size:13px;
 letter-spacing:.8px;
 color:#81aab4;
-margin:24px 0 10px;
+margin:24px 0 10px
 }
 
 .request{
@@ -767,16 +711,21 @@ border:1px solid #214550;
 border-radius:17px;
 padding:16px;
 margin-bottom:11px;
+transition:.3s
 }
+
+/* NEW SOS HIGHLIGHT */
 
 .request.newRequest{
 border-color:#ff5868;
 animation:newSOS 1s ease 3;
+box-shadow:0 0 18px rgba(255,70,85,.25)
 }
 
 @keyframes newSOS{
 50%{
-box-shadow:0 0 25px rgba(255,70,85,.6);
+box-shadow:0 0 30px rgba(255,70,85,.7);
+transform:scale(1.01)
 }
 }
 
@@ -785,35 +734,35 @@ font-size:9px;
 font-weight:bold;
 color:#ff6978;
 letter-spacing:1px;
-margin-bottom:10px;
+margin-bottom:10px
 }
 
 .requestTop{
 display:flex;
 align-items:center;
 justify-content:space-between;
-gap:10px;
+gap:10px
 }
 
 .requestId{
 font-size:11px;
-color:#78949d;
+color:#78949d
 }
 
 .request h3{
 margin:12px 0 6px;
-font-size:16px;
+font-size:16px
 }
 
 .requestInfo{
 font-size:11px;
 color:#8fa8b0;
-line-height:1.9;
+line-height:1.9
 }
 
 .rescueDistance{
 color:#71d4e6;
-font-weight:bold;
+font-weight:bold
 }
 
 .requestLocation{
@@ -824,14 +773,14 @@ background:#0c222b;
 border:1px solid #1c414c;
 color:#79cddd;
 font-size:10px;
-line-height:1.6;
+line-height:1.6
 }
 
 .requestButtons{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:8px;
-margin-top:13px;
+margin-top:13px
 }
 
 .requestButtons button{
@@ -839,28 +788,105 @@ padding:11px 5px;
 border-radius:9px;
 border:0;
 font-size:10px;
-font-weight:bold;
+font-weight:bold
 }
 
 .viewBtn{
 background:#183c47;
-color:#9fd5df;
+color:#9fd5df
 }
 
 .mapRequestBtn{
 background:#164653;
-color:#71d4e6;
+color:#71d4e6
 }
 
 .assignBtn{
 background:#079dbc;
-color:white;
+color:white
 }
 
 .assigned{
 background:#17472f!important;
-color:#70e6a0!important;
+color:#70e6a0!important
 }
+
+/* LIVE RESCUE PROGRESS */
+
+.rescueProgress{
+margin-top:14px;
+padding:14px;
+border-radius:14px;
+background:#0b222b;
+border:1px solid #214550
+}
+
+.progressTop{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:8px
+}
+
+.progressStatus{
+font-size:10px;
+font-weight:bold;
+color:#71d4e6
+}
+
+.progressEta{
+font-size:9px;
+color:#8fa8b0;
+text-align:right
+}
+
+.progressEta strong{color:white}
+
+.progressBar{
+height:8px;
+margin-top:12px;
+background:#183640;
+border-radius:999px;
+overflow:hidden
+}
+
+.progressFill{
+height:100%;
+width:0%;
+background:#18bad5;
+border-radius:999px;
+transition:width 1s ease
+}
+
+.progressSteps{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:5px;
+margin-top:11px
+}
+
+.progressStep{
+font-size:7px;
+color:#607b84;
+text-align:center;
+line-height:1.3
+}
+
+.progressStep.active{color:#70e6a0}
+
+.progressStep.current{
+color:#ffd06c;
+font-weight:bold
+}
+
+.progressMessage{
+margin-top:10px;
+font-size:9px;
+color:#8fa8b0;
+line-height:1.5
+}
+
+.progressMessage strong{color:white}
 
 /* BOAT */
 
@@ -868,7 +894,7 @@ color:#70e6a0!important;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:8px;
-margin:18px 0;
+margin:18px 0
 }
 
 .boatStat{
@@ -876,17 +902,17 @@ background:#102832;
 border:1px solid #1d414c;
 border-radius:13px;
 padding:12px 5px;
-text-align:center;
+text-align:center
 }
 
 .boatStat strong{
 display:block;
-font-size:21px;
+font-size:21px
 }
 
 .boatStat small{
 font-size:9px;
-color:#8ba5ae;
+color:#8ba5ae
 }
 
 .boatMission{
@@ -894,59 +920,59 @@ margin-top:18px;
 background:linear-gradient(145deg,#102f39,#0b242c);
 border:1px solid #28515c;
 border-radius:19px;
-padding:17px;
+padding:17px
 }
 
 .boatMissionHeader{
 display:flex;
 align-items:center;
 justify-content:space-between;
-gap:10px;
+gap:10px
 }
 
 .boatMissionTitle{
 font-size:12px;
 letter-spacing:1px;
 color:#70d3e4;
-font-weight:bold;
+font-weight:bold
 }
 
 .boatPriority{
 padding:6px 9px;
 border-radius:8px;
 font-size:9px;
-font-weight:bold;
+font-weight:bold
 }
 
 .boatPriority.critical{
 background:#5b202a;
-color:#ff7d88;
+color:#ff7d88
 }
 
 .boatPriority.high{
 background:#5b401b;
-color:#ffd06c;
+color:#ffd06c
 }
 
 .boatPriority.medium{
 background:#504a19;
-color:#ffe86c;
+color:#ffe86c
 }
 
 .boatPriority.low{
 background:#17472f;
-color:#6de7a2;
+color:#6de7a2
 }
 
 .boatMission h2{
 font-size:19px;
-margin:12px 0 7px;
+margin:12px 0 7px
 }
 
 .boatInfo{
 font-size:11px;
 color:#8fa8b0;
-line-height:1.9;
+line-height:1.9
 }
 
 .boatLocation{
@@ -957,14 +983,14 @@ background:#0c222b;
 border:1px solid #1c414d;
 color:#79cddd;
 font-size:10px;
-line-height:1.7;
+line-height:1.7
 }
 
 .boatActions{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:8px;
-margin-top:13px;
+margin-top:13px
 }
 
 .boatActions button,
@@ -975,22 +1001,22 @@ border-radius:9px;
 font-size:10px;
 font-weight:bold;
 text-align:center;
-text-decoration:none;
+text-decoration:none
 }
 
 .primaryBoat{
 background:#079dbc;
-color:white;
+color:white
 }
 
 .secondaryBoat{
 background:#183c47;
-color:#9fd5df;
+color:#9fd5df
 }
 
 .callBoat{
 background:#17472f;
-color:#70e6a0;
+color:#70e6a0
 }
 
 .noMission{
@@ -1001,7 +1027,7 @@ border:1px solid #214550;
 text-align:center;
 color:#8fa8b0;
 font-size:12px;
-line-height:1.7;
+line-height:1.7
 }
 
 .boatStatusBox{
@@ -1009,12 +1035,10 @@ margin-top:15px;
 background:#102832;
 border:1px solid #214550;
 border-radius:17px;
-padding:16px;
+padding:16px
 }
 
-.boatStatusBox h3{
-margin:0 0 8px;
-}
+.boatStatusBox h3{margin:0 0 8px}
 
 .boatStatusLine{
 display:flex;
@@ -1023,26 +1047,24 @@ align-items:center;
 font-size:11px;
 color:#8fa8b0;
 padding:7px 0;
-border-bottom:1px solid rgba(255,255,255,.05);
+border-bottom:1px solid rgba(255,255,255,.05)
 }
 
-.boatStatusLine:last-child{
-border-bottom:0;
-}
+.boatStatusLine:last-child{border-bottom:0}
 
 .statusReady{
 color:#70e6a0;
-font-weight:bold;
+font-weight:bold
 }
 
 .statusActive{
 color:#ffd06c;
-font-weight:bold;
+font-weight:bold
 }
 
 .statusReturning{
 color:#71d4e6;
-font-weight:bold;
+font-weight:bold
 }
 
 /* NAV */
@@ -1058,7 +1080,7 @@ background:rgba(4,19,25,.98);
 border-top:1px solid rgba(255,255,255,.07);
 display:grid;
 grid-template-columns:repeat(5,1fr);
-z-index:9999;
+z-index:9999
 }
 
 .nav button{
@@ -1070,20 +1092,14 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 gap:5px;
-position:relative;
+position:relative
 }
 
-.nav button.active{
-color:#55cadf;
-}
+.nav button.active{color:#55cadf}
 
-.nav span{
-font-size:20px;
-}
+.nav span{font-size:20px}
 
-.nav small{
-font-size:9px;
-}
+.nav small{font-size:9px}
 
 .navAlert{
 position:absolute;
@@ -1093,12 +1109,12 @@ width:8px;
 height:8px;
 border-radius:50%;
 background:#ff5362;
-display:none;
+display:none
 }
 
 .navAlert.show{
 display:block;
-animation:pulse 1s infinite;
+animation:pulse 1s infinite
 }
 
 /* MOBILE */
@@ -1107,12 +1123,10 @@ animation:pulse 1s infinite;
 
 .sos{
 width:175px;
-height:175px;
+height:175px
 }
 
-.priorityGrid{
-gap:4px;
-}
+.priorityGrid{gap:4px}
 
 }
 
@@ -1126,8 +1140,24 @@ gap:4px;
 <header class="header">
 
 <div class="logo">
+
 <div class="logoIcon">🌊</div>
-FloodHelp
+
+<div>
+<div>FloodHelp</div>
+
+<div style="
+font-size:9px;
+font-weight:normal;
+color:#6ba5b3;
+margin-top:2px;
+letter-spacing:.5px;
+">
+EMERGENCY FLOOD RESCUE
+</div>
+
+</div>
+
 </div>
 
 <div class="status">
@@ -1576,52 +1606,27 @@ Live SOS requests are automatically prioritised and linked to their location.
 <div class="priorityGrid">
 
 <div class="priorityCard">
-
-<strong id="criticalCount" class="criticalNumber">
-0
-</strong>
-
+<strong id="criticalCount" class="criticalNumber">0</strong>
 <small>CRITICAL</small>
-
 </div>
 
-
 <div class="priorityCard">
-
-<strong id="highCount" class="highNumber">
-0
-</strong>
-
+<strong id="highCount" class="highNumber">0</strong>
 <small>HIGH</small>
-
 </div>
 
-
 <div class="priorityCard">
-
-<strong id="mediumCount" class="mediumNumber">
-0
-</strong>
-
+<strong id="mediumCount" class="mediumNumber">0</strong>
 <small>MEDIUM</small>
-
 </div>
-
 
 <div class="priorityCard">
-
-<strong id="lowCount" class="lowNumber">
-0
-</strong>
-
+<strong id="lowCount" class="lowNumber">0</strong>
 <small>LOW</small>
-
 </div>
 
 </div>
 
-
-<!-- RESCUE SUMMARY -->
 
 <div class="dashboardTools">
 
@@ -1641,8 +1646,6 @@ Live SOS requests are automatically prioritised and linked to their location.
 
 </div>
 
-
-<!-- RESCUERS -->
 
 <div class="rescuerSection">
 
@@ -1719,12 +1722,8 @@ Monitor the rescue boat and launch it toward the highest-priority active SOS.
 </div>
 
 
-<!-- ACTIVE MISSION -->
-
 <div id="boatMissionContainer"></div>
 
-
-<!-- BOAT STATUS -->
 
 <div class="boatStatusBox">
 
@@ -1734,13 +1733,11 @@ Monitor the rescue boat and launch it toward the highest-priority active SOS.
 
 <span>Status</span>
 
-<strong id="boatCurrentStatus"
-class="statusReady">
+<strong id="boatCurrentStatus" class="statusReady">
 READY
 </strong>
 
 </div>
-
 
 <div class="boatStatusLine">
 
@@ -1751,7 +1748,6 @@ Waiting at camp
 </strong>
 
 </div>
-
 
 <div class="boatStatusLine">
 
@@ -1773,49 +1769,29 @@ No active mission
 <nav class="nav">
 
 <button id="navHome" class="active">
-
 <span>⌂</span>
-
 <small>Home</small>
-
 </button>
-
 
 <button id="navCamp">
-
 <span>🏕️</span>
-
 <small>Camp</small>
-
 </button>
-
 
 <button id="navMap">
-
 <span>🗺️</span>
-
 <small>Map</small>
-
 </button>
-
 
 <button id="navRescue">
-
 <span>🚑</span>
-
 <small>Rescue</small>
-
 <span class="navAlert" id="navAlert"></span>
-
 </button>
 
-
 <button id="navBoat">
-
 <span>🚤</span>
-
 <small>Boat</small>
-
 </button>
 
 </nav>
@@ -1825,12 +1801,11 @@ No active mission
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-
 <script>
 
 /* =========================================
    FLOODHELP
-   UPDATED COMPLETE APPLICATION
+   COMPLETE VERSION
 ========================================= */
 
 
@@ -1838,9 +1813,7 @@ No active mission
    SCREEN CONTROL
 ========================================= */
 
-const screens =
-document.querySelectorAll(".screen");
-
+const screens=document.querySelectorAll(".screen");
 
 function openScreen(id){
 
@@ -1848,34 +1821,23 @@ screens.forEach(screen=>{
 screen.classList.remove("active");
 });
 
-
-document.getElementById(id)
-.classList.add("active");
-
+document.getElementById(id).classList.add("active");
 
 window.scrollTo({
 top:0,
 behavior:"smooth"
 });
 
-
 document.querySelectorAll(".nav button")
 .forEach(button=>{
 button.classList.remove("active");
 });
 
+if(id==="home") navHome.classList.add("active");
 
-if(id==="home"){
-navHome.classList.add("active");
-}
+if(id==="camp") navCamp.classList.add("active");
 
-if(id==="camp"){
-navCamp.classList.add("active");
-}
-
-if(id==="mapScreen"){
-navMap.classList.add("active");
-}
+if(id==="mapScreen") navMap.classList.add("active");
 
 if(id==="rescue"){
 navRescue.classList.add("active");
@@ -1883,11 +1845,8 @@ navAlert.classList.remove("show");
 }
 
 if(id==="boat"){
-
 navBoat.classList.add("active");
-
 renderBoatPage();
-
 }
 
 if(id==="mapScreen"){
@@ -1895,11 +1854,7 @@ if(id==="mapScreen"){
 initializeMap();
 
 setTimeout(()=>{
-
-if(map){
-map.invalidateSize();
-}
-
+if(map) map.invalidateSize();
 },300);
 
 }
@@ -1911,9 +1866,7 @@ map.invalidateSize();
    NAVIGATION
 ========================================= */
 
-navHome.onclick=()=>{
-openScreen("home");
-};
+navHome.onclick=()=>openScreen("home");
 
 navCamp.onclick=()=>{
 openScreen("camp");
@@ -1944,29 +1897,18 @@ openScreen("home");
 ========================================= */
 
 sosBtn.onclick=()=>{
-
 openScreen("sos");
-
 getLocation();
-
 };
-
 
 campBtn.onclick=()=>{
-
 openScreen("camp");
-
 getLocation();
-
 };
 
-
 mapBtn.onclick=()=>{
-
 openScreen("mapScreen");
-
 getLocation();
-
 };
 
 
@@ -1974,17 +1916,11 @@ getLocation();
    BACK
 ========================================= */
 
-backSOS.onclick=()=>{
-openScreen("home");
-};
+backSOS.onclick=()=>openScreen("home");
 
-backCamp.onclick=()=>{
-openScreen("home");
-};
+backCamp.onclick=()=>openScreen("home");
 
-backMap.onclick=()=>{
-openScreen("home");
-};
+backMap.onclick=()=>openScreen("home");
 
 
 /* =========================================
@@ -1996,24 +1932,18 @@ function updateConnection(){
 if(navigator.onLine){
 
 systemStatus.textContent="System ready";
-
 offlineText.textContent="Offline-ready";
 
-}
-
-else{
+}else{
 
 systemStatus.textContent="Offline mode";
-
-offlineText.textContent=
-"OFFLINE — local SOS storage active";
+offlineText.textContent="OFFLINE — local SOS storage active";
 
 }
 
 }
 
 window.addEventListener("online",updateConnection);
-
 window.addEventListener("offline",updateConnection);
 
 updateConnection();
@@ -2028,12 +1958,10 @@ let emergencyType="";
 let peopleCount=1;
 
 let needs={
-
 children:false,
 elderly:false,
 medical:false,
 special:false
-
 };
 
 
@@ -2053,8 +1981,7 @@ item.classList.remove("selected");
 
 button.classList.add("selected");
 
-emergencyType=
-button.dataset.type;
+emergencyType=button.dataset.type;
 
 calculatePriority();
 
@@ -2069,9 +1996,7 @@ calculatePriority();
 
 plus.onclick=()=>{
 
-if(peopleCount<20){
-peopleCount++;
-}
+if(peopleCount<20) peopleCount++;
 
 people.textContent=peopleCount;
 
@@ -2079,12 +2004,9 @@ calculatePriority();
 
 };
 
-
 minus.onclick=()=>{
 
-if(peopleCount>1){
-peopleCount--;
-}
+if(peopleCount>1) peopleCount--;
 
 people.textContent=peopleCount;
 
@@ -2102,8 +2024,7 @@ document.querySelectorAll(".optional")
 
 button.onclick=()=>{
 
-const option=
-button.dataset.opt;
+const option=button.dataset.opt;
 
 needs[option]=!needs[option];
 
@@ -2127,51 +2048,34 @@ function getPriorityData(){
 
 let vulnerable=0;
 
-if(needs.children)
-vulnerable++;
+if(needs.children) vulnerable++;
 
-if(needs.elderly)
-vulnerable++;
+if(needs.elderly) vulnerable++;
 
-if(needs.medical)
-vulnerable++;
+if(needs.medical) vulnerable++;
 
-if(needs.special)
-vulnerable++;
-
+if(needs.special) vulnerable++;
 
 let priority="MEDIUM";
 
-
 if(
-
 needs.medical ||
-
 needs.special ||
-
 peopleCount>=6 ||
-
 (
 emergencyType==="trapped" &&
 vulnerable>0
 )
-
 ){
 
 priority="CRITICAL";
 
-}
-
-else if(
+}else if(
 
 emergencyType==="trapped" ||
-
 emergencyType==="medical" ||
-
 peopleCount>=4 ||
-
 needs.children ||
-
 needs.elderly
 
 ){
@@ -2180,17 +2084,13 @@ priority="HIGH";
 
 }
 
-
 let critical=0;
-
 
 if(priority==="CRITICAL"){
 
 critical=peopleCount;
 
-}
-
-else if(
+}else if(
 
 needs.medical ||
 needs.special ||
@@ -2203,13 +2103,10 @@ critical=1;
 
 }
 
-
 return{
-
 priority,
 vulnerable,
 critical
-
 };
 
 }
@@ -2217,57 +2114,37 @@ critical
 
 function calculatePriority(){
 
-if(!emergencyType){
-return;
-}
+if(!emergencyType) return;
 
-
-const data=
-getPriorityData();
-
+const data=getPriorityData();
 
 document.getElementById("priority")
 .classList.add("show");
 
-
-const badge=
-document.getElementById("badge");
-
+const badge=document.getElementById("badge");
 
 badge.className=
-"badge "+
-data.priority.toLowerCase();
+"badge "+data.priority.toLowerCase();
 
+badge.textContent=data.priority;
 
-badge.textContent=
-data.priority;
+peopleStat.textContent=peopleCount;
 
+criticalStat.textContent=data.critical;
 
-peopleStat.textContent=
-peopleCount;
-
-criticalStat.textContent=
-data.critical;
-
-vulnerableStat.textContent=
-data.vulnerable;
-
+vulnerableStat.textContent=data.vulnerable;
 
 if(data.priority==="CRITICAL"){
 
 priorityTitle.textContent=
 "Immediate rescue recommended";
 
-}
-
-else if(data.priority==="HIGH"){
+}else if(data.priority==="HIGH"){
 
 priorityTitle.textContent=
 "High priority rescue";
 
-}
-
-else{
+}else{
 
 priorityTitle.textContent=
 "Response required";
@@ -2299,37 +2176,30 @@ return;
 
 }
 
-
 navigator.geolocation.getCurrentPosition(
 
 position=>{
 
-userLat=
-position.coords.latitude;
+userLat=position.coords.latitude;
 
-userLng=
-position.coords.longitude;
+userLng=position.coords.longitude;
 
 locationReady=true;
-
 
 homeLocation.textContent=
 "📍 Location detected";
 
 homeLocation.classList.add("ok");
 
-
 sosLocation.textContent=
 "📍 Location detected";
 
 sosLocation.classList.add("ok");
 
-
 campLocation.textContent=
 "📍 Your location detected";
 
 campLocation.classList.add("ok");
-
 
 updateCamps();
 
@@ -2339,10 +2209,7 @@ updateRescueCards();
 
 renderBoatPage();
 
-
-if(map){
-updateMapLocation();
-}
+if(map) updateMapLocation();
 
 },
 
@@ -2368,36 +2235,26 @@ function distanceKm(a,b,c,d){
 
 const R=6371;
 
-const dLat=
-(c-a)*Math.PI/180;
+const dLat=(c-a)*Math.PI/180;
 
-const dLon=
-(d-b)*Math.PI/180;
+const dLon=(d-b)*Math.PI/180;
 
 const x=
-
 Math.sin(dLat/2)**2+
-
 Math.cos(a*Math.PI/180)*
-
 Math.cos(c*Math.PI/180)*
-
 Math.sin(dLon/2)**2;
 
-
 return R*2*Math.atan2(
-
 Math.sqrt(x),
-
 Math.sqrt(1-x)
-
 );
 
 }
 
 
 /* =========================================
-   RESCUER UNITS
+   RESCUERS
 ========================================= */
 
 const rescuers=[
@@ -2439,24 +2296,18 @@ status:"AVAILABLE"
 
 function getRescuerDistance(rescuer){
 
-if(
-userLat===null ||
-userLng===null
-){
+if(userLat===null || userLng===null){
 
 return "Distance unavailable";
 
 }
 
-
-const d=
-distanceKm(
+const d=distanceKm(
 userLat,
 userLng,
 rescuer.lat,
 rescuer.lng
 );
-
 
 return d.toFixed(1)+" km away";
 
@@ -2468,19 +2319,13 @@ function renderRescuers(){
 const container=
 document.getElementById("rescuerList");
 
-
 container.innerHTML="";
-
 
 rescuers.forEach((rescuer,index)=>{
 
-const card=
-document.createElement("div");
+const card=document.createElement("div");
 
-
-card.className=
-"rescuerCard";
-
+card.className="rescuerCard";
 
 card.innerHTML=`
 
@@ -2496,7 +2341,6 @@ card.innerHTML=`
 
 </div>
 
-
 <div class="rescuerInfo">
 
 📏 <span class="rescueDistance">
@@ -2509,28 +2353,23 @@ ${getRescuerDistance(rescuer)}
 
 </div>
 
-
 <div class="rescuerActions">
 
 <a
 class="callRescuer"
-href="tel:${rescuer.phone}"
->
+href="tel:${rescuer.phone}">
 📞 CALL
 </a>
 
-
 <button
 class="locateRescuer"
-onclick="locateRescuer(${index})"
->
+onclick="locateRescuer(${index})">
 🗺️ LOCATE
 </button>
 
 </div>
 
 `;
-
 
 container.appendChild(card);
 
@@ -2540,17 +2379,13 @@ container.appendChild(card);
 
 
 function updateRescuerDistances(){
-
 renderRescuers();
-
 }
 
 
 function locateRescuer(index){
 
-const rescuer=
-rescuers[index];
-
+const rescuer=rescuers[index];
 
 if(!map){
 
@@ -2559,7 +2394,6 @@ openScreen("mapScreen");
 initializeMap();
 
 }
-
 
 setTimeout(()=>{
 
@@ -2635,7 +2469,6 @@ function updateCamps(){
 
 let list=[...camps];
 
-
 if(userLat!==null){
 
 list.sort((a,b)=>
@@ -2646,9 +2479,7 @@ userLng,
 a.lat,
 a.lng
 )
-
 -
-
 distanceKm(
 userLat,
 userLng,
@@ -2660,33 +2491,25 @@ b.lng
 
 }
 
-
 const best=list[0];
 
+bestName.textContent=best.name;
 
-bestName.textContent=
-best.name;
-
-bestVacancy.textContent=
-best.vacancy+"%";
-
+bestVacancy.textContent=best.vacancy+"%";
 
 if(userLat!==null){
 
-const d=
-distanceKm(
+const d=distanceKm(
 userLat,
 userLng,
 best.lat,
 best.lng
 );
 
-
 bestDistance.textContent=
 "📏 "+d.toFixed(1)+" km away";
 
 }
-
 
 renderCamps(list);
 
@@ -2697,12 +2520,9 @@ function renderCamps(list=camps){
 
 campList.innerHTML="";
 
-
 list.forEach(camp=>{
 
-let distance=
-"Distance unavailable";
-
+let distance="Distance unavailable";
 
 if(userLat!==null){
 
@@ -2716,13 +2536,9 @@ camp.lng
 
 }
 
-
-const div=
-document.createElement("div");
-
+const div=document.createElement("div");
 
 div.className="camp";
-
 
 div.innerHTML=`
 
@@ -2754,14 +2570,8 @@ ${camp.medicine?"Available":"Unavailable"}
 
 `;
 
-
 div.querySelector("button")
-.onclick=()=>{
-
-routeToCamp(camp);
-
-};
-
+.onclick=()=>routeToCamp(camp);
 
 campList.appendChild(div);
 
@@ -2777,9 +2587,7 @@ function routeToCamp(camp){
 
 if(userLat===null){
 
-alert(
-"Please allow location access first."
-);
+alert("Please allow location access first.");
 
 getLocation();
 
@@ -2787,9 +2595,7 @@ return;
 
 }
 
-
 const url=
-
 "https://www.google.com/maps/dir/?api=1"+
 "&origin="+
 userLat+","+userLng+
@@ -2797,11 +2603,7 @@ userLat+","+userLng+
 camp.lat+","+camp.lng+
 "&travelmode=walking";
 
-
-window.open(
-url,
-"_blank"
-);
+window.open(url,"_blank");
 
 }
 
@@ -2810,11 +2612,9 @@ bestRoute.onclick=()=>{
 
 let best=camps[0];
 
-
 if(userLat!==null){
 
-best=
-[...camps].sort((a,b)=>
+best=[...camps].sort((a,b)=>
 
 distanceKm(
 userLat,
@@ -2822,9 +2622,7 @@ userLng,
 a.lat,
 a.lng
 )
-
 -
-
 distanceKm(
 userLat,
 userLng,
@@ -2835,7 +2633,6 @@ b.lng
 )[0];
 
 }
-
 
 routeToCamp(best);
 
@@ -2848,12 +2645,262 @@ routeToCamp(best);
 
 let sosNumber=1043;
 
-
 let sosRequests=
 JSON.parse(
-localStorage.getItem(
-"floodhelp_sos"
-) || "[]"
+localStorage.getItem("floodhelp_sos") || "[]"
+);
+
+
+/* =========================================
+   LIVE RESCUE SIMULATION
+========================================= */
+
+const RESCUE_DEMO_DURATION=30000;
+
+
+function startRescueSimulation(request){
+
+if(!request.rescueStartTime){
+
+request.rescueStartTime=Date.now();
+
+request.status="SOS SENT";
+
+request.progress=0;
+
+request.boatDistance=3.0;
+
+request.eta=10;
+
+request.completed=false;
+
+request.assigned=false;
+
+localStorage.setItem(
+"floodhelp_sos",
+JSON.stringify(sosRequests)
+);
+
+}
+
+}
+
+
+function getRescueSimulation(request){
+
+startRescueSimulation(request);
+
+if(request.completed){
+
+return{
+
+status:"ASSIGNED",
+
+progress:100,
+
+distance:0,
+
+eta:0,
+
+stage:4,
+
+message:"Rescue completed successfully."
+
+};
+
+}
+
+
+const elapsed=
+Date.now()-Number(request.rescueStartTime);
+
+
+let progress=
+Math.min(
+100,
+(elapsed/RESCUE_DEMO_DURATION)*100
+);
+
+let status="SOS SENT";
+
+let stage=0;
+
+let message=
+"Emergency request received. Waiting for rescue assignment.";
+
+
+/* SOS SENT */
+
+if(elapsed<4000){
+
+status="SOS SENT";
+
+stage=0;
+
+message=
+"Emergency request received. Rescue team is being notified.";
+
+}
+
+/* ASSIGNED */
+
+else if(elapsed<8000){
+
+status="RESCUE ASSIGNED";
+
+stage=1;
+
+message=
+"Rescue team assigned to this emergency.";
+
+}
+
+/* BOAT ON THE WAY */
+
+else if(elapsed<22000){
+
+status="BOAT ON THE WAY";
+
+stage=2;
+
+message=
+"Rescue boat is travelling toward the SOS location.";
+
+}
+
+/* ARRIVING */
+
+else{
+
+status="RESCUE ARRIVING";
+
+stage=3;
+
+message=
+"Rescue boat is approaching the emergency location.";
+
+}
+
+
+/* DEMO DISTANCE */
+
+const distance=
+Math.max(
+0,
+3-(3*(progress/100))
+);
+
+
+/* DEMO ETA */
+
+const eta=
+Math.max(
+0,
+Math.ceil(
+10*(1-progress/100)
+)
+);
+
+
+/* COMPLETE */
+
+if(progress>=100){
+
+request.completed=true;
+
+request.assigned=true;
+
+request.status="ASSIGNED";
+
+request.progress=100;
+
+request.boatDistance=0;
+
+request.eta=0;
+
+localStorage.setItem(
+"floodhelp_sos",
+JSON.stringify(sosRequests)
+);
+
+return{
+
+status:"ASSIGNED",
+
+progress:100,
+
+distance:0,
+
+eta:0,
+
+stage:4,
+
+message:
+"Rescue completed successfully."
+
+};
+
+}
+
+
+request.status=status;
+
+request.progress=Math.round(progress);
+
+request.boatDistance=
+Number(distance.toFixed(1));
+
+request.eta=eta;
+
+
+return{
+
+status,
+
+progress:Math.round(progress),
+
+distance:Number(distance.toFixed(1)),
+
+eta,
+
+stage,
+
+message
+
+};
+
+}
+
+
+function updateRescueSimulation(){
+
+sosRequests.forEach(request=>{
+
+if(request.completed) return;
+
+getRescueSimulation(request);
+
+});
+
+localStorage.setItem(
+"floodhelp_sos",
+JSON.stringify(sosRequests)
+);
+
+updateRescueCounts();
+
+updateDashboardSummary();
+
+updateRescueCards();
+
+renderBoatPage();
+
+}
+
+
+setInterval(
+updateRescueSimulation,
+1000
 );
 
 
@@ -2874,15 +2921,12 @@ return "Distance unavailable";
 
 }
 
-
-const d=
-distanceKm(
+const d=distanceKm(
 userLat,
 userLng,
 Number(request.lat),
 Number(request.lng)
 );
-
 
 return d.toFixed(1)+" km away";
 
@@ -2906,15 +2950,11 @@ function createCircleIcon(type){
 
 let background="#168dd0";
 
-
-if(type==="sos"){
+if(type==="sos")
 background="#ef4050";
-}
 
-if(type==="camp"){
+if(type==="camp")
 background="#32c779";
-}
-
 
 return L.divIcon({
 
@@ -2929,8 +2969,7 @@ border-radius:50%;
 background:${background};
 border:4px solid white;
 box-shadow:0 2px 8px rgba(0,0,0,.45);
-">
-</div>
+"></div>
 
 `,
 
@@ -2955,7 +2994,6 @@ return;
 
 }
 
-
 if(typeof L==="undefined"){
 
 alert(
@@ -2966,7 +3004,6 @@ return;
 
 }
 
-
 map=
 L.map("map")
 .setView(
@@ -2974,35 +3011,23 @@ L.map("map")
 13
 );
 
-
 L.tileLayer(
-
 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
 {
-
-attribution:
-"&copy; OpenStreetMap contributors"
-
+attribution:"&copy; OpenStreetMap contributors"
 }
-
 ).addTo(map);
 
 
 camps.forEach(camp=>{
 
 const marker=
-
 L.marker(
-
 [camp.lat,camp.lng],
-
 {
 icon:createCircleIcon("camp")
 }
-
 ).addTo(map);
-
 
 marker.bindPopup(`
 
@@ -3032,18 +3057,15 @@ ${camp.medicine?"Available":"Unavailable"}
 
 <button
 class="mapPopupButton"
-onclick="openRoute('${camp.name}')"
->
+onclick="openRoute('${camp.name}')">
 🛣️ Route
 </button>
 
 `);
 
-
 campMarkers.push(marker);
 
 });
-
 
 updateMapLocation();
 
@@ -3054,10 +3076,7 @@ updateAllSOSMarkers();
 
 function updateMapLocation(){
 
-if(!map || userLat===null){
-return;
-}
-
+if(!map || userLat===null) return;
 
 if(userMarker){
 
@@ -3066,21 +3085,16 @@ userLat,
 userLng
 ]);
 
-}
-
-else{
+}else{
 
 userMarker=
-
 L.marker(
-
 [userLat,userLng],
-
 {
 icon:createCircleIcon("you")
 }
-
-).addTo(map)
+)
+.addTo(map)
 .bindPopup(
 "<strong>📍 You are here</strong>"
 );
@@ -3096,15 +3110,11 @@ icon:createCircleIcon("you")
 
 function updateAllSOSMarkers(){
 
-if(!map){
-return;
-}
-
+if(!map) return;
 
 sosMarkers.forEach(marker=>{
 map.removeLayer(marker);
 });
-
 
 sosMarkers=[];
 
@@ -3120,22 +3130,19 @@ return;
 
 }
 
-
 const marker=
-
 L.marker(
-
 [
 request.lat,
 request.lng
 ],
-
 {
 icon:createCircleIcon("sos")
 }
-
 ).addTo(map);
 
+
+const rescue=getRescueSimulation(request);
 
 marker.bindPopup(`
 
@@ -3161,20 +3168,23 @@ ${request.people}
 
 <br>
 
-📏 Distance:
-${getRescueDistance(request)}
+🚤 Status:
+${rescue.status}
+
+<br>
+
+📏 Boat:
+${rescue.distance.toFixed(1)} km
 
 <br><br>
 
 <button
 class="mapPopupButton"
-onclick="routeToSOS(${request.lat},${request.lng})"
->
+onclick="routeToSOS(${request.lat},${request.lng})">
 📍 Route to SOS
 </button>
 
 `);
-
 
 sosMarkers.push(marker);
 
@@ -3201,9 +3211,7 @@ return;
 
 }
 
-
 const url=
-
 "https://www.google.com/maps/dir/?api=1"+
 "&origin="+
 userLat+","+userLng+
@@ -3211,11 +3219,7 @@ userLat+","+userLng+
 lat+","+lng+
 "&travelmode=walking";
 
-
-window.open(
-url,
-"_blank"
-);
+window.open(url,"_blank");
 
 }
 
@@ -3252,7 +3256,6 @@ emergencyNames[emergencyType] ||
 
 
 let vulnerable=[];
-
 
 if(needs.children)
 vulnerable.push("👶 Child");
@@ -3291,8 +3294,21 @@ lat:userLat,
 
 lng:userLng,
 
-time:new Date()
-.toLocaleTimeString()
+time:new Date().toLocaleTimeString(),
+
+status:"SOS SENT",
+
+rescueStartTime:Date.now(),
+
+progress:0,
+
+boatDistance:3.0,
+
+eta:10,
+
+assigned:false,
+
+completed:false
 
 };
 
@@ -3318,16 +3334,14 @@ navAlert.classList.add("show");
 
 liveStatus.classList.add("alert");
 
-liveStatus.textContent=
-"● NEW SOS";
+liveStatus.textContent="● NEW SOS";
 
 
 setTimeout(()=>{
 
 liveStatus.classList.remove("alert");
 
-liveStatus.textContent=
-"● LIVE";
+liveStatus.textContent="● LIVE";
 
 },7000);
 
@@ -3348,7 +3362,6 @@ let medium=0;
 
 let low=0;
 
-
 sosRequests.forEach(request=>{
 
 if(request.priority==="CRITICAL")
@@ -3365,20 +3378,16 @@ low++;
 
 });
 
-
 criticalCount.textContent=critical;
-
 highCount.textContent=high;
-
 mediumCount.textContent=medium;
-
 lowCount.textContent=low;
 
 }
 
 
 /* =========================================
-   RESCUE DASHBOARD SUMMARY
+   DASHBOARD SUMMARY
 ========================================= */
 
 function updateDashboardSummary(){
@@ -3386,25 +3395,41 @@ function updateDashboardSummary(){
 totalRescueCount.textContent=
 sosRequests.length;
 
+const active=
+sosRequests.filter(
+request=>!request.completed
+).length;
+
 activeRescueCount.textContent=
-sosRequests.length;
+active;
 
 }
 
 
 /* =========================================
-   RESCUE CARDS
+   RESCUE CARD
 ========================================= */
 
 function createRequestCard(request,isNew=false){
 
-const card=
-document.createElement("div");
-
+const card=document.createElement("div");
 
 card.className=
 "request"+
 (isNew?" newRequest":"");
+
+
+const rescue=
+getRescueSimulation(request);
+
+
+const sosActive=rescue.stage>=0;
+
+const assignedActive=rescue.stage>=1;
+
+const boatActive=rescue.stage>=2;
+
+const arrivingActive=rescue.stage>=3;
 
 
 let locationHTML="";
@@ -3430,9 +3455,7 @@ ${Number(request.lng).toFixed(5)}
 
 `;
 
-}
-
-else{
+}else{
 
 locationHTML=`
 
@@ -3445,6 +3468,150 @@ locationHTML=`
 `;
 
 }
+
+
+let assignButton="";
+
+
+if(request.completed){
+
+assignButton=`
+
+<button
+class="assignBtn assigned"
+disabled>
+✓ ASSIGNED
+</button>
+
+`;
+
+}else if(request.assigned){
+
+assignButton=`
+
+<button
+class="assignBtn assigned"
+disabled>
+✓ ASSIGNED
+</button>
+
+`;
+
+}else{
+
+assignButton=`
+
+<button
+class="assignBtn"
+onclick="assignRequest(this,'${request.id}')">
+ASSIGN RESCUE
+</button>
+
+`;
+
+}
+
+
+const progressHTML=`
+
+<div class="rescueProgress">
+
+<div class="progressTop">
+
+<span class="progressStatus">
+
+${
+rescue.status==="SOS SENT"
+?"🚨":
+rescue.status==="RESCUE ASSIGNED"
+?"🚑":
+rescue.status==="BOAT ON THE WAY"
+?"🚤":
+rescue.status==="RESCUE ARRIVING"
+?"📍":
+"✅"
+}
+
+${rescue.status}
+
+</span>
+
+
+<div class="progressEta">
+
+${
+rescue.stage<4
+?
+`
+🚤 ${rescue.distance.toFixed(1)} km<br>
+ETA: <strong>~${rescue.eta} min</strong>
+`
+:
+`
+<strong>RESCUE COMPLETE</strong>
+`
+}
+
+</div>
+
+</div>
+
+
+<div class="progressBar">
+
+<div
+class="progressFill"
+style="width:${rescue.progress}%">
+</div>
+
+</div>
+
+
+<div class="progressSteps">
+
+<div
+class="progressStep
+${sosActive?"active":""}
+${rescue.stage===0?"current":""}">
+🚨<br>SOS SENT
+</div>
+
+
+<div
+class="progressStep
+${assignedActive?"active":""}
+${rescue.stage===1?"current":""}">
+🚑<br>ASSIGNED
+</div>
+
+
+<div
+class="progressStep
+${boatActive?"active":""}
+${rescue.stage===2?"current":""}">
+🚤<br>ON THE WAY
+</div>
+
+
+<div
+class="progressStep
+${arrivingActive?"active":""}
+${rescue.stage===3?"current":""}">
+📍<br>ARRIVING
+</div>
+
+</div>
+
+
+<div class="progressMessage">
+
+<strong>${rescue.message}</strong>
+
+</div>
+
+</div>
+
+`;
 
 
 card.innerHTML=`
@@ -3500,20 +3667,21 @@ ${getRescueDistance(request)}
 ${locationHTML}
 
 
+${progressHTML}
+
+
 <div class="requestButtons">
 
 <button
 class="viewBtn"
-onclick="viewRequest('${request.id}')"
->
+onclick="viewRequest('${request.id}')">
 VIEW
 </button>
 
 
 <button
 class="mapRequestBtn"
-onclick="showSOSOnMap('${request.id}')"
->
+onclick="showSOSOnMap('${request.id}')">
 🗺️ VIEW ON MAP
 </button>
 
@@ -3522,12 +3690,7 @@ onclick="showSOSOnMap('${request.id}')"
 
 <div class="requestButtons">
 
-<button
-class="assignBtn"
-onclick="assignRequest(this,'${request.id}')"
->
-ASSIGN RESCUE
-</button>
+${assignButton}
 
 </div>
 
@@ -3539,21 +3702,17 @@ return card;
 }
 
 
+/* =========================================
+   RESCUE CARDS
+========================================= */
+
 function updateRescueCards(){
 
-if(!requestList){
-return;
-}
-
-
-const existing=
-sosRequests.slice();
-
+if(!requestList) return;
 
 requestList.innerHTML="";
 
-
-existing.forEach(request=>{
+sosRequests.forEach(request=>{
 
 requestList.appendChild(
 createRequestCard(request,false)
@@ -3565,7 +3724,7 @@ createRequestCard(request,false)
 
 
 /* =========================================
-   FULL RESCUE DASHBOARD
+   FULL DASHBOARD
 ========================================= */
 
 function renderRescueDashboard(){
@@ -3607,11 +3766,11 @@ navigator.geolocation.getCurrentPosition(
 
 position=>{
 
-userLat=
-position.coords.latitude;
+userLat=position.coords.latitude;
 
-userLng=
-position.coords.longitude;
+userLng=position.coords.longitude;
+
+locationReady=true;
 
 finishSOS();
 
@@ -3629,58 +3788,96 @@ return;
 
 }
 
-
 finishSOS();
 
 };
 
 
+/* =========================================
+   FINISH SOS
+========================================= */
+
 function finishSOS(){
 
-const data=
-getPriorityData();
+const data=getPriorityData();
+
+addLiveSOS(data.priority);
 
 
-addLiveSOS(
-data.priority
-);
+/*
+   Open Rescue Dashboard automatically.
+*/
+
+openScreen("rescue");
+
+renderRescueDashboard();
+
+
+/*
+   Highlight newest SOS.
+*/
+
+setTimeout(()=>{
+
+const cards=
+document.querySelectorAll(".request");
+
+cards.forEach(card=>{
+card.classList.remove("newRequest");
+});
+
+if(cards.length>0){
+
+cards[0].classList.add("newRequest");
+
+cards[0].scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+
+}
+
+},150);
+
+
+/*
+   Keep alert active.
+*/
+
+navAlert.classList.add("show");
+
+liveStatus.classList.add("alert");
+
+liveStatus.textContent="● NEW SOS";
+
+
+setTimeout(()=>{
+
+liveStatus.classList.remove("alert");
+
+liveStatus.textContent="● LIVE";
+
+},7000);
 
 
 let locationMessage=
-
 userLat!==null
-
 ?
-
 "📍 Your GPS location was attached."
-
 :
-
 "⚠️ GPS location was unavailable.";
 
 
 alert(
 
 "🚨 SOS SENT!\n\n"+
-
-"Priority: "+
-data.priority+
-
-"\nPeople: "+
-peopleCount+
-
+"Priority: "+data.priority+
+"\nPeople: "+peopleCount+
 "\n\n"+
-
 locationMessage+
-
 "\n\nRescue dashboard updated."
 
 );
-
-
-openScreen("rescue");
-
-renderRescueDashboard();
 
 }
 
@@ -3704,31 +3901,56 @@ getLocation();
 
 function assignRequest(button,id){
 
-button.textContent=
-"✓ ASSIGNED";
-
-button.classList.add("assigned");
-
-button.disabled=true;
-
-
-/* Mark matching request */
-
 const request=
 sosRequests.find(
 item=>item.id===id
 );
 
-if(request){
+
+if(!request) return;
+
 
 request.assigned=true;
+
+request.status="RESCUE ASSIGNED";
+
+
+if(!request.rescueStartTime){
+
+request.rescueStartTime=Date.now();
+
+}
+
 
 localStorage.setItem(
 "floodhelp_sos",
 JSON.stringify(sosRequests)
 );
 
-}
+
+button.textContent="✓ ASSIGNED";
+
+button.classList.add("assigned");
+
+button.disabled=true;
+
+
+renderRescueDashboard();
+
+
+liveStatus.classList.add("alert");
+
+liveStatus.textContent=
+"● RESCUE ASSIGNED";
+
+
+setTimeout(()=>{
+
+liveStatus.classList.remove("alert");
+
+liveStatus.textContent="● LIVE";
+
+},4000);
 
 }
 
@@ -3741,52 +3963,44 @@ item=>item.id===id
 );
 
 
-if(!request){
-return;
-}
+if(!request) return;
+
+
+const rescue=
+getRescueSimulation(request);
 
 
 let location=
-
 request.lat!==null
-
 ?
-
 "\n📍 Location attached"
-
 :
-
 "\n⚠️ Location unavailable";
-
-
-let distance=
-
-getRescueDistance(request);
 
 
 alert(
 
 request.id+
-
 "\n\n"+
-
 request.title+
-
 "\n\n"+
-
 "Priority: "+
 request.priority+
-
 "\n"+
-
 "People: "+
 request.people+
-
 "\n"+
-
+"Status: "+
+rescue.status+
+"\n"+
+"Boat distance: "+
+rescue.distance.toFixed(1)+" km"+
+"\n"+
+"ETA: ~"+
+rescue.eta+" min"+
+"\n"+
 "Distance: "+
-distance+
-
+getRescueDistance(request)+
 location
 
 );
@@ -3802,9 +4016,7 @@ item=>item.id===id
 );
 
 
-if(!request){
-return;
-}
+if(!request) return;
 
 
 if(
@@ -3828,9 +4040,7 @@ initializeMap();
 
 setTimeout(()=>{
 
-if(!map){
-return;
-}
+if(!map) return;
 
 
 map.setView(
@@ -3848,25 +4058,15 @@ sosMarkers.find(marker=>{
 const position=
 marker.getLatLng();
 
-
 return(
-
-Math.abs(
-position.lat-request.lat
-)<0.000001 &&
-
-Math.abs(
-position.lng-request.lng
-)<0.000001
-
+Math.abs(position.lat-request.lat)<0.000001 &&
+Math.abs(position.lng-request.lng)<0.000001
 );
 
 });
 
 
-if(marker){
-marker.openPopup();
-}
+if(marker) marker.openPopup();
 
 },500);
 
@@ -3874,7 +4074,7 @@ marker.openPopup();
 
 
 /* =========================================
-   CAMP MAP ROUTE
+   CAMP ROUTE
 ========================================= */
 
 function openRoute(name){
@@ -3884,10 +4084,7 @@ camps.find(
 item=>item.name===name
 );
 
-
-if(camp){
-routeToCamp(camp);
-}
+if(camp) routeToCamp(camp);
 
 }
 
@@ -3896,31 +4093,20 @@ routeToCamp(camp);
    BOAT
 ========================================= */
 
-/*
-   DEMONSTRATION BOAT STATE
-*/
-
 let boatState="READY";
 
 
 function getActiveBoatRequest(){
 
-if(sosRequests.length===0){
+if(sosRequests.length===0)
 return null;
-}
 
-
-/*
-   Sort by priority first
-*/
 
 const order={
-
 CRITICAL:1,
 HIGH:2,
 MEDIUM:3,
 LOW:4
-
 };
 
 
@@ -3933,11 +4119,8 @@ const priorityDifference=
 (order[a.priority]||5)-
 (order[b.priority]||5);
 
-
-if(priorityDifference!==0){
+if(priorityDifference!==0)
 return priorityDifference;
-}
-
 
 return sosRequests.indexOf(a)-
 sosRequests.indexOf(b);
@@ -3965,30 +4148,23 @@ boatActive.textContent="1";
 
 boatReady.textContent="0";
 
-boatLiveStatus.textContent=
-"● ON RESCUE";
+boatLiveStatus.textContent="● ON RESCUE";
 
-}
-
-else if(boatState==="RETURNING"){
+}else if(boatState==="RETURNING"){
 
 boatActive.textContent="1";
 
 boatReady.textContent="0";
 
-boatLiveStatus.textContent=
-"● RETURNING";
+boatLiveStatus.textContent="● RETURNING";
 
-}
-
-else{
+}else{
 
 boatActive.textContent="0";
 
 boatReady.textContent="1";
 
-boatLiveStatus.textContent=
-"● READY";
+boatLiveStatus.textContent="● READY";
 
 }
 
@@ -4025,12 +4201,14 @@ When an SOS is received, the highest-priority request will appear here.
 boatMissionStatus.textContent=
 "No active mission";
 
-}
-
-else{
+}else{
 
 const distance=
 getRescueDistance(activeRequest);
+
+
+const rescue=
+getRescueSimulation(activeRequest);
 
 
 let callNumber=
@@ -4075,6 +4253,21 @@ ${distance}
 
 <br>
 
+🚤 Boat status:
+<strong>${rescue.status}</strong>
+
+<br>
+
+🚤 Boat distance:
+<strong>${rescue.distance.toFixed(1)} km</strong>
+
+<br>
+
+⏱️ ETA:
+<strong>~${rescue.eta} min</strong>
+
+<br>
+
 🕐 SOS received at ${activeRequest.time}
 
 </div>
@@ -4114,32 +4307,28 @@ ${Number(activeRequest.lng).toFixed(5)}
 
 <button
 class="primaryBoat"
-onclick="boatGoToRescue('${activeRequest.id}')"
->
+onclick="boatGoToRescue('${activeRequest.id}')">
 🗺️ GO TO RESCUE
 </button>
 
 
 <a
 class="callBoat"
-href="tel:${callNumber}"
->
+href="tel:${callNumber}">
 📞 CALL RESCUER
 </a>
 
 
 <button
 class="secondaryBoat"
-onclick="launchBoat('${activeRequest.id}')"
->
+onclick="launchBoat('${activeRequest.id}')">
 🚤 LAUNCH RESCUE
 </button>
 
 
 <button
 class="secondaryBoat"
-onclick="returnBoat()"
->
+onclick="returnBoat()">
 🏕️ RETURN TO CAMP
 </button>
 
@@ -4149,7 +4338,6 @@ onclick="returnBoat()"
 
 `;
 
-
 boatMissionStatus.textContent=
 activeRequest.id;
 
@@ -4158,37 +4346,27 @@ activeRequest.id;
 
 if(boatState==="READY"){
 
-boatCurrentStatus.textContent=
-"READY";
+boatCurrentStatus.textContent="READY";
 
-boatCurrentStatus.className=
-"statusReady";
+boatCurrentStatus.className="statusReady";
 
 boatCurrentLocation.textContent=
 "Waiting at camp";
 
-}
+}else if(boatState==="ACTIVE"){
 
-else if(boatState==="ACTIVE"){
+boatCurrentStatus.textContent="ON RESCUE";
 
-boatCurrentStatus.textContent=
-"ON RESCUE";
-
-boatCurrentStatus.className=
-"statusActive";
+boatCurrentStatus.className="statusActive";
 
 boatCurrentLocation.textContent=
 "Travelling to SOS";
 
-}
+}else{
 
-else{
+boatCurrentStatus.textContent="RETURNING";
 
-boatCurrentStatus.textContent=
-"RETURNING";
-
-boatCurrentStatus.className=
-"statusReturning";
+boatCurrentStatus.className="statusReturning";
 
 boatCurrentLocation.textContent=
 "Returning to camp";
@@ -4206,9 +4384,7 @@ item=>item.id===id
 );
 
 
-if(!request){
-return;
-}
+if(!request) return;
 
 
 if(
@@ -4232,7 +4408,8 @@ initializeMap();
 
 setTimeout(()=>{
 
-if(map){
+if(!map) return;
+
 
 map.setView(
 [
@@ -4242,6 +4419,7 @@ request.lng
 16
 );
 
+
 const marker=
 sosMarkers.find(marker=>{
 
@@ -4249,29 +4427,23 @@ const position=
 marker.getLatLng();
 
 return(
-
-Math.abs(
-position.lat-request.lat
-)<0.000001 &&
-
-Math.abs(
-position.lng-request.lng
-)<0.000001
-
+Math.abs(position.lat-request.lat)<0.000001 &&
+Math.abs(position.lng-request.lng)<0.000001
 );
 
 });
 
-if(marker){
-marker.openPopup();
-}
 
-}
+if(marker) marker.openPopup();
 
 },500);
 
 }
 
+
+/* =========================================
+   LAUNCH BOAT
+========================================= */
 
 function launchBoat(id){
 
@@ -4281,9 +4453,7 @@ item=>item.id===id
 );
 
 
-if(!request){
-return;
-}
+if(!request) return;
 
 
 if(
@@ -4303,42 +4473,62 @@ return;
 boatState="ACTIVE";
 
 
+if(!request.rescueStartTime){
+
+request.rescueStartTime=Date.now();
+
+}
+
+
+request.assigned=true;
+
+request.status="BOAT ON THE WAY";
+
+
+localStorage.setItem(
+"floodhelp_sos",
+JSON.stringify(sosRequests)
+);
+
+
 renderBoatPage();
+
+renderRescueDashboard();
+
+
+liveStatus.classList.add("alert");
+
+liveStatus.textContent=
+"● BOAT ON THE WAY";
 
 
 alert(
 
 "🚤 RESCUE BOAT LAUNCHED\n\n"+
-
 request.id+
-
 "\n"+
-
 request.title+
-
 "\n\n"+
-
 "Priority: "+
 request.priority+
-
 "\n"+
-
 "People: "+
 request.people+
-
 "\n\n"+
-
-"Boat is travelling toward the rescue location."
+"🚤 Boat is travelling toward the rescue location."
 
 );
 
 }
 
 
+/* =========================================
+   RETURN BOAT
+========================================= */
+
 function returnBoat(){
 
 boatState="RETURNING";
-
 
 renderBoatPage();
 
@@ -4364,6 +4554,47 @@ alert(
 ========================================= */
 
 function restoreRequests(){
+
+/*
+   Repair old SOS records created by
+   previous versions of FloodHelp.
+*/
+
+sosRequests.forEach(request=>{
+
+if(request.completed===undefined)
+request.completed=false;
+
+if(request.assigned===undefined)
+request.assigned=false;
+
+if(!request.rescueStartTime){
+
+request.rescueStartTime=
+Date.now();
+
+}
+
+if(!request.status)
+request.status="SOS SENT";
+
+if(request.progress===undefined)
+request.progress=0;
+
+if(request.boatDistance===undefined)
+request.boatDistance=3.0;
+
+if(request.eta===undefined)
+request.eta=10;
+
+});
+
+
+localStorage.setItem(
+"floodhelp_sos",
+JSON.stringify(sosRequests)
+);
+
 
 renderRescueDashboard();
 
