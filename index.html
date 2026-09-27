@@ -1419,7 +1419,6 @@ Everything else is optional.
 
 </div>
 
-
 <!-- SAVED AREA -->
 <div class="areaBox">
 
@@ -1671,7 +1670,6 @@ RESCUE CONTROL
 Live SOS requests are automatically prioritised and linked to their location.
 </p>
 
-
 <!-- SAVED AREA -->
 <div class="filterBox">
 
@@ -1918,21 +1916,14 @@ CANCEL
 </div>
 
 
-<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database-compat.js"></script>
 
-
 <script>
 
-/* =========================================================
-   FLOODHELP + FIREBASE
-   ========================================================= */
-
-const firebaseConfig = {
+const firebaseConfig={
  apiKey:"AIzaSyClMo6MhjKULCrYIoG_hLnDEe5M-2sC_A0",
  authDomain:"floodhelp-bacd2.firebaseapp.com",
  projectId:"floodhelp-bacd2",
@@ -1949,13 +1940,11 @@ try{
  firebase.initializeApp(firebaseConfig);
  firebaseDB=firebase.database();
  firebaseReady=true;
- console.log("🔥 Firebase connected");
 }catch(error){
- console.error("Firebase error:",error);
+ console.error(error);
 }
 
 const $=id=>document.getElementById(id);
-
 const screens=document.querySelectorAll(".screen");
 
 function openScreen(id){
@@ -1964,8 +1953,7 @@ function openScreen(id){
 
  $(id).classList.add("active");
 
- document
- .querySelectorAll(".nav button")
+ document.querySelectorAll(".nav button")
  .forEach(x=>x.classList.remove("active"));
 
  if(id==="home")navHome.classList.add("active");
@@ -1988,13 +1976,11 @@ function openScreen(id){
 
  if(id==="mapScreen"){
   initializeMap();
-
   setTimeout(()=>{
    if(map)map.invalidateSize();
   },300);
  }
 }
-
 
 /* NAV */
 
@@ -2040,7 +2026,6 @@ findCampBtn.onclick=()=>{
  getLocation();
 };
 
-
 /* CONNECTION */
 
 function updateConnection(){
@@ -2061,19 +2046,14 @@ function updateConnection(){
    firebaseReady
    ?"LIVE — Firebase connected"
    :"Offline-ready";
-
  }
 }
 
 addEventListener("online",updateConnection);
 addEventListener("offline",updateConnection);
-
 updateConnection();
 
-
-/* =========================================================
-   SOS
-   ========================================================= */
+/* SOS */
 
 let emergencyType="";
 let peopleCount=1;
@@ -2085,14 +2065,11 @@ let needs={
  special:false
 };
 
-document
-.querySelectorAll(".emergency")
-.forEach(b=>{
+document.querySelectorAll(".emergency").forEach(b=>{
 
  b.onclick=()=>{
 
-  document
-  .querySelectorAll(".emergency")
+  document.querySelectorAll(".emergency")
   .forEach(x=>x.classList.remove("selected"));
 
   b.classList.add("selected");
@@ -2100,11 +2077,8 @@ document
   emergencyType=b.dataset.type;
 
   calculatePriority();
-
  };
-
 });
-
 
 plus.onclick=()=>{
 
@@ -2113,9 +2087,7 @@ plus.onclick=()=>{
  people.textContent=peopleCount;
 
  calculatePriority();
-
 };
-
 
 minus.onclick=()=>{
 
@@ -2124,13 +2096,9 @@ minus.onclick=()=>{
  people.textContent=peopleCount;
 
  calculatePriority();
-
 };
 
-
-document
-.querySelectorAll(".optional")
-.forEach(b=>{
+document.querySelectorAll(".optional").forEach(b=>{
 
  b.onclick=()=>{
 
@@ -2141,18 +2109,12 @@ document
   b.classList.toggle("selected",needs[o]);
 
   calculatePriority();
-
  };
-
 });
-
 
 function getPriorityData(){
 
- let v=
- Object.values(needs)
- .filter(Boolean)
- .length;
+ let v=Object.values(needs).filter(Boolean).length;
 
  let p="MEDIUM";
 
@@ -2176,18 +2138,16 @@ function getPriorityData(){
  }
 
  let c=
- p==="CRITICAL"
- ?peopleCount
- :(Object.values(needs).some(Boolean)?1:0);
+  p==="CRITICAL"
+  ?peopleCount
+  :(Object.values(needs).some(Boolean)?1:0);
 
  return{
   priority:p,
   vulnerable:v,
   critical:c
  };
-
 }
-
 
 function calculatePriority(){
 
@@ -2197,8 +2157,7 @@ function calculatePriority(){
 
  priority.classList.add("show");
 
- badge.className=
- "badge "+d.priority.toLowerCase();
+ badge.className="badge "+d.priority.toLowerCase();
 
  badge.textContent=d.priority;
 
@@ -2209,18 +2168,14 @@ function calculatePriority(){
  vulnerableStat.textContent=d.vulnerable;
 
  priorityTitle.textContent=
- d.priority==="CRITICAL"
- ?"Immediate rescue recommended"
- :d.priority==="HIGH"
- ?"High priority rescue"
- :"Response required";
-
+  d.priority==="CRITICAL"
+  ?"Immediate rescue recommended"
+  :d.priority==="HIGH"
+  ?"High priority rescue"
+  :"Response required";
 }
 
-
-/* =========================================================
-   LOCATION
-   ========================================================= */
+/* LOCATION */
 
 let userLat=null;
 let userLng=null;
@@ -2228,16 +2183,13 @@ let map=null;
 let userMarker=null;
 let sosMarkers=[];
 
-
 function getLocation(){
 
  if(!navigator.geolocation){
 
-  homeLocation.textContent=
-  "📍 Location unavailable";
+  homeLocation.textContent="📍 Location unavailable";
 
   return;
-
  }
 
  navigator.geolocation.getCurrentPosition(
@@ -2247,19 +2199,13 @@ function getLocation(){
    userLat=p.coords.latitude;
    userLng=p.coords.longitude;
 
-   homeLocation.textContent=
-   "📍 Location detected";
-
+   homeLocation.textContent="📍 Location detected";
    homeLocation.classList.add("ok");
 
-   sosLocation.textContent=
-   "📍 Location detected";
-
+   sosLocation.textContent="📍 Location detected";
    sosLocation.classList.add("ok");
 
-   campLocation.textContent=
-   "📍 Your location detected";
-
+   campLocation.textContent="📍 Your location detected";
    campLocation.classList.add("ok");
 
    updateCamps();
@@ -2268,20 +2214,14 @@ function getLocation(){
    renderBoatPage();
 
    if(map)updateMapLocation();
-
   },
 
   ()=>{
-
    sosLocation.textContent=
    "📍 Location permission unavailable.";
-
   }
-
  );
-
 }
-
 
 function distanceKm(a,b,c,d){
 
@@ -2300,16 +2240,11 @@ function distanceKm(a,b,c,d){
   Math.sqrt(z),
   Math.sqrt(1-z)
  );
-
 }
 
-
-/* =========================================================
-   CAMPS
-   ========================================================= */
+/* CAMPS */
 
 const camps=[
-
  {
   name:"Community Relief Camp",
   lat:11.073,
@@ -2319,7 +2254,6 @@ const camps=[
   food:true,
   medicine:true
  },
-
  {
   name:"Emergency Shelter Centre",
   lat:11.079,
@@ -2329,7 +2263,6 @@ const camps=[
   food:true,
   medicine:false
  },
-
  {
   name:"Safe Haven Camp",
   lat:11.067,
@@ -2339,9 +2272,7 @@ const camps=[
   food:false,
   medicine:true
  }
-
 ];
-
 
 function updateCamps(){
 
@@ -2351,39 +2282,26 @@ function updateCamps(){
 
   list.sort(
    (a,b)=>
-   distanceKm(
-    userLat,userLng,a.lat,a.lng
-   )
-   -
-   distanceKm(
-    userLat,userLng,b.lat,b.lng
-   )
+   distanceKm(userLat,userLng,a.lat,a.lng)-
+   distanceKm(userLat,userLng,b.lat,b.lng)
   );
-
  }
 
  let b=list[0];
 
  bestName.textContent=b.name;
-
- bestVacancy.textContent=
- b.vacancy+"%";
+ bestVacancy.textContent=b.vacancy+"%";
 
  if(userLat!==null){
 
   bestDistance.textContent=
-  "📏 "+
-  distanceKm(
-   userLat,userLng,b.lat,b.lng
-  ).toFixed(1)+
-  " km away";
-
+   "📏 "+
+   distanceKm(userLat,userLng,b.lat,b.lng).toFixed(1)+
+   " km away";
  }
 
  renderCamps(list);
-
 }
-
 
 function renderCamps(list=camps){
 
@@ -2392,13 +2310,9 @@ function renderCamps(list=camps){
  list.forEach(c=>{
 
   let d=
-  userLat!==null
-  ?
-  distanceKm(
-   userLat,userLng,c.lat,c.lng
-  ).toFixed(1)+" km"
-  :
-  "Distance unavailable";
+   userLat!==null
+   ?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km"
+   :"Distance unavailable";
 
   let x=document.createElement("div");
 
@@ -2419,68 +2333,45 @@ function renderCamps(list=camps){
   <button>
   🛣️ ROUTE TO CAMP
   </button>
-
   `;
 
-  x.querySelector("button").onclick=
-  ()=>routeToCamp(c);
+  x.querySelector("button").onclick=()=>routeToCamp(c);
 
   campList.appendChild(x);
-
  });
-
 }
-
 
 function routeToCamp(c){
 
  if(userLat===null){
 
   alert("Please allow location access first.");
-
   getLocation();
-
   return;
-
  }
 
  window.open(
   `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=walking`,
   "_blank"
  );
-
 }
-
 
 bestRoute.onclick=()=>{
 
- let c=
- [...camps].sort(
+ let c=[...camps].sort(
   (a,b)=>
   (userLat===null?0:
-   distanceKm(
-    userLat,userLng,a.lat,a.lng
-   )
-  )
-  -
+   distanceKm(userLat,userLng,a.lat,a.lng))-
   (userLat===null?0:
-   distanceKm(
-    userLat,userLng,b.lat,b.lng
-   )
-  )
+   distanceKm(userLat,userLng,b.lat,b.lng))
  )[0];
 
  routeToCamp(c);
-
 };
 
-
-/* =========================================================
-   RESCUERS
-   ========================================================= */
+/* RESCUERS */
 
 const rescuers=[
-
  {
   id:"demo1",
   name:"Rescue Unit 01",
@@ -2490,7 +2381,6 @@ const rescuers=[
   status:"AVAILABLE",
   method:"vehicle"
  },
-
  {
   id:"demo2",
   name:"Rescue Unit 02",
@@ -2500,7 +2390,6 @@ const rescuers=[
   status:"AVAILABLE",
   method:"vehicle"
  },
-
  {
   id:"demo3",
   name:"Rescue Unit 03",
@@ -2510,7 +2399,6 @@ const rescuers=[
   status:"AVAILABLE",
   method:"foot"
  },
-
  {
   id:"demo4",
   name:"Rescue Boat Team",
@@ -2520,38 +2408,26 @@ const rescuers=[
   status:"AVAILABLE",
   method:"boat"
  }
-
 ];
 
-
 let registeredRescuers=
-JSON.parse(
- localStorage.getItem(
-  "floodhelp_registered_rescuers"
- )||"[]"
-);
-
+ JSON.parse(
+  localStorage.getItem(
+   "floodhelp_registered_rescuers"
+  )||"[]"
+ );
 
 function allRescuers(){
-
- return[
-  ...rescuers,
-  ...registeredRescuers
- ];
-
+ return[...rescuers,...registeredRescuers];
 }
 
-
 function methodName(m){
-
  return m==="boat"
  ?"🚤 Boat"
  :m==="vehicle"
  ?"🚑 Vehicle"
  :"🚶 On Foot";
-
 }
-
 
 function getRescuerDistance(r){
 
@@ -2563,9 +2439,7 @@ function getRescuerDistance(r){
    r.lat,
    r.lng
   ).toFixed(1)+" km away";
-
 }
-
 
 function renderRescuers(){
 
@@ -2613,15 +2487,11 @@ function renderRescuers(){
   </button>
 
   </div>
-
   `;
 
   rescuerList.appendChild(c);
-
  });
-
 }
-
 
 function locateRescuer(i){
 
@@ -2630,23 +2500,17 @@ function locateRescuer(i){
  if(!r)return;
 
  openScreen("mapScreen");
-
  initializeMap();
 
  setTimeout(()=>{
 
   if(map){
 
-   map.setView(
-    [r.lat,r.lng],
-    16
-   );
+   map.setView([r.lat,r.lng],16);
 
    L.marker(
     [r.lat,r.lng],
-    {
-     icon:createCircleIcon("you")
-    }
+    {icon:createCircleIcon("you")}
    )
    .addTo(map)
    .bindPopup(
@@ -2655,21 +2519,15 @@ function locateRescuer(i){
     <br>📞 ${r.phone}`
    )
    .openPopup();
-
   }
 
  },400);
-
 }
 
-
-/* =========================================================
-   RESCUER REGISTRATION
-   ========================================================= */
+/* RESCUER REGISTRATION */
 
 let newRescuerLat=null;
 let newRescuerLng=null;
-
 
 beRescuerBtn.onclick=()=>{
 
@@ -2683,15 +2541,11 @@ beRescuerBtn.onclick=()=>{
 
   rescuerNameInput.value=u.name;
   rescuerPhoneInput.value=u.mobile;
-
  }
-
 };
-
 
 closeRescuerBtn.onclick=()=>
  rescuerOverlay.classList.add("hidden");
-
 
 shareRescuerLocationBtn.onclick=()=>{
 
@@ -2701,7 +2555,6 @@ shareRescuerLocationBtn.onclick=()=>{
   "Location unavailable.";
 
   return;
-
  }
 
  rescuerLocationStatus.textContent=
@@ -2711,49 +2564,35 @@ shareRescuerLocationBtn.onclick=()=>{
 
   p=>{
 
-   newRescuerLat=
-   p.coords.latitude;
-
-   newRescuerLng=
-   p.coords.longitude;
+   newRescuerLat=p.coords.latitude;
+   newRescuerLng=p.coords.longitude;
 
    rescuerLocationStatus.textContent=
    "📍 Location shared successfully";
-
   },
 
   ()=>{
-
    rescuerLocationStatus.textContent=
    "⚠️ Location permission denied";
-
   }
-
  );
-
 };
-
 
 becomeRescuerConfirm.onclick=()=>{
 
- let name=
- rescuerNameInput.value.trim();
+ let name=rescuerNameInput.value.trim();
 
  let phone=
  rescuerPhoneInput.value.replace(/\D/g,"");
 
- let method=
- rescuerMethodInput.value;
+ let method=rescuerMethodInput.value;
 
  rescuerError.textContent="";
 
  if(!name){
 
-  rescuerError.textContent=
-  "Enter your name.";
-
+  rescuerError.textContent="Enter your name.";
   return;
-
  }
 
  if(phone.length<10){
@@ -2762,7 +2601,6 @@ becomeRescuerConfirm.onclick=()=>{
   "Enter a valid phone number.";
 
   return;
-
  }
 
  if(newRescuerLat===null){
@@ -2771,11 +2609,9 @@ becomeRescuerConfirm.onclick=()=>{
   "Please share your location first.";
 
   return;
-
  }
 
- let r=
- registeredRescuers.find(
+ let r=registeredRescuers.find(
   x=>x.phone===phone
  );
 
@@ -2792,28 +2628,19 @@ becomeRescuerConfirm.onclick=()=>{
    }
   );
 
- }
-
- else{
+ }else{
 
   registeredRescuers.push({
 
    id:"R"+Date.now(),
-
    name,
-
    phone,
-
    method,
-
    lat:newRescuerLat,
-
    lng:newRescuerLng,
-
    status:"AVAILABLE"
 
   });
-
  }
 
  localStorage.setItem(
@@ -2828,29 +2655,23 @@ becomeRescuerConfirm.onclick=()=>{
  alert(
   "🚑 You are now AVAILABLE as a rescuer!"
  );
-
 };
 
-
-/* =========================================================
-   SOS DATA
-   ========================================================= */
+/* SOS DATA */
 
 let sosNumber=1043;
 
 let sosRequests=
-JSON.parse(
- localStorage.getItem(
-  "floodhelp_sos"
- )||"[]"
-);
+ JSON.parse(
+  localStorage.getItem(
+   "floodhelp_sos"
+  )||"[]"
+ );
 
 const RESCUE_DEMO_DURATION=30000;
 
 let boatState="READY";
-
 let completedReturnTimers={};
-
 
 function getStoredUser(){
 
@@ -2865,15 +2686,10 @@ function getStoredUser(){
  }catch(e){
 
   return null;
-
  }
-
 }
 
-
-/* =========================================================
-   USER AREA
-   ========================================================= */
+/* USER AREA */
 
 function getUserArea(){
 
@@ -2888,9 +2704,7 @@ function getUserArea(){
  );
 
  return emergencyArea||"";
-
 }
-
 
 function updateSavedAreaDisplays(){
 
@@ -2899,37 +2713,32 @@ function updateSavedAreaDisplays(){
  if(sosAreaDisplay){
 
   sosAreaDisplay.textContent=
-  area||"Area not selected";
-
+   area||"Area not selected";
  }
 
  if(rescueAreaDisplay){
 
   rescueAreaDisplay.textContent=
-  area||"Area not selected";
-
+   area||"Area not selected";
  }
 
  if(filterStatus){
 
   filterStatus.textContent=
-  area
-  ?"Showing SOS requests from "+area+"."
-  :"No area selected.";
-
+   area
+   ?"Showing SOS requests from "+area+"."
+   :"No area selected.";
  }
-
 }
-
 
 function requester(){
 
  let u=getStoredUser();
 
  let s=
- localStorage.getItem(
-  "floodhelp_logged_in"
- );
+  localStorage.getItem(
+   "floodhelp_logged_in"
+  );
 
  return{
 
@@ -2942,60 +2751,10 @@ function requester(){
   s==="true"&&u
   ?u.mobile
   :""
-
  };
-
 }
 
-
-/* =========================================================
-   FIREBASE SAVE
-   ========================================================= */
-
-function saveSOSFirebase(r){
-
- if(!firebaseReady||!firebaseDB){
-
-  console.warn(
-   "Firebase unavailable"
-  );
-
-  return null;
-
- }
-
- try{
-
-  let key=
-  firebaseDB
-  .ref("sosRequests")
-  .push().key;
-
-  r.firebaseKey=key;
-
-  firebaseDB
-  .ref("sosRequests/"+key)
-  .set(r);
-
-  return key;
-
- }catch(error){
-
-  console.error(
-   "Firebase SOS error:",
-   error
-  );
-
-  return null;
-
- }
-
-}
-
-
-/* =========================================================
-   CREATE SOS
-   ========================================================= */
+/* CREATE SOS */
 
 function addLiveSOS(priority){
 
@@ -3003,152 +2762,80 @@ function addLiveSOS(priority){
 
  let names={
 
-  trapped:
-  "🌊 Person trapped by floodwater",
-
-  medical:
-  "🏥 Medical emergency",
-
-  rescue:
-  "👥 People need rescue",
-
-  home:
-  "🏠 Flooded home"
+  trapped:"🌊 Person trapped by floodwater",
+  medical:"🏥 Medical emergency",
+  rescue:"👥 People need rescue",
+  home:"🏠 Flooded home"
 
  };
 
  let v=[];
 
- if(needs.children)
- v.push("👶 Child");
-
- if(needs.elderly)
- v.push("👴 Elderly");
-
- if(needs.medical)
- v.push("🏥 Medical");
-
- if(needs.special)
- v.push("♿ Special assistance");
+ if(needs.children)v.push("👶 Child");
+ if(needs.elderly)v.push("👴 Elderly");
+ if(needs.medical)v.push("🏥 Medical");
+ if(needs.special)v.push("♿ Special assistance");
 
  let u=requester();
 
- let selectedArea=
- getUserArea();
+ let selectedArea=getUserArea();
 
  let r={
 
   id:"SOS #"+sosNumber,
-
   priority,
-
-  title:
-  names[emergencyType]||
-  "🆘 Emergency assistance required",
-
+  title:names[emergencyType]||
+   "🆘 Emergency assistance required",
   people:peopleCount,
-
-  vulnerable:
-  v.length
-  ?" • "+v.join(", ")
-  :"",
-
+  vulnerable:v.length?" • "+v.join(", "):"",
   lat:userLat,
-
   lng:userLng,
-
   area:selectedArea,
-
-  time:
-  new Date().toLocaleTimeString(),
-
+  time:new Date().toLocaleTimeString(),
   timestamp:Date.now(),
-
   status:"SOS SENT",
-
   rescueStartTime:Date.now(),
-
   progress:0,
-
   boatDistance:3,
-
   eta:10,
-
   assigned:false,
-
   completed:false,
-
   requesterName:u.s,
-
   requesterPhone:u.p
-
  };
-
-
- /* LOCAL CACHE */
 
  sosRequests.unshift(r);
 
  saveSOS();
 
-
- /* FIREBASE */
-
  if(firebaseReady){
 
   let key=
-  firebaseDB
-  .ref("sosRequests")
-  .push()
-  .key;
+   firebaseDB
+   .ref("sosRequests")
+   .push().key;
 
   r.firebaseKey=key;
 
   firebaseDB
   .ref("sosRequests/"+key)
   .set(r)
-  .then(()=>{
-
-   console.log(
-    "🔥 SOS uploaded to Firebase:",
-    key
-   );
-
-  })
-  .catch(error=>{
-
-   console.error(
-    "Firebase upload failed:",
-    error
-   );
-
-  });
-
+  .catch(error=>console.error(error));
  }
-
-
- /* UI ALERT */
 
  navAlert.classList.add("show");
 
  liveStatus.classList.add("alert");
 
- liveStatus.textContent=
- "● NEW SOS";
+ liveStatus.textContent="● NEW SOS";
 
  setTimeout(()=>{
 
   liveStatus.classList.remove("alert");
-
-  liveStatus.textContent=
-  "● LIVE";
+  liveStatus.textContent="● LIVE";
 
  },7000);
-
 }
-
-
-/* LOCAL CACHE */
 
 function saveSOS(){
 
@@ -3156,28 +2843,15 @@ function saveSOS(){
   "floodhelp_sos",
   JSON.stringify(sosRequests)
  );
-
 }
 
-
-/* =========================================================
-   FIREBASE LIVE LISTENER
-   ========================================================= */
+/* FIREBASE LISTENER */
 
 function startFirebaseListener(){
 
- if(!firebaseReady){
+ if(!firebaseReady)return;
 
-  console.log(
-   "Firebase listener not started"
-  );
-
-  return;
-
- }
-
- const sosRef=
- firebaseDB.ref("sosRequests");
+ const sosRef=firebaseDB.ref("sosRequests");
 
  sosRef.on("value",snapshot=>{
 
@@ -3194,39 +2868,29 @@ function startFirebaseListener(){
    r.firebaseKey=key;
 
    incoming.push(r);
-
   });
-
 
   incoming.sort(
    (a,b)=>
-   Number(b.timestamp||0)
-   -
+   Number(b.timestamp||0)-
    Number(a.timestamp||0)
   );
-
 
   sosRequests=incoming;
 
   saveSOS();
 
-
   navAlert.classList.add("show");
 
   liveStatus.classList.add("alert");
-
-  liveStatus.textContent=
-  "● LIVE UPDATE";
+  liveStatus.textContent="● LIVE UPDATE";
 
   setTimeout(()=>{
 
    liveStatus.classList.remove("alert");
-
-   liveStatus.textContent=
-   "● LIVE";
+   liveStatus.textContent="● LIVE";
 
   },3000);
-
 
   updateRescueCounts();
   updateDashboardSummary();
@@ -3237,16 +2901,11 @@ function startFirebaseListener(){
   updateAllSOSMarkers();
 
  });
-
 }
-
 
 startFirebaseListener();
 
-
-/* =========================================================
-   FIREBASE UPDATE
-   ========================================================= */
+/* FIREBASE UPDATE */
 
 function updateSOSFirebase(r){
 
@@ -3254,78 +2913,46 @@ function updateSOSFirebase(r){
   !firebaseReady||
   !firebaseDB||
   !r.firebaseKey
- ){
-  return;
- }
+ )return;
 
  firebaseDB
- .ref(
-  "sosRequests/"+r.firebaseKey
- )
+ .ref("sosRequests/"+r.firebaseKey)
  .update({
 
   status:r.status,
-
   assigned:r.assigned,
-
   completed:r.completed,
-
-  assignedRescuerId:
-  r.assignedRescuerId||null,
-
-  assignedRescuerName:
-  r.assignedRescuerName||null,
-
-  assignedRescuerPhone:
-  r.assignedRescuerPhone||null,
-
-  assignedRescuerMethod:
-  r.assignedRescuerMethod||null,
-
-  rescueStartTime:
-  r.rescueStartTime||Date.now()
+  assignedRescuerId:r.assignedRescuerId||null,
+  assignedRescuerName:r.assignedRescuerName||null,
+  assignedRescuerPhone:r.assignedRescuerPhone||null,
+  assignedRescuerMethod:r.assignedRescuerMethod||null,
+  rescueStartTime:r.rescueStartTime||Date.now()
 
  })
- .catch(error=>
-  console.error(
-   "Firebase update error:",
-   error
-  )
- );
-
+ .catch(error=>console.error(error));
 }
 
-
-/* =========================================================
-   SIMULATION
-   ========================================================= */
+/* SIMULATION */
 
 function startRescueSimulation(r){
 
  if(!r.rescueStartTime){
 
-  r.rescueStartTime=
-  Date.now();
-
+  r.rescueStartTime=Date.now();
   r.status="SOS SENT";
   r.progress=0;
   r.boatDistance=3;
   r.eta=10;
   r.completed=false;
   r.assigned=false;
-
  }
-
 }
-
 
 function releaseRescuer(r){
 
- if(!r.assignedRescuerId)
- return;
+ if(!r.assignedRescuerId)return;
 
- let x=
- registeredRescuers.find(
+ let x=registeredRescuers.find(
   a=>a.id===r.assignedRescuerId
  );
 
@@ -3335,15 +2962,10 @@ function releaseRescuer(r){
 
   localStorage.setItem(
    "floodhelp_registered_rescuers",
-   JSON.stringify(
-    registeredRescuers
-   )
+   JSON.stringify(registeredRescuers)
   );
-
  }
-
 }
-
 
 function getRescueSimulation(r){
 
@@ -3352,7 +2974,6 @@ function getRescueSimulation(r){
  if(r.completed){
 
   return{
-
    status:"RESCUE COMPLETED",
    progress:100,
    distance:0,
@@ -3360,54 +2981,34 @@ function getRescueSimulation(r){
    stage:4,
    message:
    "Rescue completed successfully. Boat is returning to the relief camp."
-
   };
-
  }
 
+ let e=Date.now()-Number(r.rescueStartTime);
 
- let e=
- Date.now()-
- Number(r.rescueStartTime);
-
- let p=
- Math.min(
+ let p=Math.min(
   100,
   e/RESCUE_DEMO_DURATION*100
  );
 
  let stage=
- e<4000
- ?0
- :e<8000
- ?1
- :e<22000
- ?2
- :3;
-
+  e<4000?0:
+  e<8000?1:
+  e<22000?2:3;
 
  let status=[
-
   "SOS SENT",
   "RESCUE ASSIGNED",
   "BOAT ON THE WAY",
   "RESCUE ARRIVING"
-
  ][stage];
-
 
  let msg=[
-
   "Emergency request received. Rescue team is being notified.",
-
   "Rescue team assigned to this emergency.",
-
   "Rescue boat is travelling toward the SOS location.",
-
   "Rescue boat is approaching the emergency location."
-
  ][stage];
-
 
  if(p>=100){
 
@@ -3423,9 +3024,7 @@ function getRescueSimulation(r){
   boatState="RETURNING";
 
   saveSOS();
-
   updateSOSFirebase(r);
-
 
   if(!completedReturnTimers[r.id]){
 
@@ -3434,19 +3033,15 @@ function getRescueSimulation(r){
    setTimeout(()=>{
 
     boatState="READY";
-
     renderBoatPage();
     updateRescueCards();
 
     delete completedReturnTimers[r.id];
 
    },5000);
-
   }
 
-
   return{
-
    status:"RESCUE COMPLETED",
    progress:100,
    distance:0,
@@ -3454,56 +3049,33 @@ function getRescueSimulation(r){
    stage:4,
    message:
    "Rescue completed successfully. Boat is returning to the relief camp."
-
   };
-
  }
 
-
- let d=
- Math.max(
+ let d=Math.max(
   0,
   3-3*p/100
  );
 
- let eta=
- Math.max(
+ let eta=Math.max(
   0,
-  Math.ceil(
-   10*(1-p/100)
-  )
+  Math.ceil(10*(1-p/100))
  );
 
  r.status=status;
-
  r.progress=Math.round(p);
-
- r.boatDistance=
- +d.toFixed(1);
-
+ r.boatDistance=+d.toFixed(1);
  r.eta=eta;
 
-
  return{
-
   status,
-
   progress:Math.round(p),
-
   distance:+d.toFixed(1),
-
   eta,
-
   stage,
-
   message:msg
-
  };
-
 }
-
-
-/* LOCAL DISPLAY ONLY */
 
 setInterval(()=>{
 
@@ -3524,28 +3096,20 @@ setInterval(()=>{
 
 },1000);
 
-
-/* =========================================================
-   AREA FILTER — AUTOMATIC USER AREA
-   ========================================================= */
+/* AUTOMATIC AREA FILTER */
 
 function getFilteredRequests(){
 
  let area=getUserArea();
 
- if(!area)
- return [];
+ if(!area)return [];
 
  return sosRequests.filter(
   r=>r.area===area
  );
-
 }
 
-
-/* =========================================================
-   RESCUE COUNTS
-   ========================================================= */
+/* RESCUE COUNTS */
 
 function updateRescueCounts(){
 
@@ -3556,8 +3120,7 @@ function updateRescueCounts(){
   LOW:0
  };
 
- let list=
- getFilteredRequests();
+ let list=getFilteredRequests();
 
  list.forEach(r=>{
 
@@ -3570,70 +3133,51 @@ function updateRescueCounts(){
  highCount.textContent=c.HIGH;
  mediumCount.textContent=c.MEDIUM;
  lowCount.textContent=c.LOW;
-
 }
-
 
 function updateDashboardSummary(){
 
- let list=
- getFilteredRequests();
+ let list=getFilteredRequests();
 
- totalRescueCount.textContent=
- list.length;
+ totalRescueCount.textContent=list.length;
 
  activeRescueCount.textContent=
- list.filter(
-  r=>!r.completed
- ).length;
+  list.filter(r=>!r.completed).length;
 
  let area=getUserArea();
 
  filterStatus.textContent=
- area
- ?"Showing SOS requests from "+area+"."
- :"No area selected.";
-
+  area
+  ?"Showing SOS requests from "+area+"."
+  :"No area selected.";
 }
-
 
 function getRescueDistance(r){
 
  return userLat===null||
  r.lat===null||
  r.lat===undefined
-
  ?"Distance unavailable"
-
  :distanceKm(
    userLat,
    userLng,
    Number(r.lat),
    Number(r.lng)
   ).toFixed(1)+" km away";
-
 }
 
-
-/* =========================================================
-   REQUEST CARD
-   ========================================================= */
+/* REQUEST CARD */
 
 function createRequestCard(r){
 
- let card=
- document.createElement("div");
+ let card=document.createElement("div");
 
  card.className="request";
 
- let x=
- getRescueSimulation(r);
+ let x=getRescueSimulation(r);
 
- let available=
- allRescuers()
- .filter(
-  a=>a.status==="AVAILABLE"
- );
+ let available=allRescuers()
+ .filter(a=>a.status==="AVAILABLE");
 
  let options=
  `<option value="">
@@ -3645,14 +3189,10 @@ function createRequestCard(r){
  </option>`
  ).join("");
 
-
- let assign=
- r.completed
-
+ let assign=r.completed
  ?`<button class="assignBtn assigned" disabled>
  ✓ COMPLETED
  </button>`
-
  :`<select class="rescuerSelect">
  ${options}
  </select>
@@ -3663,33 +3203,25 @@ function createRequestCard(r){
  ASSIGN RESCUE
  </button>`;
 
-
  let location=
- r.lat!==null&&
- r.lat!==undefined
-
+ r.lat!==null&&r.lat!==undefined
  ?`<div class="requestLocation">
  📍 SOS LOCATION ATTACHED<br>
  ${Number(r.lat).toFixed(5)},
  ${Number(r.lng).toFixed(5)}
  </div>`
-
  :`<div class="requestLocation">
  ⚠️ Exact GPS location unavailable.
  </div>`;
 
-
  let area=
  r.area
-
  ?`<div class="requestArea">
  📍 AREA: <strong>${r.area}</strong>
  </div>`
-
  :`<div class="requestArea">
  📍 AREA: Not selected
  </div>`;
-
 
  let steps=[
   "SOS SENT",
@@ -3698,7 +3230,6 @@ function createRequestCard(r){
   "ARRIVING",
   "COMPLETE"
  ];
-
 
  let progress=`
 
@@ -3749,9 +3280,7 @@ function createRequestCard(r){
  </div>
 
  </div>
-
  `;
-
 
  card.innerHTML=`
 
@@ -3827,23 +3356,17 @@ function createRequestCard(r){
  `;
 
  return card;
-
 }
 
-
-/* =========================================================
-   RESCUE CARDS
-   ========================================================= */
+/* RESCUE CARDS */
 
 function updateRescueCards(){
 
  requestList.innerHTML="";
 
- let list=
- getFilteredRequests();
+ let list=getFilteredRequests();
 
  let area=getUserArea();
-
 
  if(list.length===0){
 
@@ -3861,13 +3384,10 @@ function updateRescueCards(){
   </p>
 
   </div>
-
   `;
 
   return;
-
  }
-
 
  list.forEach(r=>{
 
@@ -3876,14 +3396,11 @@ function updateRescueCards(){
   );
 
  });
-
 }
-
 
 function renderRescueDashboard(){
 
  updateSavedAreaDisplays();
-
  updateRescueCounts();
  updateDashboardSummary();
  renderRescuers();
@@ -3891,159 +3408,92 @@ function renderRescueDashboard(){
 
 }
 
-
-/* =========================================================
-   ASSIGN
-   ========================================================= */
+/* ASSIGN */
 
 function assignRequest(btn,id){
 
- let r=
- sosRequests.find(
-  x=>x.id===id
- );
+ let r=sosRequests.find(x=>x.id===id);
 
- if(!r||r.completed)
- return;
+ if(!r||r.completed)return;
 
+ let select=btn.previousElementSibling;
 
- let select=
- btn.previousElementSibling;
+ let chosen=select&&select.value;
 
- let chosen=
- select&&select.value;
-
- let list=
- allRescuers();
+ let list=allRescuers();
 
  let res;
 
-
  if(chosen){
 
-  res=
-  list.find(
-   x=>x.id===chosen
-  );
+  res=list.find(x=>x.id===chosen);
 
  }else{
 
-  let available=
-  list.filter(
+  let available=list.filter(
    x=>x.status==="AVAILABLE"
   );
-
 
   if(r.lat!==null&&r.lng!==null){
 
    available.sort(
     (a,b)=>
-    distanceKm(
-     r.lat,
-     r.lng,
-     a.lat,
-     a.lng
-    )
-    -
-    distanceKm(
-     r.lat,
-     r.lng,
-     b.lat,
-     b.lng
-    )
+    distanceKm(r.lat,r.lng,a.lat,a.lng)-
+    distanceKm(r.lat,r.lng,b.lat,b.lng)
    );
-
   }
 
   res=available[0];
-
  }
-
 
  if(!res){
 
-  alert(
-   "No available rescuer."
-  );
-
+  alert("No available rescuer.");
   return;
-
  }
 
-
- r.assignedRescuerId=
- res.id;
-
- r.assignedRescuerName=
- res.name;
-
- r.assignedRescuerPhone=
- res.phone;
-
- r.assignedRescuerMethod=
- res.method;
-
+ r.assignedRescuerId=res.id;
+ r.assignedRescuerName=res.name;
+ r.assignedRescuerPhone=res.phone;
+ r.assignedRescuerMethod=res.method;
  r.assigned=true;
-
- r.status=
- "RESCUE ASSIGNED";
-
- r.rescueStartTime=
- Date.now();
-
+ r.status="RESCUE ASSIGNED";
+ r.rescueStartTime=Date.now();
 
  if(
-  registeredRescuers
-  .some(x=>x.id===res.id)
+  registeredRescuers.some(x=>x.id===res.id)
  ){
 
-  let z=
-  registeredRescuers.find(
+  let z=registeredRescuers.find(
    x=>x.id===res.id
   );
 
-  if(z)
-  z.status="BUSY";
+  if(z)z.status="BUSY";
 
   localStorage.setItem(
    "floodhelp_registered_rescuers",
-   JSON.stringify(
-    registeredRescuers
-   )
+   JSON.stringify(registeredRescuers)
   );
-
  }
-
 
  boatState="ACTIVE";
 
  saveSOS();
-
  updateSOSFirebase(r);
 
  renderRescueDashboard();
-
  renderBoatPage();
-
 }
 
-
-/* =========================================================
-   REQUEST SOS
-   ========================================================= */
+/* REQUEST SOS */
 
 requestBtn.onclick=()=>{
 
  if(!emergencyType){
 
-  alert(
-   "Please select the emergency type."
-  );
-
+  alert("Please select the emergency type.");
   return;
-
  }
-
 
  let area=getUserArea();
 
@@ -4054,9 +3504,7 @@ requestBtn.onclick=()=>{
   );
 
   return;
-
  }
-
 
  if(
   userLat===null&&
@@ -4083,14 +3531,11 @@ requestBtn.onclick=()=>{
   finishSOS();
 
  }
-
 };
-
 
 function finishSOS(){
 
- let d=
- getPriorityData();
+ let d=getPriorityData();
 
  let area=getUserArea();
 
@@ -4110,25 +3555,17 @@ function finishSOS(){
   "🔥 SOS synchronized with Firebase."
 
  );
-
 }
 
-
-/* =========================================================
-   VIEW
-   ========================================================= */
+/* VIEW */
 
 function viewRequest(id){
 
- let r=
- sosRequests.find(
-  x=>x.id===id
- );
+ let r=sosRequests.find(x=>x.id===id);
 
  if(!r)return;
 
- let x=
- getRescueSimulation(r);
+ let x=getRescueSimulation(r);
 
  alert(
 
@@ -4153,13 +3590,9 @@ Boat distance: ${x.distance.toFixed(1)} km
 ETA: ~${x.eta} min`
 
  );
-
 }
 
-
-/* =========================================================
-   MAP
-   ========================================================= */
+/* MAP */
 
 function createCircleIcon(type){
 
@@ -4188,62 +3621,42 @@ function createCircleIcon(type){
   `,
 
   iconSize:[30,30],
-
   iconAnchor:[15,15]
 
  });
-
 }
-
 
 function initializeMap(){
 
  if(map){
 
   map.invalidateSize();
-
   updateAllSOSMarkers();
 
   return;
-
  }
-
 
  if(typeof L==="undefined"){
 
-  alert(
-   "Map library needs internet access."
-  );
-
+  alert("Map library needs internet access.");
   return;
-
  }
 
-
- map=
- L.map("map")
- .setView(
-  [11.073,76.073],
-  13
- );
-
+ map=L.map("map")
+ .setView([11.073,76.073],13);
 
  L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
-   attribution:
-   "© OpenStreetMap contributors"
+   attribution:"© OpenStreetMap contributors"
   }
  ).addTo(map);
-
 
  camps.forEach(c=>{
 
   L.marker(
    [c.lat,c.lng],
-   {
-    icon:createCircleIcon("camp")
-   }
+   {icon:createCircleIcon("camp")}
   )
   .addTo(map)
   .bindPopup(`
@@ -4263,43 +3676,30 @@ function initializeMap(){
 
  });
 
-
  updateMapLocation();
  updateAllSOSMarkers();
-
 }
-
 
 function updateMapLocation(){
 
- if(!map||userLat===null)
- return;
-
+ if(!map||userLat===null)return;
 
  if(userMarker){
 
-  userMarker.setLatLng(
-   [userLat,userLng]
-  );
+  userMarker.setLatLng([userLat,userLng]);
 
  }else{
 
-  userMarker=
-  L.marker(
+  userMarker=L.marker(
    [userLat,userLng],
-   {
-    icon:createCircleIcon("you")
-   }
+   {icon:createCircleIcon("you")}
   )
   .addTo(map)
   .bindPopup(
    "<strong>📍 You are here</strong>"
   );
-
  }
-
 }
-
 
 function updateAllSOSMarkers(){
 
@@ -4311,7 +3711,6 @@ function updateAllSOSMarkers(){
 
  sosMarkers=[];
 
-
  sosRequests.forEach(r=>{
 
   if(
@@ -4321,19 +3720,13 @@ function updateAllSOSMarkers(){
    r.lng===undefined
   )return;
 
-
-  let m=
-  L.marker(
+  let m=L.marker(
    [
     Number(r.lat),
     Number(r.lng)
    ],
-   {
-    icon:createCircleIcon("sos")
-   }
-  )
-  .addTo(map);
-
+   {icon:createCircleIcon("sos")}
+  ).addTo(map);
 
   m.bindPopup(`
 
@@ -4355,78 +3748,49 @@ function updateAllSOSMarkers(){
 
   `);
 
-
   sosMarkers.push(m);
 
  });
-
 }
-
 
 function routeToSOS(lat,lng){
 
  if(userLat===null){
 
   getLocation();
-
   return;
-
  }
 
  window.open(
-
   `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}&travelmode=walking`,
-
   "_blank"
-
  );
-
 }
-
 
 function showSOSOnMap(id){
 
- let r=
- sosRequests.find(
-  x=>x.id===id
- );
+ let r=sosRequests.find(x=>x.id===id);
 
- if(
-  !r||
-  r.lat===null
- ){
+ if(!r||r.lat===null){
 
-  alert(
-   "Exact GPS location unavailable."
-  );
-
+  alert("Exact GPS location unavailable.");
   return;
-
  }
 
-
  openScreen("mapScreen");
-
  initializeMap();
 
  setTimeout(()=>{
 
   map.setView(
-   [
-    Number(r.lat),
-    Number(r.lng)
-   ],
+   [Number(r.lat),Number(r.lng)],
    16
   );
 
  },300);
-
 }
 
-
-/* =========================================================
-   BOAT
-   ========================================================= */
+/* BOAT */
 
 function getActiveBoatRequest(){
 
@@ -4441,47 +3805,33 @@ function getActiveBoatRequest(){
  .filter(r=>!r.completed)
  .sort(
   (a,b)=>
-  (order[a.priority]-
-   order[b.priority])
-  ||
-  sosRequests.indexOf(a)-
-  sosRequests.indexOf(b)
+  (order[a.priority]-order[b.priority])||
+  sosRequests.indexOf(a)-sosRequests.indexOf(b)
  )[0]||null;
-
 }
-
 
 function renderBoatPage(){
 
- let r=
- getActiveBoatRequest();
+ let r=getActiveBoatRequest();
 
  boatTotal.textContent=1;
 
  boatActive.textContent=
- boatState==="READY"
- ?0
- :1;
+  boatState==="READY"?0:1;
 
  boatReady.textContent=
- boatState==="READY"
- ?1
- :0;
-
+  boatState==="READY"?1:0;
 
  boatLiveStatus.textContent=
- boatState==="READY"
- ?"● READY"
- :boatState==="ACTIVE"
- ?"● ON RESCUE"
- :"● RETURNING TO CAMP";
+  boatState==="READY"
+  ?"● READY"
+  :boatState==="ACTIVE"
+  ?"● ON RESCUE"
+  :"● RETURNING TO CAMP";
 
-
- let c=
- boatMissionContainer;
+ let c=boatMissionContainer;
 
  c.innerHTML="";
-
 
  if(boatState==="RETURNING"){
 
@@ -4506,13 +3856,10 @@ function renderBoatPage(){
   </div>
 
   </div>
-
   `;
 
   return;
-
  }
-
 
  if(!r){
 
@@ -4534,21 +3881,16 @@ function renderBoatPage(){
   🟢 READY FOR NEXT RESCUE
 
   </div>
-
   `;
 
   return;
-
  }
 
-
- let x=
- getRescueSimulation(r);
+ let x=getRescueSimulation(r);
 
  let phone=
- r.assignedRescuerPhone||
- "9876543213";
-
+  r.assignedRescuerPhone||
+  "9876543213";
 
  c.innerHTML=`
 
@@ -4565,20 +3907,13 @@ function renderBoatPage(){
  <div class="boatInfo">
 
  🆔 ${r.id}<br>
-
  📍 Area: ${r.area||"Unknown"}<br>
-
  👤 ${r.requesterName||"Unknown"}<br>
-
  👥 ${r.people} people<br>
-
  📏 ${getRescueDistance(r)}<br>
-
  🚤 ${x.status}<br>
-
  🚤 Boat distance:
  ${x.distance.toFixed(1)} km<br>
-
  ⏱️ ETA:
  ~${x.eta} min
 
@@ -4613,51 +3948,39 @@ function renderBoatPage(){
  </div>
 
  </div>
-
  `;
 
-
- boatMissionStatus.textContent=
- r.id;
+ boatMissionStatus.textContent=r.id;
 
  boatCurrentStatus.textContent=
- boatState==="READY"
- ?"READY"
- :boatState==="ACTIVE"
- ?"ON RESCUE"
- :"RETURNING";
+  boatState==="READY"
+  ?"READY"
+  :boatState==="ACTIVE"
+  ?"ON RESCUE"
+  :"RETURNING";
 
  boatCurrentStatus.className=
- boatState==="READY"
- ?"statusReady"
- :boatState==="ACTIVE"
- ?"statusActive"
- :"statusReturning";
+  boatState==="READY"
+  ?"statusReady"
+  :boatState==="ACTIVE"
+  ?"statusActive"
+  :"statusReturning";
 
  boatCurrentLocation.textContent=
- boatState==="READY"
- ?"Waiting at camp"
- :boatState==="ACTIVE"
- ?"Travelling to SOS"
- :"Returning to camp";
-
+  boatState==="READY"
+  ?"Waiting at camp"
+  :boatState==="ACTIVE"
+  ?"Travelling to SOS"
+  :"Returning to camp";
 }
-
 
 function boatGoToRescue(id){
 
- let r=
- sosRequests.find(
-  x=>x.id===id
- );
+ let r=sosRequests.find(x=>x.id===id);
 
- if(
-  r&&
-  r.lat!==null
- ){
+ if(r&&r.lat!==null){
 
   openScreen("mapScreen");
-
   initializeMap();
 
   setTimeout(()=>{
@@ -4668,37 +3991,25 @@ function boatGoToRescue(id){
    );
 
   },300);
-
  }
-
 }
-
 
 function launchBoat(id){
 
- let r=
- sosRequests.find(
-  x=>x.id===id
- );
+ let r=sosRequests.find(x=>x.id===id);
 
  if(!r)return;
 
  boatState="ACTIVE";
 
- r.rescueStartTime=
- Date.now();
-
- r.status=
- "BOAT ON THE WAY";
-
+ r.rescueStartTime=Date.now();
+ r.status="BOAT ON THE WAY";
  r.assigned=true;
 
  saveSOS();
-
  updateSOSFirebase(r);
 
  renderBoatPage();
-
  renderRescueDashboard();
 
  alert(
@@ -4712,9 +4023,7 @@ function launchBoat(id){
   (r.area||"Unknown")
 
  );
-
 }
-
 
 function returnBoat(){
 
@@ -4733,111 +4042,75 @@ function returnBoat(){
  alert(
   "🏕️ Boat returning to the relief camp."
  );
-
 }
 
-
-/* =========================================================
-   AUTH
-   ========================================================= */
+/* AUTH */
 
 const authOverlay=$("authOverlay");
-
 const loginPanel=$("loginPanel");
-
 const registerPanel=$("registerPanel");
-
 
 function updateUserDisplay(){
 
  let s=
- localStorage.getItem(
-  "floodhelp_logged_in"
- );
+  localStorage.getItem(
+   "floodhelp_logged_in"
+  );
 
- let u=
- getStoredUser();
-
+ let u=getStoredUser();
 
  userNameDisplay.textContent=
- s==="emergency"
- ?"🚨 Emergency User"
- :
- s==="true"&&u
- ?"👤 "+u.name
- :"Guest";
-
+  s==="emergency"
+  ?"🚨 Emergency User"
+  :
+  s==="true"&&u
+  ?"👤 "+u.name
+  :"Guest";
 
  logoutBtn.style.display=
- s
- ?"block"
- :"none";
+  s?"block":"none";
 
  updateSavedAreaDisplays();
-
 }
-
 
 function showLogin(){
 
- authOverlay.classList.remove(
-  "hidden"
- );
+ authOverlay.classList.remove("hidden");
 
- loginPanel.classList.remove(
-  "hidden"
- );
-
- registerPanel.classList.add(
-  "hidden"
- );
+ loginPanel.classList.remove("hidden");
+ registerPanel.classList.add("hidden");
 
  let u=getStoredUser();
 
  if(u&&u.area)
- loginArea.value=u.area;
-
+  loginArea.value=u.area;
 }
-
 
 showRegisterBtn.onclick=()=>{
 
- loginPanel.classList.add(
-  "hidden"
- );
+ loginPanel.classList.add("hidden");
+ registerPanel.classList.remove("hidden");
 
- registerPanel.classList.remove(
-  "hidden"
- );
+ let u=getStoredUser();
 
+ if(u&&u.area)
+  registerArea.value=u.area;
 };
 
+backToLoginBtn.onclick=showLogin;
 
-backToLoginBtn.onclick=
-showLogin;
-
-
-/* =========================================================
-   REGISTER
-   ========================================================= */
+/* REGISTER */
 
 registerBtn.onclick=()=>{
 
- let n=
- registerName.value.trim();
+ let n=registerName.value.trim();
 
  let m=
- registerMobile.value.replace(
-  /\D/g,
-  ""
- );
+  registerMobile.value.replace(/\D/g,"");
 
- let p=
- registerPassword.value;
+ let p=registerPassword.value;
 
- let area=
- registerArea.value;
-
+ let area=registerArea.value;
 
  if(
   !n||
@@ -4848,70 +4121,52 @@ registerBtn.onclick=()=>{
  ){
 
   registerError.textContent=
-  !area
-  ?"Please select your area."
-  :"Please enter valid details and matching password.";
+   !area
+   ?"Please select your area."
+   :"Please enter valid details and matching password.";
 
   return;
-
  }
-
 
  localStorage.setItem(
   "floodhelp_user",
   JSON.stringify({
 
    name:n,
-
    mobile:m,
-
    password:p,
-
    area:area
 
   })
  );
-
 
  localStorage.setItem(
   "floodhelp_logged_in",
   "true"
  );
 
-
  updateUserDisplay();
 
- authOverlay.classList.add(
-  "hidden"
- );
+ authOverlay.classList.add("hidden");
 
+ openScreen("home");
 
  alert(
   "✅ Account created successfully. Welcome to FloodHelp, "+
   n+"!"
  );
-
 };
 
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
+/* LOGIN */
 
 loginBtn.onclick=()=>{
 
- let u=
- getStoredUser();
+ let u=getStoredUser();
 
  let m=
- loginMobile.value.replace(
-  /\D/g,
-  ""
- );
+  loginMobile.value.replace(/\D/g,"");
 
- let selectedArea=
- loginArea.value;
-
+ let selectedArea=loginArea.value;
 
  if(
   !u||
@@ -4920,124 +4175,84 @@ loginBtn.onclick=()=>{
  ){
 
   loginError.textContent=
-  "Incorrect mobile number or password.";
+   "Incorrect mobile number or password.";
 
   return;
-
  }
-
 
  /*
-  If the old account was created before
-  the area feature, the selected login
-  area is added to the account.
+  The selected area is saved with the account.
+  Once saved, FloodHelp uses this same area
+  everywhere automatically.
  */
 
- if(!u.area){
+ if(!selectedArea){
 
-  if(!selectedArea){
-
-   loginError.textContent=
+  loginError.textContent=
    "📍 Please select your area.";
 
-   loginArea.focus();
+  loginArea.focus();
 
-   return;
-
-  }
-
-  u.area=selectedArea;
-
-  localStorage.setItem(
-   "floodhelp_user",
-   JSON.stringify(u)
-  );
-
- }else{
-
-  /*
-   Existing account area is the saved area.
-   If the user selects another area, update
-   the saved account area.
-  */
-
-  if(selectedArea&&selectedArea!==u.area){
-
-   u.area=selectedArea;
-
-   localStorage.setItem(
-    "floodhelp_user",
-    JSON.stringify(u)
-   );
-
-  }
-
+  return;
  }
 
+ u.area=selectedArea;
+
+ localStorage.setItem(
+  "floodhelp_user",
+  JSON.stringify(u)
+ );
 
  localStorage.setItem(
   "floodhelp_logged_in",
   "true"
  );
 
- updateUserDisplay();
-
- authOverlay.classList.add(
-  "hidden"
+ localStorage.removeItem(
+  "floodhelp_emergency_area"
  );
 
- openScreen("home");
+ updateUserDisplay();
 
+ authOverlay.classList.add("hidden");
+
+ openScreen("home");
 };
 
-
-/* =========================================================
-   EMERGENCY ACCESS
-   ========================================================= */
+/* EMERGENCY ACCESS */
 
 emergencyAccessBtn.onclick=()=>{
 
- let area=
- loginArea.value;
+ let area=loginArea.value;
 
  if(!area){
 
   loginError.textContent=
-  "📍 Please select your area before using Emergency Access.";
+   "📍 Please select your area before using Emergency Access.";
 
   loginArea.focus();
 
   return;
-
  }
-
 
  localStorage.setItem(
   "floodhelp_emergency_area",
   area
  );
 
-
  localStorage.setItem(
   "floodhelp_logged_in",
   "emergency"
  );
 
-
  updateUserDisplay();
 
- authOverlay.classList.add(
-  "hidden"
- );
+ authOverlay.classList.add("hidden");
 
  openScreen("home");
-
 };
 
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
+/* LOGOUT */
 
 logoutBtn.onclick=()=>{
 
@@ -5054,72 +4269,53 @@ logoutBtn.onclick=()=>{
   updateUserDisplay();
 
   showLogin();
-
  }
-
 };
 
-
-/* =========================================================
-   START
-   ========================================================= */
+/* START */
 
 function restoreRequests(){
 
  sosRequests.forEach(r=>{
 
   if(r.completed===undefined)
-  r.completed=false;
+   r.completed=false;
 
   if(r.assigned===undefined)
-  r.assigned=false;
+   r.assigned=false;
 
   if(r.requesterName===undefined)
-  r.requesterName="Unknown User";
+   r.requesterName="Unknown User";
 
   if(r.requesterPhone===undefined)
-  r.requesterPhone="";
+   r.requesterPhone="";
 
   if(r.progress===undefined)
-  r.progress=0;
+   r.progress=0;
 
   if(r.boatDistance===undefined)
-  r.boatDistance=3;
+   r.boatDistance=3;
 
   if(r.eta===undefined)
-  r.eta=10;
+   r.eta=10;
 
   if(!r.rescueStartTime)
-  r.rescueStartTime=Date.now();
+   r.rescueStartTime=Date.now();
 
   if(r.area===undefined)
-  r.area="";
-
+   r.area="";
  });
 
  saveSOS();
-
 }
-
 
 restoreRequests();
 
 updateCamps();
-
 renderRescuers();
-
 renderRescueDashboard();
-
 renderBoatPage();
-
 updateUserDisplay();
-
-
-/*
- If there is no login, show login.
- If an old account exists without an area,
- login page will ask for it.
-*/
 
 if(
  !localStorage.getItem(
@@ -5131,14 +4327,11 @@ if(
 
 }else{
 
- authOverlay.classList.add(
-  "hidden"
- );
+ authOverlay.classList.add("hidden");
 
  updateSavedAreaDisplays();
 
 }
-
 
 </script>
 
