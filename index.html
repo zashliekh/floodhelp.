@@ -2907,39 +2907,29 @@ startFirebaseListener();
 
 /* FIREBASE UPDATE */
 
-/* FIREBASE UPDATE */
-
 function updateSOSFirebase(r){
 
  if(
   !firebaseReady||
   !firebaseDB||
-  !r||
   !r.firebaseKey
- ){
-  return Promise.resolve(false);
- }
+ )return;
 
- return firebaseDB
-  .ref("sosRequests/"+r.firebaseKey)
-  .update({
-   status:r.status,
-   assigned:!!r.assigned,
-   completed:!!r.completed,
-   assignedRescuerId:r.assignedRescuerId||null,
-   assignedRescuerName:r.assignedRescuerName||null,
-   assignedRescuerPhone:r.assignedRescuerPhone||null,
-   assignedRescuerMethod:r.assignedRescuerMethod||null,
-   rescueStartTime:r.rescueStartTime||Date.now(),
-   progress:r.progress||0,
-   boatDistance:r.boatDistance||0,
-   eta:r.eta||0
-  })
-  .then(()=>true)
-  .catch(error=>{
-   console.error("Firebase SOS update failed:",error);
-   return false;
-  });
+ firebaseDB
+ .ref("sosRequests/"+r.firebaseKey)
+ .update({
+
+  status:r.status,
+  assigned:r.assigned,
+  completed:r.completed,
+  assignedRescuerId:r.assignedRescuerId||null,
+  assignedRescuerName:r.assignedRescuerName||null,
+  assignedRescuerPhone:r.assignedRescuerPhone||null,
+  assignedRescuerMethod:r.assignedRescuerMethod||null,
+  rescueStartTime:r.rescueStartTime||Date.now()
+
+ })
+ .catch(error=>console.error(error));
 }
 
 /* SIMULATION */
