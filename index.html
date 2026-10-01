@@ -610,5 +610,38 @@ restoreRequests();updateCamps();renderRescuers();renderRescueDashboard();renderB
 if(!localStorage.getItem("floodhelp_logged_in"))showLogin();
 else authOverlay.classList.add("hidden");
 </script>
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwBbj_86ubh5lpXGJw9wOEBhC5m78E1wE",
+    authDomain: "floodhelp-ce595.firebaseapp.com",
+    projectId: "floodhelp-ce595",
+    storageBucket: "floodhelp-ce595.firebasestorage.app",
+    messagingSenderId: "826307857233",
+    appId: "1:826307857233:web:4d8396595728b1c99c2170",
+    measurementId: "G-9P0VMGXYHL"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // Call this from your app to save an SOS request.
+  window.saveSOS = async function (requestData) {
+    const doc = await addDoc(collection(db, "sosRequests"), {
+      ...requestData,
+      createdAt: serverTimestamp()
+    });
+    return doc.id;
+  };
+</script>
 </body>
 </html>
