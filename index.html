@@ -3,595 +3,886 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#061820">
-<title>FloodHelp – Emergency Flood Rescue</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07151f">
+<title>FloodHelp | Emergency Rescue Command</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
+:root{
+  --bg:#07151f;--panel:#0d202c;--panel2:#102936;--line:#203d4b;
+  --cyan:#38d5e8;--cyan2:#0aa9c5;--text:#effaff;--muted:#8fa9b7;
+  --red:#ff6273;--green:#53e2a0;--amber:#ffcc70;
+  --shadow:0 18px 55px #0003;
+}
 *{box-sizing:border-box}
-html,body{margin:0;background:#061820;color:#fff;font-family:Arial,sans-serif}
-.app{max-width:520px;min-height:100vh;margin:auto;background:linear-gradient(#0b2630,#061820);padding-bottom:90px}
-.header{height:75px;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff12}
-.logo{font-size:20px;font-weight:bold;display:flex;align-items:center;gap:9px}
-.logoIcon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#079dbc;font-size:21px}
-.headerRight{text-align:right}.userLine{display:flex;gap:7px;align-items:center}.userName{font-size:9px;color:#70d4e4;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.logoutBtn{border:0;background:none;color:#ff7d88;font-size:9px}.status{font-size:10px;color:#89a4ae}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3de394;margin-right:5px}
-.screen{display:none;padding:22px 20px 30px}.screen.active{display:block;animation:fade .25s}
-@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-h1{font-size:29px;line-height:1.15;margin:8px 0}h2{margin:12px 0}p{color:#91aab3;line-height:1.5}
-button{font-family:inherit;cursor:pointer}button:active{transform:scale(.97)}
-.back{border:0;background:none;color:#62c9db;padding:0;margin-bottom:20px;font-size:14px}
-.primary,.secondary{width:100%;border-radius:13px;padding:15px;margin-top:14px;font-weight:bold}
-.primary{border:0;background:#08a2c2;color:white}.secondary{border:1px solid #254753;background:transparent;color:#a5c0c8}
-.authOverlay{position:fixed;inset:0;z-index:20000;background:#061820f8;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}.authOverlay.hidden{display:none}
-.authBox{width:min(430px,100%);background:#0b2630;border:1px solid #ffffff17;border-radius:24px;padding:25px 22px;box-shadow:0 25px 80px #0009}
-.authBrand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:22px}.authBrand .logoIcon{width:46px;height:46px;font-size:24px}.authBrandText{font-size:21px;font-weight:bold}.authBrandSub{font-size:8px;color:#6ba5b3;letter-spacing:1px}
-.authTitle{font-size:25px;text-align:center}.authSubtitle{text-align:center;font-size:12px}.authInput{width:100%;padding:14px;margin-top:10px;border-radius:12px;border:1px solid #254753;background:#102832;color:#fff;outline:0}.authPrimary{width:100%;border:0;border-radius:13px;padding:15px;margin-top:14px;background:#08a2c2;color:#fff;font-weight:bold}.authLink,.authBack{display:block;width:100%;border:0;background:none;color:#62c9db;padding:13px}.authEmergency{width:100%;border:1px solid #704047;border-radius:13px;padding:14px;background:#28191d;color:#ff929a;font-weight:bold}.authError{min-height:18px;color:#ff7d88;font-size:10px;text-align:center}.authSuccess{min-height:18px;color:#70e6a0;font-size:10px;text-align:center}.authNote{margin-top:18px;padding:11px;border-radius:11px;background:#102832;color:#78939d;font-size:9px;text-align:center}.authPanel.hidden{display:none}
-.sosWrap{display:flex;justify-content:center;margin:35px 0}.sos{width:205px;height:205px;border-radius:50%;border:8px solid #ffffff0f;background:radial-gradient(circle,#ff646d,#d62d3c 65%,#971d2a);color:#fff;box-shadow:0 20px 50px #0007;display:flex;flex-direction:column;align-items:center;justify-content:center}.sos strong{font-size:34px}.sos span{font-size:11px;margin-top:7px}
-.grid,.numberGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid #ffffff14;background:#ffffff0d;border-radius:17px;padding:18px;color:#fff;text-align:left}.cardIcon{font-size:26px;margin-bottom:10px}.card small{display:block;color:#8ca5ae;margin-top:6px}
-.location,.offline{margin-top:15px;padding:13px;border-radius:13px;background:#102832;color:#92abb4;font-size:12px}.location.ok{color:#69e3a0}.offline{font-size:11px}
-.numbers{margin-top:25px}.number{background:#102832;border:1px solid #214550;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between}.numberInfo strong{display:block;font-size:15px}.numberInfo small{color:#8fa9b2;font-size:9px}.call{background:#079dbc;color:white;text-decoration:none;border-radius:9px;padding:9px;font-size:9px;font-weight:bold}
-.emergencyGrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:22px}.emergency{border:1px solid #214652;background:#102a34;color:#fff;border-radius:16px;padding:18px 13px;text-align:left}.emergency.selected,.optional.selected{border-color:#18bad5;background:#124654}.emergency span{font-size:25px;display:block;margin-bottom:9px}
-.counter{margin-top:12px;display:flex;align-items:center;background:#102a34;border:1px solid #1c414d;border-radius:15px;padding:7px}.counter button{width:45px;height:42px;border:0;border-radius:10px;background:#183c47;color:#fff;font-size:24px}.count{flex:1;text-align:center}
-.priority{display:none;margin-top:18px;padding:19px;border-radius:19px;background:#102832;border:1px solid #274651}.priority.show{display:block}.badge{display:inline-block;padding:7px 11px;border-radius:8px;font-size:11px;font-weight:bold}.badge.critical{background:#5b202a;color:#ff7d88}.badge.high{background:#5b401b;color:#ffd06c}.badge.medium{background:#504a19;color:#ffe86c}.badge.low{background:#17472f;color:#6de7a2}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.stat{background:#ffffff0d;border-radius:11px;padding:11px;text-align:center}.stat strong{display:block;font-size:17px}.stat small{font-size:10px;color:#829ca6}
-.campMain{margin-top:20px;padding:20px;border-radius:20px;background:linear-gradient(145deg,#10404b,#0b2933);border:1px solid #22515d}.label{font-size:10px;letter-spacing:1px;color:#6bd7e7}.distance{color:#9bb4bd;margin-top:7px}.campStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:17px 0}.campStats div{background:#ffffff0d;padding:10px;border-radius:10px;text-align:center;font-size:10px}.campStats strong{display:block;font-size:15px}.campList{display:grid;gap:12px;margin-top:15px}.camp{background:#102832;border:1px solid #1c414d;border-radius:16px;padding:17px}.camp h3{margin:0 0 7px}.camp p{font-size:12px;line-height:1.8}.camp button{width:100%;padding:12px;border:0;border-radius:10px;background:#0d91ae;color:#fff}
-#map{height:440px;border-radius:18px;overflow:hidden;margin-top:15px}.mapIntro,.mapInfo,.legendItem{background:#102832;border:1px solid #1d414c;border-radius:14px;padding:14px;margin-top:12px}.mapIntro small{display:block;color:#8fa9b2;margin-top:5px}.mapLegend{display:grid;grid-template-columns:1fr 1fr;gap:8px}.legendItem{font-size:11px;margin-top:8px}.legendDot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.youDot{background:#168dd0}.sosDot{background:#ef4050}.campDot{background:#32c779}
-.rescueHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.live{font-size:10px;color:#62e5a0;background:#123a2c;padding:7px 9px;border-radius:8px}.live.alert{background:#5b202a;color:#ff7782;animation:pulse 1s infinite}@keyframes pulse{50%{transform:scale(1.05)}}
-.priorityGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:20px 0}.priorityCard{background:#102832;border:1px solid #1d414c;border-radius:13px;padding:12px 5px;text-align:center}.priorityCard strong{display:block;font-size:22px}.priorityCard small{font-size:9px;color:#8ba5ae}.criticalNumber{color:#ff6876}.highNumber{color:#ffc75c}.mediumNumber{color:#ffe768}.lowNumber{color:#63e59c}
-.dashboardSummary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summaryCard{background:#102832;border:1px solid #214550;border-radius:14px;padding:14px;text-align:center}.summaryCard strong{display:block;font-size:24px}.summaryCard small{font-size:9px;color:#8ba5ae}
-.rescuerSection{margin-top:24px}.rescuerCard{background:#102832;border:1px solid #214550;border-radius:15px;padding:14px;margin-bottom:10px}.rescuerTop{display:flex;justify-content:space-between;align-items:center}.rescuerName{font-size:14px;font-weight:bold}.rescuerStatus{font-size:9px;padding:6px 8px;border-radius:7px;background:#17472f;color:#70e6a0}.rescuerInfo{margin-top:9px;font-size:11px;color:#8fa8b0;line-height:1.7}.rescuerActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.rescuerActions a,.rescuerActions button{border:0;border-radius:9px;padding:10px;text-align:center;font-size:10px;font-weight:bold;text-decoration:none}.callRescuer{background:#079dbc;color:#fff}.locateRescuer{background:#183c47;color:#9fd5df}
-.rescuerJoin{width:100%;padding:14px;border:1px solid #28515c;border-radius:13px;background:#12343d;color:#70d9e8;font-weight:bold}
-.rescueTitle{font-size:13px;color:#81aab4;margin:24px 0 10px}.request{background:#102832;border:1px solid #214550;border-radius:17px;padding:16px;margin-bottom:11px}.request.newRequest{border-color:#ff5868;box-shadow:0 0 18px #ff465555}.newLabel{font-size:9px;color:#ff6978;margin-bottom:10px}.requestTop{display:flex;justify-content:space-between}.requestId{font-size:11px;color:#78949d}.request h3{margin:12px 0 6px;font-size:16px}.requestInfo{font-size:11px;color:#8fa8b0;line-height:1.9}.requestLocation{margin-top:10px;padding:10px;border-radius:10px;background:#0c222b;color:#79cddd;font-size:10px}.requestButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.requestButtons button,.requestButtons a{padding:11px 5px;border-radius:9px;border:0;font-size:10px;font-weight:bold;text-align:center;text-decoration:none}.viewBtn{background:#183c47;color:#9fd5df}.mapRequestBtn{background:#164653;color:#71d4e6}.assignBtn{background:#079dbc;color:#fff}.assigned{background:#17472f!important;color:#70e6a0!important}.callRequester{background:#17472f;color:#70e6a0}.rescuerSelect{width:100%;margin-top:10px;padding:10px;background:#0c222b;color:#fff;border:1px solid #214550;border-radius:9px}
-.rescueProgress{margin-top:14px;padding:14px;border-radius:14px;background:#0b222b;border:1px solid #214550}.progressTop{display:flex;justify-content:space-between}.progressStatus{font-size:10px;color:#71d4e6;font-weight:bold}.progressEta{font-size:9px;color:#8fa8b0;text-align:right}.progressBar{height:8px;margin-top:12px;background:#183640;border-radius:99px;overflow:hidden}.progressFill{height:100%;background:#18bad5}.progressSteps{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:10px}.progressStep{font-size:7px;color:#607b84;text-align:center}.progressStep.active{color:#70e6a0}.progressStep.current{color:#ffd06c}.progressMessage{margin-top:10px;font-size:9px;color:#8fa8b0}
-.boatStatGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.boatStat{background:#102832;border:1px solid #1d414c;border-radius:13px;padding:12px;text-align:center}.boatStat strong{display:block;font-size:21px}.boatStat small{font-size:9px;color:#8ba5ae}.boatMission,.returningMission,.noMission,.boatStatusBox{margin-top:18px;background:#102832;border:1px solid #214550;border-radius:17px;padding:17px}.boatMissionTitle{color:#70d3e4;font-size:11px;font-weight:bold}.boatInfo{font-size:11px;color:#8fa8b0;line-height:1.9}.boatLocation{margin-top:10px;padding:10px;background:#0c222b;border-radius:10px;color:#79cddd;font-size:10px}.boatActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.boatActions button,.boatActions a{padding:11px;border:0;border-radius:9px;text-align:center;text-decoration:none;font-size:10px;font-weight:bold}.primaryBoat{background:#079dbc;color:#fff}.secondaryBoat{background:#183c47;color:#9fd5df}.callBoat{background:#17472f;color:#70e6a0}.returningMission{text-align:center}.returningIcon{font-size:45px}.returningBadge{display:inline-block;padding:8px;background:#164653;border-radius:9px;color:#71d4e6}.boatStatusLine{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ffffff0a;font-size:11px;color:#8fa8b0}.statusReady{color:#70e6a0}.statusActive{color:#ffd06c}.statusReturning{color:#71d4e4}
-.rescuerOverlay{position:fixed;inset:0;z-index:25000;background:#041117f5;display:flex;align-items:center;justify-content:center;padding:20px}.rescuerOverlay.hidden{display:none}.rescuerBox{width:min(420px,100%);background:#0b2630;border:1px solid #ffffff17;border-radius:22px;padding:22px}.rescuerInput,.rescuerSelect{width:100%;padding:13px;margin-top:10px;border-radius:11px;border:1px solid #254753;background:#102832;color:#fff}.rescuerLocation{margin-top:12px;padding:11px;border-radius:10px;background:#102832;color:#8fa8b0;font-size:10px}.rescuerError{color:#ff7d88;font-size:10px;text-align:center;margin-top:8px}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:78px;background:#041319f8;border-top:1px solid #ffffff12;display:grid;grid-template-columns:repeat(5,1fr);z-index:9999}.nav button{background:none;border:0;color:#6e8993;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;position:relative}.nav button.active{color:#55cadf}.nav span{font-size:20px}.nav small{font-size:9px}.navAlert{position:absolute;top:9px;right:25%;width:8px;height:8px;border-radius:50%;background:#ff5362;display:none}.navAlert.show{display:block}
-
-/* PREMIUM LEAFLET POPUPS */
-.leaflet-popup.fh-popup .leaflet-popup-content-wrapper{
- background:linear-gradient(145deg,#10333e,#071d26);
- color:#fff;border:1px solid #2b6572;border-radius:18px;
- box-shadow:0 14px 40px #0009;padding:0
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+button:active{transform:scale(.98)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+a{color:inherit}
+.app{min-height:100vh}
+.shell{width:min(1440px,100%);margin:auto;padding:0 26px 110px}
+.topbar{height:82px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid #ffffff12}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;font-size:20px;letter-spacing:-.6px}
+.brand-icon{width:45px;height:45px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#25d0e4,#087d9c);box-shadow:0 7px 24px #00b6d433;font-size:23px}
+.brand small{display:block;font-size:9px;color:#83aab9;letter-spacing:1.8px;font-weight:700;margin-top:4px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.system-pill,.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid #ffffff14;border-radius:999px;padding:9px 12px;background:#ffffff06;color:#b4d0db;font-size:11px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px #53e2a055}
+.user-chip{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--line);border-radius:13px;color:#c4d9e2;font-size:12px}
+.user-avatar{width:29px;height:29px;border-radius:10px;display:grid;place-items:center;background:#16404f}
+.logout{border:0;background:none;color:var(--red);font-size:11px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:27px;padding-top:25px}
+.sidebar{align-self:start;position:sticky;top:20px;background:#0a1b26;border:1px solid #ffffff0e;border-radius:22px;padding:15px}
+.side-label{font-size:9px;color:#658795;letter-spacing:1.6px;font-weight:800;padding:12px 11px}
+.navlist{display:grid;gap:6px}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;background:transparent;color:#8eaab8;text-align:left;padding:13px 12px;border-radius:13px;font-size:12px;font-weight:650}
+.navbtn .navico{width:26px;text-align:center;font-size:17px}
+.navbtn:hover{background:#ffffff07;color:#fff}
+.navbtn.active{background:linear-gradient(100deg,#123d4b,#102b38);border-color:#235767;color:#75e8f5;box-shadow:inset 3px 0 #35d6e8}
+.nav-count{margin-left:auto;border-radius:7px;background:#53252d;color:#ff9ca5;padding:3px 6px;font-size:9px}
+.side-card{margin-top:25px;padding:14px;border:1px solid #ffffff10;border-radius:15px;background:linear-gradient(145deg,#102c39,#0a1d27)}
+.side-card .side-emoji{font-size:23px}
+.side-card strong{display:block;font-size:12px;margin:9px 0 5px}
+.side-card p{font-size:10px;line-height:1.6;color:var(--muted);margin:0}
+.side-status{margin-top:12px;color:var(--green);font-size:10px}
+.content{min-width:0}
+.screen{display:none;animation:enter .24s ease}
+.screen.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:10px;color:#65bdce;letter-spacing:2px;font-weight:850}
+h1{font-size:clamp(27px,4vw,39px);line-height:1.13;letter-spacing:-1.4px;margin:9px 0 12px}
+h2{font-size:20px;letter-spacing:-.4px;margin:0 0 12px}
+h3{font-size:15px;margin:0 0 8px}
+p{color:var(--muted);line-height:1.65;font-size:13px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:23px}
+.page-head p{max-width:650px;margin:0}
+.head-actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:12px;padding:12px 15px;font-size:11px;font-weight:800;text-decoration:none}
+.btn-primary{background:linear-gradient(110deg,#16b8d0,#0788ab);color:white;box-shadow:0 8px 25px #079dbc20}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-secondary{background:#122d3a;border-color:#254653;color:#b6dce6}
+.btn-danger{background:#421f29;border-color:#71303b;color:#ff9aa4}
+.btn-success{background:#123c2e;border-color:#24664d;color:#78e9b0}
+.btn-block{width:100%}
+.panel{background:linear-gradient(145deg,#0d222e,#0b1d28);border:1px solid #ffffff11;border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.panel + .panel{margin-top:15px}
+.grid{display:grid;gap:15px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.hero{position:relative;overflow:hidden;padding:clamp(22px,4vw,42px);border-radius:26px;border:1px solid #2a5260;background:radial-gradient(ellipse at 85% 20%,#1b63735c,transparent 42%),linear-gradient(125deg,#102f3d,#0b1d29 72%);box-shadow:var(--shadow)}
+.hero:after{content:"";position:absolute;right:-65px;bottom:-145px;width:310px;height:310px;border:1px solid #4bcddd18;border-radius:50%;box-shadow:0 0 0 30px #4bcddd08,0 0 0 65px #4bcddd05;pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:30px;align-items:center}
+.hero-copy p{max-width:480px}
+.hero-visual{display:grid;place-items:center;min-height:230px}
+.sos-button{width:190px;height:190px;border-radius:50%;border:9px solid #ffffff0d;background:radial-gradient(circle at 35% 25%,#ff8992,#f04458 49%,#a91931 100%);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 12px #f0445810,0 17px 40px #0006,inset 0 3px 9px #ffffff35}
+.sos-button strong{font-size:38px;letter-spacing:2px}
+.sos-button span{font-size:10px;letter-spacing:1.3px;font-weight:850;margin-top:7px}
+.sos-caption{font-size:10px;color:#8daeb9;margin-top:17px;text-align:center}
+.metric-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:17px 0 24px}
+.metric{padding:17px;border:1px solid #ffffff10;border-radius:17px;background:#0d222d}
+.metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center;color:#91aab7;font-size:10px}
+.metric-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:11px;background:#163946;font-size:16px}
+.metric strong{display:block;font-size:29px;letter-spacing:-1px;margin-top:12px}
+.metric small{font-size:10px;color:#73909e}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:26px 0 13px}
+.section-head h2{margin:0}
+.quick-card{background:#0d222e;border:1px solid #ffffff12;border-radius:17px;padding:18px;text-align:left;color:#fff;min-height:130px}
+.quick-card:hover{border-color:#32788a;transform:translateY(-2px)}
+.quick-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#143846;font-size:21px;margin-bottom:14px}
+.quick-card strong{font-size:13px}
+.quick-card small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:6px}
+.emergency-numbers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.number-card{display:flex;align-items:center;justify-content:space-between;gap:7px;background:#0d222e;border:1px solid #ffffff10;border-radius:13px;padding:13px}
+.number-card strong{display:block;font-size:18px}
+.number-card small{display:block;font-size:9px;color:var(--muted);margin-top:4px}
+.number-card a{font-size:9px;font-weight:800;color:#6ee5f0;text-decoration:none}
+.location-note{padding:13px 15px;background:#0d222d;border:1px solid #ffffff0c;border-radius:13px;color:#a6c2ce;font-size:11px;margin-top:14px}
+.location-note.ok{color:var(--green)}
+.field{margin-top:16px}
+.field label{display:block;color:#c3d7df;font-size:11px;font-weight:750;margin-bottom:8px}
+.field .hint{font-size:10px;color:#6f8d9b;font-weight:400;margin-top:5px}
+.input,.select,.textarea{width:100%;border:1px solid #274654;border-radius:12px;background:#091b25;color:#f3fbff;padding:13px 14px;outline:none}
+.input::placeholder,.textarea::placeholder{color:#587582}
+.textarea{resize:vertical;min-height:94px;line-height:1.5}
+.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}
+.choice{padding:17px 14px;text-align:left;background:#0e2531;border:1px solid #254653;border-radius:15px;color:#fff}
+.choice.selected{border-color:#27c5d9;background:linear-gradient(135deg,#124250,#102b37);box-shadow:inset 0 0 0 1px #27c5d920}
+.choice .choice-icon{font-size:25px;display:block;margin-bottom:10px}
+.choice strong{font-size:12px}
+.choice small{display:block;font-size:10px;color:#8ba8b5;margin-top:5px;line-height:1.4}
+.counter{display:flex;align-items:center;gap:12px;padding:9px;border:1px solid #254653;border-radius:14px;background:#0a1e29}
+.counter button{width:43px;height:43px;border:1px solid #2b5260;border-radius:11px;background:#153744;color:#fff;font-size:24px}
+.counter-value{flex:1;text-align:center}
+.counter-value strong{font-size:24px}
+.counter-value small{display:block;font-size:10px;color:var(--muted)}
+.optional-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.optional{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #274653;background:#0b202b;border-radius:12px;color:#c6dbe3;text-align:left;font-size:11px}
+.optional .check{width:21px;height:21px;border:1px solid #45616c;border-radius:6px;display:grid;place-items:center;color:transparent}
+.optional.selected{border-color:#29bfd5;background:#103744}
+.optional.selected .check{background:#11a9c2;color:white;border-color:#11a9c2}
+.priority-banner{margin-top:18px;padding:15px;border:1px solid #2b5966;border-radius:14px;background:#102c38;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.priority-banner strong{display:block;font-size:13px}
+.priority-banner small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;letter-spacing:.5px}
+.badge.CRITICAL{background:#54242d;color:#ff9ba5}
+.badge.HIGH{background:#523b1d;color:#ffd37d}
+.badge.MEDIUM{background:#4b471e;color:#f8eb8a}
+.badge.LOW{background:#164431;color:#7ee9b2}
+.detail-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
+.detail-item{padding:13px;border-radius:12px;border:1px solid #ffffff0d;background:#ffffff04;min-width:0}
+.detail-item small{display:block;color:#7998a5;font-size:9px;font-weight:800;letter-spacing:.7px;margin-bottom:7px}
+.detail-item strong{display:block;color:#e6f5fa;font-size:12px;overflow-wrap:anywhere;line-height:1.5}
+.special-box{margin-top:13px;border:1px solid #285766;background:linear-gradient(135deg,#102f3c,#0c222d);border-radius:14px;padding:15px}
+.special-box h3{font-size:12px;color:#85e7f1}
+.special-box p{font-size:11px;margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.stat-card{padding:15px 10px;text-align:center;border:1px solid #ffffff10;background:#0e232e;border-radius:14px}
+.stat-card strong{display:block;font-size:24px}
+.stat-card small{font-size:9px;color:#89a5b2}
+.request-list{display:grid;gap:13px}
+.request-card{padding:18px;background:#0d222e;border:1px solid #25424e;border-radius:18px;min-width:0}
+.request-card.is-new{border-color:#a94b58;box-shadow:0 0 25px #f0445810}
+.request-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.request-id{font-size:10px;color:#7997a5}
+.request-card h3{font-size:15px;margin:12px 0 7px}
+.request-summary{font-size:11px;color:#91aab6;line-height:1.9}
+.request-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.request-actions .btn{flex:1;min-width:100px}
+.progress-wrap{margin-top:14px;padding:13px;border-radius:13px;background:#081b25;border:1px solid #ffffff0b}
+.progress-top{display:flex;justify-content:space-between;gap:10px;font-size:10px}
+.progress-top strong{color:#70deee}
+.progressbar{height:7px;background:#193441;border-radius:99px;overflow:hidden;margin-top:12px}
+.progressbar div{height:100%;background:linear-gradient(90deg,#0ca9c5,#54e4f0);border-radius:99px;transition:width .3s}
+.progress-note{font-size:10px;color:#86a5b2;margin-top:9px}
+.empty-state{text-align:center;padding:38px 15px;border:1px dashed #2b4a57;border-radius:17px;background:#0b202a}
+.empty-state .empty-icon{font-size:34px}
+.empty-state h3{margin-top:12px}
+.empty-state p{font-size:11px;max-width:340px;margin:6px auto 0}
+#map{height:440px;border-radius:17px;overflow:hidden;border:1px solid #294957}
+.map-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;color:#94b1be;font-size:10px}
+.map-legend span{display:flex;align-items:center;gap:6px}
+.legend-dot{width:9px;height:9px;border-radius:50%}
+.camp-card{border:1px solid #254653;border-radius:16px;background:#0d222d;padding:17px}
+.camp-card p{font-size:11px;line-height:1.8}
+.camp-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.vacancy{color:#72e6ad;font-size:10px;font-weight:800}
+.boat-hero{padding:23px;border:1px solid #275462;border-radius:20px;background:radial-gradient(ellipse at 90% 0%,#17627455,transparent 50%),linear-gradient(130deg,#102f3b,#0b1d29)}
+.boat-heading{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.boat-heading .big-boat{font-size:45px}
+.boat-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:16px}
+.status-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff0b;font-size:11px;color:#91aab6}
+.status-row:last-child{border-bottom:0}
+.status-row strong{color:#effaff;text-align:right}
+.rescuer-card{padding:15px;border:1px solid #254653;background:#0d222e;border-radius:15px;margin-bottom:10px}
+.rescuer-top{display:flex;justify-content:space-between;gap:10px}
+.rescuer-meta{font-size:10px;color:#8ea9b6;line-height:1.8;margin-top:9px}
+.mobile-nav{display:none}
+.overlay{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:18px;background:#020b10d9;backdrop-filter:blur(12px);overflow:auto}
+.overlay.hidden{display:none}
+.modal{width:min(680px,100%);max-height:92vh;overflow:auto;background:#0b1e29;border:1px solid #31515f;border-radius:22px;padding:23px;box-shadow:0 30px 100px #0009}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:15px}
+.modal-close{width:35px;height:35px;border-radius:10px;background:#152f3a;border:1px solid #294754;color:#c8e0e7;font-size:19px}
+.modal-subtitle{font-size:11px;color:var(--muted);margin:0}
+.auth-overlay{position:fixed;inset:0;z-index:30000;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 0%,#114050,#06121b 68%)}
+.auth-overlay.hidden{display:none}
+.auth-box{width:min(420px,100%);padding:27px;border:1px solid #2a5362;border-radius:24px;background:#0b202c;box-shadow:0 30px 100px #0008}
+.auth-brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:23px}
+.auth-brand strong{font-size:22px}
+.auth-brand small{display:block;color:#79a7b6;font-size:9px;letter-spacing:1.4px;margin-top:4px}
+.auth-title{text-align:center}
+.auth-box>p{text-align:center;font-size:11px}
+.auth-error{min-height:18px;color:#ff8793;font-size:10px;margin-top:8px}
+.auth-note{text-align:center;font-size:9px;color:#73919e;line-height:1.6;margin-top:17px}
+.toast-wrap{position:fixed;top:18px;right:18px;z-index:50000;display:grid;gap:8px;width:min(340px,calc(100vw - 36px))}
+.toast{padding:14px 16px;border:1px solid #2b6875;background:#102d39;color:#eafaff;border-radius:13px;box-shadow:var(--shadow);font-size:12px;animation:enter .2s}
+.toast.error{border-color:#8e3e49}
+.toast.success{border-color:#27684d}
+.leaflet-popup.fh-popup .leaflet-popup-content-wrapper{background:#0e2935;color:white;border:1px solid #2d6877;border-radius:14px}
+.leaflet-popup.fh-popup .leaflet-popup-content{margin:13px;max-width:250px}
+.leaflet-popup.fh-popup .leaflet-popup-tip{background:#0e2935}
+.leaflet-popup.fh-popup .leaflet-popup-close-button{color:#c3e9f0!important}
+.popup-title{font-weight:800;font-size:13px}
+.popup-text{font-size:11px;color:#abc7d2;line-height:1.8;margin-top:7px}
+@media(max-width:1050px){
+ .shell{padding:0 18px 105px}.layout{grid-template-columns:190px minmax(0,1fr);gap:17px}
+ .metric-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .emergency-numbers{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero-grid{grid-template-columns:minmax(0,1fr) 220px}
+ .sos-button{width:165px;height:165px}
 }
-.leaflet-popup.fh-popup .leaflet-popup-content{
- margin:0;width:260px!important;max-width:calc(100vw - 100px);
+@media(max-width:760px){
+ .shell{padding:0 14px 100px}.topbar{height:70px}.brand{font-size:18px}.brand-icon{width:39px;height:39px}
+ .system-pill{display:none}.layout{display:block;padding-top:17px}.sidebar{display:none}
+ .page-head{display:block}.head-actions{margin-top:13px}
+ .hero-grid{grid-template-columns:1fr;gap:8px}.hero-visual{min-height:185px}
+ .sos-button{width:165px;height:165px}.hero{padding:23px}
+ .grid-3,.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metric-row{gap:9px}.metric{padding:13px}.metric strong{font-size:25px}
+ .panel{padding:16px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobile-nav{display:grid;position:fixed;z-index:9999;left:0;right:0;bottom:0;padding:8px 5px max(8px,env(safe-area-inset-bottom));grid-template-columns:repeat(5,minmax(0,1fr));background:#06131df5;border-top:1px solid #ffffff16;backdrop-filter:blur(15px)}
+ .mobile-nav button{position:relative;border:0;background:none;color:#7f9aa7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;font-size:19px}
+ .mobile-nav button small{font-size:9px}
+ .mobile-nav button.active{color:#63dfee}
+ .mobile-alert{position:absolute;top:1px;right:23%;width:7px;height:7px;border-radius:50%;background:var(--red);display:none}
+ .mobile-alert.show{display:block}
 }
-.leaflet-popup.fh-popup .leaflet-popup-tip{
- background:#10333e;border:1px solid #2b6572
+@media(max-width:430px){
+ .user-chip{padding:6px}.user-chip .user-label{display:none}.logout{font-size:10px}
+ .grid-2{grid-template-columns:1fr}.choice-grid{gap:8px}
+ .choice{padding:13px 11px}.detail-list{grid-template-columns:1fr}
+ .emergency-numbers{gap:7px}.number-card{padding:10px}
+ .boat-actions{grid-template-columns:1fr}
+ .request-actions .btn{min-width:90px}
+ .optional-grid{grid-template-columns:1fr 1fr}
 }
-.leaflet-popup.fh-popup .leaflet-popup-close-button{
- color:#a7d5de!important;font-size:22px!important;padding:8px 10px!important
-}
-.fh-popup-inner{padding:16px}
-.fh-popup-head{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid #ffffff17}
-.fh-popup-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;font-size:22px}
-.fh-popup-icon.camp{background:#124a36;border:1px solid #267d59}
-.fh-popup-icon.sos{background:#56212b;border:1px solid #a43e4b}
-.fh-popup-title{font-size:14px;font-weight:800;line-height:1.3;padding-right:12px}
-.fh-popup-sub{font-size:9px;color:#86aeb8;margin-top:4px;letter-spacing:.5px}
-.fh-popup-badge{display:inline-block;margin-top:12px;border-radius:7px;padding:6px 8px;font-size:9px;font-weight:bold;letter-spacing:.4px}
-.fh-popup-badge.green{background:#124631;color:#79edac}
-.fh-popup-badge.red{background:#51232b;color:#ff9ca4}
-.fh-popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
-.fh-popup-stat{padding:9px;border-radius:10px;background:#ffffff09;border:1px solid #ffffff0c}
-.fh-popup-stat small{display:block;font-size:9px;color:#89aab3;margin-bottom:5px}
-.fh-popup-stat strong{display:block;font-size:12px;color:#f1fbfd;overflow-wrap:anywhere}
-.fh-popup-resources{margin-top:11px;padding:10px;border-radius:11px;background:#071c24;font-size:10px;line-height:1.9;color:#c2dce1}
-.fh-popup-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}
-.fh-popup-btn{width:100%;border:0;border-radius:9px;padding:10px 5px;font-size:9px;font-weight:800;color:#fff;background:#164653;white-space:normal}
-.fh-popup-btn.primary{margin:0;background:#079dbc}
-.fh-popup-btn.green{background:#167247}
-.fh-popup-btn:focus-visible{outline:2px solid #9be8f2;outline-offset:2px}
-.fh-popup-foot{font-size:9px;line-height:1.5;color:#86a4ad;margin-top:10px}
-@media(max-width:360px){.sos{width:175px;height:175px}.priorityGrid{gap:4px}.leaflet-popup.fh-popup .leaflet-popup-content{width:235px!important}}
 </style>
 </head>
 
 <body>
 <div class="app">
-
-<div id="authOverlay" class="authOverlay">
-<div class="authBox">
-<div class="authBrand"><div class="logoIcon">🌊</div><div><div class="authBrandText">FloodHelp</div><div class="authBrandSub">EMERGENCY FLOOD RESCUE</div></div></div>
-<div id="loginPanel" class="authPanel">
-<h1 class="authTitle">Welcome</h1>
-<p class="authSubtitle">Sign in to access the FloodHelp emergency rescue system.</p>
-<input id="loginMobile" class="authInput" type="tel" placeholder="Mobile number">
-<input id="loginPassword" class="authInput" type="password" placeholder="Password">
-<div id="loginError" class="authError"></div>
-<button id="loginBtn" class="authPrimary">🔐 LOGIN</button>
-<button id="showRegisterBtn" class="authLink">CREATE ACCOUNT</button>
-<button id="emergencyAccessBtn" class="authEmergency">🚨 EMERGENCY ACCESS</button>
-</div>
-<div id="registerPanel" class="authPanel hidden">
-<h1 class="authTitle">Create Account</h1>
-<p class="authSubtitle">Create a local FloodHelp account for this device.</p>
-<input id="registerName" class="authInput" placeholder="Full name">
-<input id="registerMobile" class="authInput" type="tel" placeholder="Mobile number">
-<input id="registerPassword" class="authInput" type="password" placeholder="Password">
-<input id="registerConfirm" class="authInput" type="password" placeholder="Confirm password">
-<div id="registerError" class="authError"></div><div id="registerSuccess" class="authSuccess"></div>
-<button id="registerBtn" class="authPrimary">CREATE ACCOUNT</button>
-<button id="backToLoginBtn" class="authBack">← Back to Login</button>
-</div>
-<div class="authNote">🔒 Demo authentication<br>Your account is stored only on this device.</div>
-</div>
-</div>
-
-<header class="header">
-<div class="logo"><div class="logoIcon">🌊</div><div>FloodHelp<div style="font-size:9px;font-weight:normal;color:#6ba5b3">EMERGENCY FLOOD RESCUE</div></div></div>
-<div class="headerRight"><div class="userLine"><span id="userNameDisplay" class="userName">Guest</span><button id="logoutBtn" class="logoutBtn" style="display:none">Logout</button></div><div class="status"><span class="dot"></span><span id="systemStatus">System ready</span></div></div>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><div class="brand-icon">🌊</div><div>FloodHelp<small>EMERGENCY RESCUE NETWORK</small></div></div>
+  <div class="top-actions">
+    <div class="system-pill"><span class="dot"></span><span id="systemStatus">System ready</span></div>
+    <div class="user-chip"><span class="user-avatar">👤</span><span id="userNameDisplay" class="user-label">Guest</span></div>
+    <button id="logoutBtn" class="logout" hidden>Logout</button>
+  </div>
 </header>
 
+<div class="layout">
+<aside class="sidebar">
+  <div class="side-label">WORKSPACE</div>
+  <div class="navlist">
+    <button class="navbtn active" data-screen="home"><span class="navico">⌂</span>Overview</button>
+    <button class="navbtn" data-screen="camp"><span class="navico">🏕️</span>Relief camps</button>
+    <button class="navbtn" data-screen="mapScreen"><span class="navico">🗺️</span>Live map</button>
+    <button class="navbtn" data-screen="rescue"><span class="navico">🚑</span>Rescue requests <span id="sideAlert" class="nav-count" hidden>NEW</span></button>
+    <button class="navbtn" data-screen="boat"><span class="navico">🚤</span>Boat control</button>
+  </div>
+  <div class="side-card"><div class="side-emoji">🛟</div><strong>Safety comes first</strong><p>Share accurate information so rescue teams can understand the emergency and respond appropriately.</p><div class="side-status">● Rescue system ready</div></div>
+  <div class="side-label">EMERGENCY SUPPORT</div>
+  <div class="side-card"><strong>Need urgent assistance?</strong><p>For immediate danger, contact the official emergency services. Do not wait for an app response.</p><a class="btn btn-secondary btn-block" href="tel:112" style="margin-top:12px">☎ Call 112</a></div>
+</aside>
+
+<main class="content">
+
+<!-- HOME -->
 <section id="home" class="screen active">
-<p style="font-size:11px;letter-spacing:1px;color:#6ba5b3">EMERGENCY RESPONSE</p>
-<h1>When the flood is here,<br>help should be simple.</h1><p>One tap to request help.<br>One place to find safety.</p>
-<div class="sosWrap"><button class="sos" id="sosBtn"><strong>SOS</strong><span>I NEED HELP</span></button></div>
-<div class="grid">
-<button class="card" id="campBtn"><div class="cardIcon">🏕️</div><strong>Safest Camp Near Me</strong><small>Distance, vacancy and resources</small></button>
-<button class="card" id="mapBtn"><div class="cardIcon">🗺️</div><strong>Map & Routes</strong><small>My location, SOS locations and camps</small></button>
-</div>
-<div class="numbers"><strong>Emergency numbers</strong><div class="numberGrid">
-<div class="number"><div class="numberInfo"><strong>112</strong><small>All emergencies</small></div><a href="tel:112" class="call">CALL</a></div>
-<div class="number"><div class="numberInfo"><strong>108</strong><small>Ambulance</small></div><a href="tel:108" class="call">CALL</a></div>
-<div class="number"><div class="numberInfo"><strong>101</strong><small>Fire & Rescue</small></div><a href="tel:101" class="call">CALL</a></div>
-<div class="number"><div class="numberInfo"><strong>1098</strong><small>Child Helpline</small></div><a href="tel:1098" class="call">CALL</a></div>
-</div></div>
-<div class="location" id="homeLocation">📍 Location not shared</div>
-<div class="offline">📡 <b id="offlineText">Offline-ready</b><br>SOS records are saved on this device if connection drops.</div>
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">EMERGENCY RESPONSE • FLOODHELP</div>
+        <h1>When every minute matters,<br>help starts here.</h1>
+        <p>Request rescue, share your location, and connect emergency information with the rescue dashboard.</p>
+        <div class="head-actions"><button class="btn btn-primary" id="startSOS">🚨 Request emergency help</button><button class="btn btn-secondary" id="heroMap">🗺️ Open live map</button></div>
+      </div>
+      <div class="hero-visual"><div><button class="sos-button" id="sosBtn"><strong>SOS</strong><span>I NEED HELP</span></button><div class="sos-caption">Only press when you need emergency assistance</div></div></div>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric"><div class="metric-top"><span>All SOS requests</span><span class="metric-icon">🆘</span></div><strong id="homeTotal">0</strong><small>Saved requests</small></div>
+    <div class="metric"><div class="metric-top"><span>Active emergencies</span><span class="metric-icon">🚨</span></div><strong id="homeActive">0</strong><small>Awaiting completion</small></div>
+    <div class="metric"><div class="metric-top"><span>Available camps</span><span class="metric-icon">🏕️</span></div><strong id="homeCamps">3</strong><small>Demo camp records</small></div>
+    <div class="metric"><div class="metric-top"><span>Boat status</span><span class="metric-icon">🚤</span></div><strong id="homeBoat" style="font-size:19px">READY</strong><small id="homeBoatNote">Waiting at camp</small></div>
+  </div>
+  <div class="section-head"><h2>Quick actions</h2><span class="tag">Easy access</span></div>
+  <div class="grid grid-3">
+    <button class="quick-card" data-go="camp"><div class="quick-icon">🏕️</div><strong>Find a relief camp</strong><small>Review camp resources and directions.</small></button>
+    <button class="quick-card" data-go="mapScreen"><div class="quick-icon">🗺️</div><strong>Open live map</strong><small>See the current location, SOS markers and camps.</small></button>
+    <button class="quick-card" data-go="rescue"><div class="quick-icon">🚑</div><strong>Rescue dashboard</strong><small>Review SOS details and request priorities.</small></button>
+  </div>
+  <div class="section-head"><h2>Emergency numbers</h2><span class="tag">India</span></div>
+  <div class="emergency-numbers">
+    <div class="number-card"><div><strong>112</strong><small>All emergencies</small></div><a href="tel:112">CALL ↗</a></div>
+    <div class="number-card"><div><strong>108</strong><small>Ambulance</small></div><a href="tel:108">CALL ↗</a></div>
+    <div class="number-card"><div><strong>101</strong><small>Fire & rescue</small></div><a href="tel:101">CALL ↗</a></div>
+    <div class="number-card"><div><strong>1098</strong><small>Child helpline</small></div><a href="tel:1098">CALL ↗</a></div>
+  </div>
+  <div id="homeLocation" class="location-note">📍 Location has not been shared.</div>
+  <div class="location-note">📡 <strong>Connection:</strong> <span id="connectionText">Checking connection…</span><br><span style="color:#7d9aa8">SOS requests are saved locally on this device. Local storage does not automatically synchronise between devices.</span></div>
 </section>
 
+<!-- SOS FORM -->
 <section id="sos" class="screen">
-<button class="back" id="backSOS">← Back</button><h1>🆘 What's happening?</h1><p>Choose the emergency.<br>Everything else is optional.</p>
-<div class="emergencyGrid">
-<button class="emergency" data-type="trapped"><span>🌊</span><strong>Trapped</strong></button>
-<button class="emergency" data-type="medical"><span>🏥</span><strong>Medical</strong></button>
-<button class="emergency" data-type="rescue"><span>👥</span><strong>People Need Rescue</strong></button>
-<button class="emergency" data-type="home"><span>🏠</span><strong>Flooded Home</strong></button>
-</div>
-<p><strong style="color:#fff">People affected</strong><br><small>Optional</small></p>
-<div class="counter"><button id="minus">−</button><div class="count"><strong id="people">1</strong><br><small>people</small></div><button id="plus">+</button></div>
-<p><strong style="color:#fff">Optional needs</strong></p>
-<div class="grid">
-<button class="card optional" data-opt="children">👶 Children</button><button class="card optional" data-opt="elderly">👴 Elderly</button>
-<button class="card optional" data-opt="medical">🏥 Medical need</button><button class="card optional" data-opt="special">♿ Special assistance</button>
-</div>
-<div id="priority" class="priority"><span id="badge" class="badge critical">CRITICAL</span><h2 id="priorityTitle">Automatic Priority</h2><p>Your emergency has been automatically prioritised.</p>
-<div class="stats"><div class="stat"><strong id="peopleStat">1</strong><small>People</small></div><div class="stat"><strong id="criticalStat">1</strong><small>Critical</small></div><div class="stat"><strong id="vulnerableStat">0</strong><small>Vulnerable</small></div></div>
-<button class="primary" id="requestBtn">🚑 REQUEST RESCUE</button><button class="secondary" id="findCampBtn">🏕️ FIND SAFEST CAMP</button>
-</div>
-<div class="location" id="sosLocation">📍 Location will be detected automatically.</div>
+  <div class="page-head"><div><div class="eyebrow">EMERGENCY REQUEST</div><h1>Tell us what happened.</h1><p>Choose the emergency and add details that help responders understand what assistance is needed.</p></div><button class="btn btn-secondary" data-go="home">← Home</button></div>
+  <div class="panel">
+    <h2>01 · Emergency type</h2>
+    <p style="font-size:11px;margin-top:-5px">Select the closest match.</p>
+    <div class="choice-grid" id="emergencyChoices">
+      <button class="choice" data-type="trapped"><span class="choice-icon">🌊</span><strong>Trapped by floodwater</strong><small>Cannot reach a safe location</small></button>
+      <button class="choice" data-type="medical"><span class="choice-icon">🏥</span><strong>Medical emergency</strong><small>Urgent health-related assistance</small></button>
+      <button class="choice" data-type="rescue"><span class="choice-icon">👥</span><strong>People need rescue</strong><small>One or more people need evacuation</small></button>
+      <button class="choice" data-type="home"><span class="choice-icon">🏠</span><strong>Flooded home</strong><small>Floodwater has entered a home</small></button>
+    </div>
+    <div class="field"><label for="emergencyNotes">What is happening? (optional)</label><textarea id="emergencyNotes" class="textarea" placeholder="Example: Water is rising on the ground floor. We are waiting on the first floor." maxlength="1200"></textarea></div>
+  </div>
+  <div class="panel">
+    <h2>02 · People affected</h2>
+    <p style="font-size:11px;margin-top:-5px">Include everyone who needs help.</p>
+    <div class="counter"><button id="minusPeople" aria-label="Decrease people">−</button><div class="counter-value"><strong id="peopleCount">1</strong><small>people needing help</small></div><button id="plusPeople" aria-label="Increase people">+</button></div>
+    <div class="field"><label>Additional assistance needed</label><div class="optional-grid">
+      <button class="optional" data-need="children"><span class="check">✓</span>👶 Children</button>
+      <button class="optional" data-need="elderly"><span class="check">✓</span>👴 Older adults</button>
+      <button class="optional" data-need="medical"><span class="check">✓</span>🏥 Medical assistance</button>
+      <button class="optional" data-need="special"><span class="check">✓</span>♿ Mobility / special assistance</button>
+      <button class="optional" data-need="pregnancy"><span class="check">✓</span>🤰 Pregnancy</button>
+      <button class="optional" data-need="injury"><span class="check">✓</span>🩹 Injury</button>
+      <button class="optional" data-need="nonSwimmer"><span class="check">✓</span>🛟 Cannot swim</button>
+      <button class="optional" data-need="medicines"><span class="check">✓</span>💊 Urgent medicines</button>
+    </div></div>
+    <div class="field"><label for="specialCareNotes">Special Care details</label><textarea id="specialCareNotes" class="textarea" placeholder="Example: One person uses a wheelchair; one person needs insulin; a child is frightened." maxlength="1200"></textarea><div class="hint">Only enter information that helps the rescue team provide appropriate assistance.</div></div>
+    <div class="field"><label for="requesterPhone">Contact phone (optional)</label><input id="requesterPhone" class="input" type="tel" placeholder="Phone number responders can call" maxlength="20"></div>
+  </div>
+  <div class="panel">
+    <h2>03 · Location</h2><p style="font-size:11px;margin-top:-5px">Allow location access so responders can see where help is needed.</p>
+    <div id="sosLocation" class="location-note">📍 Location has not been detected.</div>
+    <button class="btn btn-secondary btn-block" id="getLocationBtn" style="margin-top:12px">📍 Share my current location</button>
+    <div id="priorityPreview" class="priority-banner"><div><strong>Priority will be calculated</strong><small>Select an emergency type to see the suggested priority.</small></div><span class="badge MEDIUM">PENDING</span></div>
+    <div class="head-actions" style="margin-top:18px"><button class="btn btn-primary" id="requestBtn">🚨 SEND SOS REQUEST</button><button class="btn btn-secondary" id="cancelSOS">Cancel</button></div>
+    <p style="font-size:10px">This prototype is not a replacement for official emergency services. If you are in immediate danger, call 112.</p>
+  </div>
 </section>
 
+<!-- CAMPS -->
 <section id="camp" class="screen">
-<button class="back" id="backCamp">← Back</button><h1>🏕️ Safest Camp Near Me</h1><p>Find a nearby camp with space and essential resources.</p>
-<div class="location" id="campLocation">📍 Detecting location...</div>
-<div class="campMain"><div class="label">BEST AVAILABLE CAMP</div><h2 id="bestName">Community Relief Camp</h2><div class="distance" id="bestDistance">📏 Calculating distance...</div>
-<div class="campStats"><div><strong id="bestVacancy">65%</strong>Space</div><div><strong>💧</strong>Water</div><div><strong>🍱</strong>Food</div></div>
-<button class="primary" id="bestRoute">🛣️ SAFEST ROUTE</button></div>
-<h2>Nearby camps</h2><div id="campList" class="campList"></div>
+  <div class="page-head"><div><div class="eyebrow">SAFETY & SHELTER</div><h1>Relief camps</h1><p>Review the demo camp records and open directions to a selected location.</p></div><button class="btn btn-secondary" id="refreshCamps">↻ Refresh</button></div>
+  <div class="panel"><div class="eyebrow">LOCATION STATUS</div><h2 style="margin-top:9px">Find a camp near you</h2><div id="campLocation" class="location-note">📍 Location not detected.</div><button class="btn btn-primary" id="campGetLocation" style="margin-top:12px">📍 Use my location</button></div>
+  <div class="section-head"><h2>Available camp records</h2><span class="tag">3 camps</span></div>
+  <div id="campList" class="grid grid-2"></div>
+  <p style="font-size:10px">Camp coordinates, vacancy and resources are sample demonstration data. Confirm actual shelter availability and safe travel routes with local authorities.</p>
 </section>
 
+<!-- MAP -->
 <section id="mapScreen" class="screen">
-<button class="back" id="backMap">← Back</button><h1>🗺️ Map & Routes</h1><p>See your location, SOS locations and relief camps.</p>
-<div class="mapIntro"><strong>LIVE EMERGENCY MAP</strong><small>Your location, active SOS requests and relief camps are shown separately.</small></div>
-<div id="map"></div>
-<div class="mapLegend"><div class="legendItem"><span class="legendDot youDot"></span>Your location</div><div class="legendItem"><span class="legendDot sosDot"></span>SOS location</div><div class="legendItem"><span class="legendDot campDot"></span>Relief camp</div><div class="legendItem">🛣️ Safest route</div></div>
-<div class="mapInfo">📍 Blue = You<br>🚨 Red = Active SOS<br>🏕️ Green = Relief camp<br>🛣️ Select a marker for details</div>
+  <div class="page-head"><div><div class="eyebrow">SITUATIONAL AWARENESS</div><h1>Live emergency map</h1><p>View this device's location, SOS requests with GPS coordinates, and demo relief camps.</p></div><button class="btn btn-secondary" id="mapLocate">📍 My location</button></div>
+  <div class="panel"><div id="map"></div><div class="map-legend"><span><i class="legend-dot" style="background:#168dd0"></i>Your location</span><span><i class="legend-dot" style="background:#ef4050"></i>SOS request</span><span><i class="legend-dot" style="background:#32c779"></i>Relief camp</span></div></div>
+  <div class="location-note">🛣️ Use a marker to view its details. Directions open in Google Maps; they do not verify that a route is safe during flooding.</div>
 </section>
 
+<!-- RESCUE -->
 <section id="rescue" class="screen">
-<div class="rescueHeader"><div><p style="font-size:10px;letter-spacing:1px;margin:0;color:#6ba5b3">RESCUE CONTROL</p><h1 style="font-size:28px;margin:5px 0">🚑 Rescue</h1></div><div class="live" id="liveStatus">● LIVE</div></div>
-<p>Live SOS requests are automatically prioritised and linked to their location.</p>
-<div class="priorityGrid"><div class="priorityCard"><strong id="criticalCount" class="criticalNumber">0</strong><small>CRITICAL</small></div><div class="priorityCard"><strong id="highCount" class="highNumber">0</strong><small>HIGH</small></div><div class="priorityCard"><strong id="mediumCount" class="mediumNumber">0</strong><small>MEDIUM</small></div><div class="priorityCard"><strong id="lowCount" class="lowNumber">0</strong><small>LOW</small></div></div>
-<h2>Rescue summary</h2><div class="dashboardSummary"><div class="summaryCard"><strong id="totalRescueCount">0</strong><small>TOTAL RESCUES</small></div><div class="summaryCard"><strong id="activeRescueCount">0</strong><small>ACTIVE REQUESTS</small></div></div>
-<div class="rescuerSection"><h2>🚑 Available Rescuers</h2><div id="rescuerList"></div><button class="rescuerJoin" id="beRescuerBtn">🚑 BE A RESCUER</button></div>
-<div class="rescueTitle">PRIORITISED SOS REQUESTS</div><div id="requestList"></div>
+  <div class="page-head"><div><div class="eyebrow">OPERATIONS CENTER</div><h1>Rescue dashboard</h1><p>Review incoming requests, inspect Special Care details, and update the demonstration status.</p></div><div class="head-actions"><button class="btn btn-secondary" id="refreshRescue">↻ Refresh</button></div></div>
+  <div class="stats-grid">
+    <div class="stat-card"><strong id="criticalCount" style="color:#ff7583">0</strong><small>CRITICAL</small></div>
+    <div class="stat-card"><strong id="highCount" style="color:#ffcc70">0</strong><small>HIGH</small></div>
+    <div class="stat-card"><strong id="mediumCount" style="color:#f6e68b">0</strong><small>MEDIUM</small></div>
+    <div class="stat-card"><strong id="lowCount" style="color:#63e6a4">0</strong><small>LOW</small></div>
+  </div>
+  <div class="grid grid-2">
+    <div class="metric"><div class="metric-top"><span>Total requests</span><span class="metric-icon">🆘</span></div><strong id="totalRescueCount">0</strong><small>All saved requests</small></div>
+    <div class="metric"><div class="metric-top"><span>Active requests</span><span class="metric-icon">🚨</span></div><strong id="activeRescueCount">0</strong><small>Not marked completed</small></div>
+  </div>
+  <div class="section-head"><h2>Incoming SOS requests</h2><span class="tag">Sorted by priority</span></div>
+  <div id="requestList" class="request-list"></div>
+  <div class="section-head"><h2>Rescue team</h2><button class="btn btn-secondary" id="beRescuerBtn">＋ Register rescuer</button></div>
+  <div id="rescuerList"></div>
 </section>
 
+<!-- BOAT -->
 <section id="boat" class="screen">
-<button class="back" id="backBoat">← Back</button>
-<div class="rescueHeader"><div><p style="font-size:10px;color:#6ba5b3">BOAT CONTROL</p><h1 style="font-size:28px;margin:5px 0">🚤 Rescue Boat</h1></div><div class="live" id="boatLiveStatus">● READY</div></div>
-<p>Monitor the rescue boat and launch it toward the highest-priority active SOS.</p>
-<div class="boatStatGrid"><div class="boatStat"><strong id="boatTotal">1</strong><small>BOATS</small></div><div class="boatStat"><strong id="boatActive">0</strong><small>ACTIVE</small></div><div class="boatStat"><strong id="boatReady">1</strong><small>READY</small></div></div>
-<div id="boatMissionContainer"></div>
-<div class="boatStatusBox"><h3>🚤 Boat 01 Status</h3><div class="boatStatusLine"><span>Status</span><strong id="boatCurrentStatus" class="statusReady">READY</strong></div><div class="boatStatusLine"><span>Current location</span><strong id="boatCurrentLocation">Waiting at camp</strong></div><div class="boatStatusLine"><span>Mission</span><strong id="boatMissionStatus">No active mission</strong></div></div>
+  <div class="page-head"><div><div class="eyebrow">FLOODHELP • BOAT OPERATIONS</div><h1>Rescue boat</h1><p>Track the selected rescue mission and use the return control for the demonstration.</p></div></div>
+  <div class="boat-hero">
+    <div class="boat-heading"><div><div class="eyebrow">BOAT 01</div><h2 style="font-size:25px;margin:9px 0" id="boatHeroStatus">READY AT CAMP</h2><p style="font-size:11px;margin:0" id="boatHeroNote">Waiting for a rescue mission.</p></div><div class="big-boat">🚤</div></div>
+    <div class="stats-grid"><div class="stat-card"><strong id="boatTotal">1</strong><small>BOATS</small></div><div class="stat-card"><strong id="boatActive">0</strong><small>ACTIVE</small></div><div class="stat-card"><strong id="boatReady">1</strong><small>READY</small></div><div class="stat-card"><strong id="boatProgress">0%</strong><small>MISSION</small></div></div>
+  </div>
+  <div id="boatMissionContainer"></div>
+  <div class="panel" style="margin-top:16px"><h2>Boat status</h2>
+    <div class="status-row"><span>Current state</span><strong id="boatCurrentStatus" style="color:var(--green)">READY</strong></div>
+    <div class="status-row"><span>Mission</span><strong id="boatMissionStatus">No active mission</strong></div>
+    <div class="status-row"><span>Location / direction</span><strong id="boatCurrentLocation">Waiting at camp</strong></div>
+    <div class="status-row"><span>Control connection</span><strong id="boatConnectionStatus">Demo interface</strong></div>
+    <p style="font-size:10px">Important: this page's visual status does not prove that the physical boat received a command. The supplied app has an ESP32 alarm URL, but no documented boat-return endpoint. A matching ESP32 command handler is needed for real hardware control.</p>
+  </div>
 </section>
 
-<div id="rescuerOverlay" class="rescuerOverlay hidden"><div class="rescuerBox">
-<h2>🚑 Become a Rescuer</h2><p>Register yourself as an available local rescuer.</p>
-<input id="rescuerNameInput" class="rescuerInput" placeholder="Your name"><input id="rescuerPhoneInput" class="rescuerInput" type="tel" placeholder="Phone number">
-<select id="rescuerMethodInput" class="rescuerSelect"><option value="boat">🚤 Boat</option><option value="vehicle">🚑 Vehicle</option><option value="foot">🚶 On Foot</option></select>
-<div id="rescuerLocationStatus" class="rescuerLocation">📍 Location not shared</div>
-<button class="primary" id="shareRescuerLocationBtn">📍 SHARE MY LOCATION</button><button class="primary" id="becomeRescuerConfirm">✅ BECOME AVAILABLE</button><button class="secondary" id="closeRescuerBtn">CANCEL</button><div id="rescuerError" class="rescuerError"></div>
-</div></div>
-
-<nav class="nav"><button id="navHome" class="active"><span>⌂</span><small>Home</small></button><button id="navCamp"><span>🏕️</span><small>Camp</small></button><button id="navMap"><span>🗺️</span><small>Map</small></button><button id="navRescue"><span>🚑</span><small>Rescue</small><span class="navAlert" id="navAlert"></span></button><button id="navBoat"><span>🚤</span><small>Boat</small></button></nav>
+</main>
 </div>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <button class="active" data-screen="home"><span>⌂</span><small>Home</small></button>
+  <button data-screen="camp"><span>🏕️</span><small>Camp</small></button>
+  <button data-screen="mapScreen"><span>🗺️</span><small>Map</small></button>
+  <button data-screen="rescue"><span>🚑</span><small>Rescue</small><i id="mobileAlert" class="mobile-alert"></i></button>
+  <button data-screen="boat"><span>🚤</span><small>Boat</small></button>
+</nav>
+
+<!-- DETAILS MODAL -->
+<div id="detailsOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+  <div class="modal">
+    <div class="modal-head"><div><div class="eyebrow">REQUEST DETAILS</div><h2 id="detailsTitle" style="margin-top:8px">SOS Request</h2><p class="modal-subtitle">Complete emergency information for the rescue operator.</p></div><button class="modal-close" data-close="detailsOverlay" aria-label="Close">×</button></div>
+    <div id="detailsContent"></div>
+    <div class="head-actions" style="margin-top:18px"><button class="btn btn-secondary" data-close="detailsOverlay">Close details</button><button class="btn btn-primary" id="detailMapBtn">🗺️ View location</button></div>
+  </div>
+</div>
+
+<!-- RESCUER MODAL -->
+<div id="rescuerOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head"><div><div class="eyebrow">RESCUE NETWORK</div><h2 style="margin-top:8px">Register as a rescuer</h2><p class="modal-subtitle">This demo stores the registration on this device.</p></div><button class="modal-close" data-close="rescuerOverlay">×</button></div>
+    <div class="field"><label for="rescuerName">Full name</label><input id="rescuerName" class="input" placeholder="Your name"></div>
+    <div class="field"><label for="rescuerPhone">Phone number</label><input id="rescuerPhone" class="input" type="tel" placeholder="Contact number"></div>
+    <div class="field"><label for="rescuerMethod">Rescue method</label><select id="rescuerMethod" class="select"><option value="boat">🚤 Boat</option><option value="vehicle">🚑 Vehicle</option><option value="foot">🚶 On foot</option></select></div>
+    <div id="rescuerLocStatus" class="location-note">📍 Location has not been shared.</div>
+    <div class="head-actions" style="margin-top:13px"><button class="btn btn-secondary" id="shareRescuerLocation">📍 Share location</button><button class="btn btn-primary" id="saveRescuer">Become available</button></div>
+    <div id="rescuerError" class="auth-error"></div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-brand"><div class="brand-icon">🌊</div><div><strong>FloodHelp</strong><small>EMERGENCY RESCUE NETWORK</small></div></div>
+    <div id="loginPanel">
+      <h1 class="auth-title" style="font-size:27px">Welcome back</h1><p>Sign in to your FloodHelp demo account.</p>
+      <div class="field"><label for="loginMobile">Mobile number</label><input id="loginMobile" class="input" type="tel" placeholder="Mobile number" autocomplete="username"></div>
+      <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" class="input" type="password" placeholder="Password" autocomplete="current-password"></div>
+      <div id="loginError" class="auth-error"></div>
+      <button id="loginBtn" class="btn btn-primary btn-block">🔐 Sign in</button>
+      <button id="showRegister" class="btn btn-secondary btn-block" style="margin-top:9px">Create an account</button>
+      <button id="emergencyAccess" class="btn btn-danger btn-block" style="margin-top:9px">🚨 Continue with emergency access</button>
+    </div>
+    <div id="registerPanel" hidden>
+      <h1 class="auth-title" style="font-size:27px">Create account</h1><p>For this demonstration, your account is stored on this device.</p>
+      <div class="field"><label for="registerName">Full name</label><input id="registerName" class="input" placeholder="Full name"></div>
+      <div class="field"><label for="registerMobile">Mobile number</label><input id="registerMobile" class="input" type="tel" placeholder="Mobile number"></div>
+      <div class="field"><label for="registerPassword">Password</label><input id="registerPassword" class="input" type="password" placeholder="At least 4 characters"></div>
+      <div class="field"><label for="registerConfirm">Confirm password</label><input id="registerConfirm" class="input" type="password" placeholder="Repeat password"></div>
+      <div id="registerError" class="auth-error"></div>
+      <button id="registerBtn" class="btn btn-primary btn-block">Create account</button>
+      <button id="backToLogin" class="btn btn-secondary btn-block" style="margin-top:9px">← Back to sign in</button>
+    </div>
+    <div class="auth-note">Demo authentication only. Do not use this local password system for sensitive or real emergency-service accounts.<br>For immediate danger, call 112.</div>
+  </div>
+</div>
+
+<div id="toastWrap" class="toast-wrap" aria-live="polite"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+"use strict";
 const $=id=>document.getElementById(id);
-const screens=document.querySelectorAll(".screen");
-function openScreen(id){
- screens.forEach(x=>x.classList.remove("active"));$(id).classList.add("active");
- document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
- if(id==="home")navHome.classList.add("active");
- if(id==="camp")navCamp.classList.add("active");
- if(id==="mapScreen")navMap.classList.add("active");
- if(id==="rescue"){navRescue.classList.add("active");navAlert.classList.remove("show");renderRescueDashboard()}
- if(id==="boat"){navBoat.classList.add("active");renderBoatPage()}
- window.scrollTo(0,0);
- if(id==="mapScreen"){initializeMap();setTimeout(()=>map&&map.invalidateSize(),300)}
-}
-navHome.onclick=()=>openScreen("home");
-navCamp.onclick=()=>{openScreen("camp");getLocation()};
-navMap.onclick=()=>{openScreen("mapScreen");getLocation()};
-navRescue.onclick=()=>openScreen("rescue");
-navBoat.onclick=()=>openScreen("boat");
-backBoat.onclick=backSOS.onclick=backCamp.onclick=backMap.onclick=()=>openScreen("home");
-sosBtn.onclick=()=>{openScreen("sos");getLocation()};
-campBtn.onclick=()=>{openScreen("camp");getLocation()};
-mapBtn.onclick=()=>{openScreen("mapScreen");getLocation()};
-findCampBtn.onclick=()=>{openScreen("camp");getLocation()};
+const safeJSON=(value,fallback)=>{try{return JSON.parse(value)||fallback}catch{return fallback}};
+const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const screens=[...document.querySelectorAll(".screen")];
+let currentScreen="home",map=null,userMarker=null,sosMarkers=[],campMarkers=[];
+let userLat=null,userLng=null,peopleCount=1,emergencyType="";
+let boatState="READY",selectedDetailsId=null,newRescuerLat=null,newRescuerLng=null;
+const needs={children:false,elderly:false,medical:false,special:false,pregnancy:false,injury:false,nonSwimmer:false,medicines:false};
+let sosRequests=safeJSON(localStorage.getItem("floodhelp_sos"),[]);
+let registeredRescuers=safeJSON(localStorage.getItem("floodhelp_registered_rescuers"),[]);
+let nextSosNumber=1043;
 
-function updateConnection(){systemStatus.textContent=navigator.onLine?"System ready":"Offline mode";offlineText.textContent=navigator.onLine?"Offline-ready":"OFFLINE — local SOS storage active"}
-addEventListener("online",updateConnection);addEventListener("offline",updateConnection);updateConnection();
-
-let emergencyType="",peopleCount=1;
-let needs={children:false,elderly:false,medical:false,special:false};
-document.querySelectorAll(".emergency").forEach(b=>b.onclick=()=>{
- document.querySelectorAll(".emergency").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");emergencyType=b.dataset.type;calculatePriority()
-});
-plus.onclick=()=>{if(peopleCount<20)peopleCount++;people.textContent=peopleCount;calculatePriority()};
-minus.onclick=()=>{if(peopleCount>1)peopleCount--;people.textContent=peopleCount;calculatePriority()};
-document.querySelectorAll(".optional").forEach(b=>b.onclick=()=>{
- let o=b.dataset.opt;needs[o]=!needs[o];b.classList.toggle("selected",needs[o]);calculatePriority()
-});
-function getPriorityData(){
- let v=Object.values(needs).filter(Boolean).length,p="MEDIUM";
- if(needs.medical||needs.special||peopleCount>=6||(emergencyType==="trapped"&&v))p="CRITICAL";
- else if(emergencyType==="trapped"||emergencyType==="medical"||peopleCount>=4||needs.children||needs.elderly)p="HIGH";
- let c=p==="CRITICAL"?peopleCount:(Object.values(needs).some(Boolean)?1:0);
- return{priority:p,vulnerable:v,critical:c}
-}
-function calculatePriority(){
- if(!emergencyType)return;let d=getPriorityData();priority.classList.add("show");badge.className="badge "+d.priority.toLowerCase();badge.textContent=d.priority;
- peopleStat.textContent=peopleCount;criticalStat.textContent=d.critical;vulnerableStat.textContent=d.vulnerable;
- priorityTitle.textContent=d.priority==="CRITICAL"?"Immediate rescue recommended":d.priority==="HIGH"?"High priority rescue":"Response required"
-}
-
-let userLat=null,userLng=null,map=null,userMarker=null,sosMarkers=[],campMarkers=[];
-function getLocation(){
- if(!navigator.geolocation){homeLocation.textContent="📍 Location unavailable";return}
- navigator.geolocation.getCurrentPosition(p=>{
-  userLat=p.coords.latitude;userLng=p.coords.longitude;
-  homeLocation.textContent="📍 Location detected";homeLocation.classList.add("ok");
-  sosLocation.textContent="📍 Location detected";sosLocation.classList.add("ok");
-  campLocation.textContent="📍 Your location detected";campLocation.classList.add("ok");
-  updateCamps();renderRescuers();updateRescueCards();renderBoatPage();if(map)updateMapLocation()
- },()=>{sosLocation.textContent="📍 Location permission needed for exact SOS location."})
-}
-function distanceKm(a,b,c,d){
- let R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;
- let z=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;
- return R*2*Math.atan2(Math.sqrt(z),Math.sqrt(1-z))
-}
 const camps=[
  {name:"Community Relief Camp",lat:11.073,lng:76.073,vacancy:65,water:true,food:true,medicine:true},
  {name:"Emergency Shelter Centre",lat:11.079,lng:76.080,vacancy:42,water:true,food:true,medicine:false},
  {name:"Safe Haven Camp",lat:11.067,lng:76.064,vacancy:25,water:true,food:false,medicine:true}
 ];
-function updateCamps(){
- let list=[...camps];
- if(userLat!==null)list.sort((a,b)=>distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng));
- let b=list[0];bestName.textContent=b.name;bestVacancy.textContent=b.vacancy+"%";
- bestDistance.textContent=userLat!==null?"📏 "+distanceKm(userLat,userLng,b.lat,b.lng).toFixed(1)+" km away":"📏 Enable location to calculate distance";
- renderCamps(list)
-}
-function renderCamps(list=camps){
- campList.innerHTML="";
- list.forEach(c=>{
-  let d=userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km":"Distance unavailable";
-  let x=document.createElement("div");x.className="camp";
-  let h=document.createElement("h3");h.textContent="🏕️ "+c.name;
-  let p=document.createElement("p");
-  p.textContent=`📏 ${d} | 👥 Vacancy: ${c.vacancy}% | 💧 Water: ${c.water?"Available":"Unavailable"} | 🍱 Food: ${c.food?"Available":"Unavailable"} | 💊 Medicine: ${c.medicine?"Available":"Unavailable"}`;
-  let b=document.createElement("button");b.textContent="🛣️ ROUTE TO CAMP";b.onclick=()=>routeToCamp(c);
-  x.append(h,p,b);campList.appendChild(x)
- }
-)}
-function routeToCamp(c){
- if(userLat===null){alert("Please allow location access first.");getLocation();return}
- window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=walking`,"_blank")
-}
-bestRoute.onclick=()=>{
- let c=[...camps].sort((a,b)=>userLat===null?0:distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng))[0];routeToCamp(c)
-};
-
-const rescuers=[
+const demoRescuers=[
  {id:"demo1",name:"Rescue Unit 01",phone:"9876543210",lat:11.0745,lng:76.075,status:"AVAILABLE",method:"vehicle"},
  {id:"demo2",name:"Rescue Unit 02",phone:"9876543211",lat:11.0805,lng:76.0815,status:"AVAILABLE",method:"vehicle"},
  {id:"demo3",name:"Rescue Unit 03",phone:"9876543212",lat:11.068,lng:76.0655,status:"AVAILABLE",method:"foot"},
- {id:"demo4",name:"Rescue Boat Team",phone:"9876543213",lat:11.0715,lng:76.07,status:"AVAILABLE",method:"boat"}
+ {id:"demo4",name:"Rescue Boat Team",phone:"9876543213",lat:11.0715,lng:76.070,status:"AVAILABLE",method:"boat"}
 ];
-let registeredRescuers=JSON.parse(localStorage.getItem("floodhelp_registered_rescuers")||"[]");
-function allRescuers(){return [...rescuers,...registeredRescuers]}
-function methodName(m){return m==="boat"?"🚤 Boat":m==="vehicle"?"🚑 Vehicle":"🚶 On Foot"}
-function getRescuerDistance(r){return userLat===null?"Distance unavailable":distanceKm(userLat,userLng,r.lat,r.lng).toFixed(1)+" km away"}
-function renderRescuers(){
- rescuerList.innerHTML="";
- allRescuers().forEach((r,i)=>{
-  let c=document.createElement("div");c.className="rescuerCard";
-  let top=document.createElement("div");top.className="rescuerTop";
-  let n=document.createElement("div");n.className="rescuerName";n.textContent="🚑 "+r.name;
-  let s=document.createElement("div");s.className="rescuerStatus";s.textContent="● "+r.status;
-  top.append(n,s);
-  let info=document.createElement("div");info.className="rescuerInfo";info.textContent=`📞 ${r.phone} | ${methodName(r.method)} | 📏 ${getRescuerDistance(r)}`;
-  let actions=document.createElement("div");actions.className="rescuerActions";
-  let call=document.createElement("a");call.className="callRescuer";call.href="tel:"+r.phone;call.textContent="📞 CALL";
-  let locate=document.createElement("button");locate.className="locateRescuer";locate.textContent="🗺️ LOCATE";locate.onclick=()=>locateRescuer(i);
-  actions.append(call,locate);c.append(top,info,actions);rescuerList.appendChild(c)
- })
-}
-function locateRescuer(i){
- let r=allRescuers()[i];if(!r)return;openScreen("mapScreen");initializeMap();
- setTimeout(()=>{if(map){map.setView([r.lat,r.lng],16);L.marker([r.lat,r.lng],{icon:createCircleIcon("you")}).addTo(map).bindPopup(`<strong>🚑 ${escapePopupText(r.name)}</strong><br>${escapePopupText(methodName(r.method))}<br>📞 ${escapePopupText(r.phone)}`).openPopup()}},400)
-}
-let newRescuerLat=null,newRescuerLng=null;
-beRescuerBtn.onclick=()=>{rescuerOverlay.classList.remove("hidden");rescuerError.textContent="";let u=getStoredUser();if(u){rescuerNameInput.value=u.name;rescuerPhoneInput.value=u.mobile}};
-closeRescuerBtn.onclick=()=>rescuerOverlay.classList.add("hidden");
-shareRescuerLocationBtn.onclick=()=>{
- if(!navigator.geolocation){rescuerError.textContent="Location unavailable.";return}
- rescuerLocationStatus.textContent="📍 Getting location...";
- navigator.geolocation.getCurrentPosition(p=>{newRescuerLat=p.coords.latitude;newRescuerLng=p.coords.longitude;rescuerLocationStatus.textContent="📍 Location shared successfully"},()=>{rescuerLocationStatus.textContent="⚠️ Location permission denied"})
-};
-becomeRescuerConfirm.onclick=()=>{
- let name=rescuerNameInput.value.trim(),phone=rescuerPhoneInput.value.replace(/\D/g,""),method=rescuerMethodInput.value;rescuerError.textContent="";
- if(!name){rescuerError.textContent="Enter your name.";return}
- if(phone.length<10){rescuerError.textContent="Enter a valid phone number.";return}
- if(newRescuerLat===null){rescuerError.textContent="Please share your location first.";return}
- let r=registeredRescuers.find(x=>x.phone===phone);
- if(r)Object.assign(r,{name,method,lat:newRescuerLat,lng:newRescuerLng,status:"AVAILABLE"});
- else registeredRescuers.push({id:"R"+Date.now(),name,phone,method,lat:newRescuerLat,lng:newRescuerLng,status:"AVAILABLE",registered:true});
- localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers));rescuerOverlay.classList.add("hidden");renderRescuers();alert("🚑 You are now AVAILABLE as a rescuer!")
-};
 
-/* SOS STORAGE */
-let sosNumber=1043,sosRequests=JSON.parse(localStorage.getItem("floodhelp_sos")||"[]");
-const RESCUE_DEMO_DURATION=30000;
-let boatState="READY",completedReturnTimers={};
-function getStoredUser(){try{return JSON.parse(localStorage.getItem("floodhelp_user")||"null")}catch(e){return null}}
-function requester(){let u=getStoredUser(),s=localStorage.getItem("floodhelp_logged_in");return{s:s==="true"&&u?u.name:"Emergency User",p:s==="true"&&u?u.mobile:""}}
-function saveSOSLocal(){localStorage.setItem("floodhelp_sos",JSON.stringify(sosRequests))}
-function addLiveSOS(priority){
- sosNumber++;let names={trapped:"🌊 Person trapped by floodwater",medical:"🏥 Medical emergency",rescue:"👥 People need rescue",home:"🏠 Flooded home"},v=[];
- if(needs.children)v.push("👶 Child");if(needs.elderly)v.push("👴 Elderly");if(needs.medical)v.push("🏥 Medical");if(needs.special)v.push("♿ Special assistance");
- let u=requester(),r={id:"SOS #"+sosNumber,priority,title:names[emergencyType]||"🆘 Emergency assistance required",people:peopleCount,vulnerable:v.length?" • "+v.join(", "):"",lat:userLat,lng:userLng,time:new Date().toLocaleTimeString(),status:"SOS SENT",rescueStartTime:Date.now(),progress:0,boatDistance:3,eta:10,assigned:false,completed:false,requesterName:u.s,requesterPhone:u.p};
- sosRequests.unshift(r);saveSOSLocal();
- if(navigator.onLine&&window.saveSOSToFirestore)window.saveSOSToFirestore(r);
- navAlert.classList.add("show");liveStatus.classList.add("alert");liveStatus.textContent="● NEW SOS";
- setTimeout(()=>{liveStatus.classList.remove("alert");liveStatus.textContent="● LIVE"},7000)
+function toast(message,type=""){
+ const t=document.createElement("div");t.className="toast "+type;t.textContent=message;$("toastWrap").appendChild(t);
+ setTimeout(()=>t.remove(),4200);
 }
-function startRescueSimulation(r){if(!r.rescueStartTime){r.rescueStartTime=Date.now();r.status="SOS SENT";r.progress=0;r.boatDistance=3;r.eta=10;r.completed=false;r.assigned=false}}
-function releaseRescuer(r){
- if(!r.assignedRescuerId)return;
- let x=registeredRescuers.find(a=>a.id===r.assignedRescuerId);
- if(x){x.status="AVAILABLE";localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers))}
+function go(screen){
+ if(!$ (screen))return;
+ currentScreen=screen;screens.forEach(s=>s.classList.toggle("active",s.id===screen));
+ document.querySelectorAll("[data-screen]").forEach(b=>b.classList.toggle("active",b.dataset.screen===screen));
+ if(screen==="rescue")$("sideAlert").hidden=true;
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(screen==="camp"){renderCamps();requestLocation(false)}
+ if(screen==="mapScreen"){initializeMap();requestLocation(false);setTimeout(()=>map&&map.invalidateSize(),200)}
+ if(screen==="rescue")renderRescue();
+ if(screen==="boat")renderBoat();
+ updateHome();
 }
-function getRescueSimulation(r){
- startRescueSimulation(r);
- if(r.completed)return{status:"RESCUE COMPLETED",progress:100,distance:0,eta:0,stage:4,message:"Rescue completed successfully. Boat is returning to the relief camp."};
- let e=Date.now()-Number(r.rescueStartTime),p=Math.min(100,e/RESCUE_DEMO_DURATION*100),stage=e<4000?0:e<8000?1:e<22000?2:3;
- let status=["SOS SENT","RESCUE ASSIGNED","BOAT ON THE WAY","RESCUE ARRIVING"][stage];
- let msg=["Emergency request received. Rescue team is being notified.","Rescue team assigned to this emergency.","Rescue boat is travelling toward the SOS location.","Rescue boat is approaching the emergency location."][stage];
- if(p>=100){
-  r.completed=true;r.assigned=true;r.status="RESCUE COMPLETED";r.progress=100;r.boatDistance=0;r.eta=0;releaseRescuer(r);boatState="RETURNING";saveSOSLocal();
-  if(!completedReturnTimers[r.id]){completedReturnTimers[r.id]=1;setTimeout(()=>{boatState="READY";renderBoatPage();updateRescueCards();delete completedReturnTimers[r.id]},5000)}
-  return{status:"RESCUE COMPLETED",progress:100,distance:0,eta:0,stage:4,message:"Rescue completed successfully. Boat is returning to the relief camp."}
+document.querySelectorAll("[data-screen]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.screen)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+$("startSOS").onclick=$("sosBtn").onclick=()=>{go("sos");requestLocation(false)};
+$("heroMap").onclick=()=>go("mapScreen");
+$("cancelSOS").onclick=()=>go("home");
+
+function getStoredUser(){return safeJSON(localStorage.getItem("floodhelp_user"),null)}
+function loggedIn(){return localStorage.getItem("floodhelp_logged_in")}
+function updateUserDisplay(){
+ const u=getStoredUser(),s=loggedIn();
+ $("userNameDisplay").textContent=s==="emergency"?"Emergency User":s==="true"&&u?u.name:"Guest";
+ $("logoutBtn").hidden=!s;
+}
+$("logoutBtn").onclick=()=>{
+ if(confirm("Log out of FloodHelp?")){localStorage.removeItem("floodhelp_logged_in");$("authOverlay").classList.remove("hidden");$("loginPanel").hidden=false;$("registerPanel").hidden=true;updateUserDisplay()}
+};
+$("showRegister").onclick=()=>{$("loginPanel").hidden=true;$("registerPanel").hidden=false;$("registerError").textContent=""};
+$("backToLogin").onclick=()=>{$("loginPanel").hidden=false;$("registerPanel").hidden=true};
+$("registerBtn").onclick=()=>{
+ const name=$("registerName").value.trim(),mobile=$("registerMobile").value.replace(/\D/g,""),password=$("registerPassword").value;
+ if(name.length<2||mobile.length<10||password.length<4||password!==$("registerConfirm").value){$("registerError").textContent="Check your name, mobile number and matching passwords.";return}
+ localStorage.setItem("floodhelp_user",JSON.stringify({name,mobile,password}));
+ localStorage.setItem("floodhelp_logged_in","true");$("authOverlay").classList.add("hidden");updateUserDisplay();toast("Account created on this device.","success");
+};
+$("loginBtn").onclick=()=>{
+ const u=getStoredUser(),mobile=$("loginMobile").value.replace(/\D/g,"");
+ if(!u||u.mobile!==mobile||u.password!==$("loginPassword").value){$("loginError").textContent="The mobile number or password is incorrect.";return}
+ localStorage.setItem("floodhelp_logged_in","true");$("authOverlay").classList.add("hidden");$("loginError").textContent="";updateUserDisplay();go("home");
+};
+$("emergencyAccess").onclick=()=>{localStorage.setItem("floodhelp_logged_in","emergency");$("authOverlay").classList.add("hidden");updateUserDisplay();go("home")};
+
+function updateConnection(){
+ $("systemStatus").textContent=navigator.onLine?"System online":"Offline mode";
+ $("connectionText").textContent=navigator.onLine?"Online; external services may be available.":"Offline. Local records remain on this device.";
+}
+addEventListener("online",updateConnection);addEventListener("offline",updateConnection);
+
+function distanceKm(a,b,c,d){
+ const R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;
+ const z=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;
+ return R*2*Math.atan2(Math.sqrt(z),Math.sqrt(1-z));
+}
+function requestLocation(showMessage=true){
+ if(!navigator.geolocation){
+  setLocationText("Location services are not available in this browser.");
+  if(showMessage)toast("This browser does not support location.","error");
+  return;
  }
- let d=Math.max(0,3-3*p/100),eta=Math.max(0,Math.ceil(10*(1-p/100)));
- r.status=status;r.progress=Math.round(p);r.boatDistance=+d.toFixed(1);r.eta=eta;
- return{status,progress:Math.round(p),distance:+d.toFixed(1),eta,stage,message:msg}
+ navigator.geolocation.getCurrentPosition(p=>{
+  userLat=p.coords.latitude;userLng=p.coords.longitude;
+  const txt=`📍 Location shared: ${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+  $("homeLocation").textContent=txt;$("homeLocation").classList.add("ok");
+  $("sosLocation").textContent=txt;$("sosLocation").classList.add("ok");
+  $("campLocation").textContent=txt;$("campLocation").classList.add("ok");
+  $("rescuerLocStatus").textContent=txt;
+  if(map){updateMapLocation();updateSosMarkers()}
+  renderCamps();renderRescue();renderBoat();updateHome();
+  if(showMessage)toast("Location shared successfully.","success");
+ },()=>{
+  setLocationText("📍 Location permission was not granted. You can still create a request, but it will not include GPS coordinates.");
+  if(showMessage)toast("Location permission was denied.","error");
+ },{enableHighAccuracy:true,timeout:12000,maximumAge:15000});
 }
-setInterval(()=>{
- sosRequests.forEach(r=>{if(!r.completed)getRescueSimulation(r)});
- saveSOSLocal();updateRescueCounts();updateDashboardSummary();updateRescueCards();renderBoatPage();if(map)updateAllSOSMarkers()
-},1000);
-function updateRescueCounts(){let c={CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0};sosRequests.forEach(r=>c[r.priority]++);criticalCount.textContent=c.CRITICAL;highCount.textContent=c.HIGH;mediumCount.textContent=c.MEDIUM;lowCount.textContent=c.LOW}
-function updateDashboardSummary(){totalRescueCount.textContent=sosRequests.length;activeRescueCount.textContent=sosRequests.filter(r=>!r.completed).length}
-function getRescueDistance(r){return userLat===null||r.lat===null?"Distance unavailable":distanceKm(userLat,userLng,Number(r.lat),Number(r.lng)).toFixed(1)+" km away"}
-function createRequestCard(r){
- let card=document.createElement("div");card.className="request";let x=getRescueSimulation(r),available=allRescuers().filter(a=>a.status==="AVAILABLE");
- let options=`<option value="">Auto-select nearest rescuer</option>`+available.map(a=>`<option value="${escapePopupText(a.id)}">${escapePopupText(a.name)} — ${escapePopupText(methodName(a.method))}</option>`).join("");
- let assign=r.completed?`<button class="assignBtn assigned" disabled>✓ COMPLETED</button>`:`<select class="rescuerSelect">${options}</select><button class="assignBtn" onclick="assignRequest(this,'${escapePopupText(r.id)}')">ASSIGN RESCUE</button>`;
- let location=r.lat!==null&&r.lng!==null?`<div class="requestLocation">📍 SOS LOCATION ATTACHED<br>${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</div>`:`<div class="requestLocation">⚠️ Exact GPS location unavailable.</div>`;
- let steps=["SOS SENT","ASSIGNED","ON THE WAY","ARRIVING","COMPLETE"];
- let progress=`<div class="rescueProgress"><div class="progressTop"><span class="progressStatus">🚨 ${x.status}</span><div class="progressEta">🚤 ${x.distance.toFixed(1)} km<br>ETA: <strong>~${x.eta} min</strong></div></div><div class="progressBar"><div class="progressFill" style="width:${x.progress}%"></div></div><div class="progressSteps">${steps.map((s,i)=>`<div class="progressStep ${x.stage>=i?"active":""} ${x.stage===i?"current":""}">${["🚨","🚑","🚤","📍","🏕️"][i]}<br>${s}</div>`).join("")}</div><div class="progressMessage"><strong>${x.message}</strong></div></div>`;
- card.innerHTML=`<div class="requestTop"><span class="badge ${r.priority.toLowerCase()}">${escapePopupText(r.priority)}</span><span class="requestId">${escapePopupText(r.id)}</span></div><h3>${escapePopupText(r.title)}</h3><div class="requestInfo">👤 ${escapePopupText(r.requesterName||"Unknown User")}<br>📞 ${escapePopupText(r.requesterPhone||"No number")}<br>👥 ${r.people} people ${escapePopupText(r.vulnerable||"")}<br>📏 ${getRescueDistance(r)}<br>🕐 ${escapePopupText(r.time||"")}</div>${location}${progress}<div class="requestButtons"><button class="viewBtn" onclick="viewRequest('${escapePopupText(r.id)}')">VIEW</button><button class="mapRequestBtn" onclick="showSOSOnMap('${escapePopupText(r.id)}')">🗺️ VIEW ON MAP</button></div><div class="requestButtons"><a class="callRequester" href="${r.requesterPhone?"tel:"+encodeURIComponent(r.requesterPhone):"#"}">📞 CALL</a>${assign}</div>`;
- return card
+function setLocationText(t){
+ $("homeLocation").textContent=t;$("sosLocation").textContent=t;$("campLocation").textContent=t;
 }
-function updateRescueCards(){requestList.innerHTML="";sosRequests.forEach(r=>requestList.appendChild(createRequestCard(r)))}
-function renderRescueDashboard(){updateRescueCounts();updateDashboardSummary();renderRescuers();updateRescueCards()}
-function assignRequest(btn,id){
- let r=sosRequests.find(x=>x.id===id);if(!r||r.completed)return;
- let select=btn.previousElementSibling,chosen=select&&select.value,list=allRescuers();
- let res=chosen?list.find(x=>x.id===chosen):list.filter(x=>x.status==="AVAILABLE").sort((a,b)=>distanceKm(r.lat||userLat||0,r.lng||userLng||0,a.lat,a.lng)-distanceKm(r.lat||userLat||0,r.lng||userLng||0,b.lat,b.lng))[0];
- if(!res){alert("No available rescuer.");return}
- r.assignedRescuerId=res.id;r.assignedRescuerName=res.name;r.assignedRescuerPhone=res.phone;r.assignedRescuerMethod=res.method;
- if(res.registered){let z=registeredRescuers.find(x=>x.id===res.id);if(z)z.status="BUSY";localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers))}
- r.assigned=true;r.status="RESCUE ASSIGNED";r.rescueStartTime=Date.now();boatState="ACTIVE";saveSOSLocal();renderRescueDashboard();renderBoatPage()
-}
+$("getLocationBtn").onclick=$("campGetLocation").onclick=$("mapLocate").onclick=()=>requestLocation(true);
 
-requestBtn.onclick=()=>{
- if(!emergencyType){alert("Please select the emergency type.");return}
- if(userLat===null&&navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;finishSOS()},finishSOS)
- }else finishSOS()
-};
+function getPriority(){
+ let vulnerable=Object.values(needs).filter(Boolean).length;
+ let priority="MEDIUM";
+ if(needs.medical||needs.special||needs.injury||needs.pregnancy||needs.medicines||peopleCount>=6||(emergencyType==="trapped"&&vulnerable))priority="CRITICAL";
+ else if(emergencyType==="trapped"||emergencyType==="medical"||peopleCount>=4||needs.children||needs.elderly||needs.nonSwimmer)priority="HIGH";
+ return{priority,vulnerable};
+}
+function updatePriorityPreview(){
+ const box=$("priorityPreview");
+ if(!emergencyType){box.innerHTML='<div><strong>Select an emergency type</strong><small>Priority will appear here.</small></div><span class="badge MEDIUM">PENDING</span>';return}
+ const d=getPriority(),labels={CRITICAL:"Immediate attention recommended",HIGH:"High-priority assistance",MEDIUM:"Response required",LOW:"Lower priority"};
+ box.innerHTML=`<div><strong>${labels[d.priority]}</strong><small>${peopleCount} people · ${d.vulnerable} additional care needs selected</small></div><span class="badge ${d.priority}">${d.priority}</span>`;
+}
+document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{
+ emergencyType=b.dataset.type;
+ document.querySelectorAll("[data-type]").forEach(x=>x.classList.toggle("selected",x===b));
+ updatePriorityPreview();
+});
+document.querySelectorAll("[data-need]").forEach(b=>b.onclick=()=>{
+ const k=b.dataset.need;needs[k]=!needs[k];b.classList.toggle("selected",needs[k]);updatePriorityPreview();
+});
+$("plusPeople").onclick=()=>{peopleCount=Math.min(30,peopleCount+1);$("peopleCount").textContent=peopleCount;updatePriorityPreview()};
+$("minusPeople").onclick=()=>{peopleCount=Math.max(1,peopleCount-1);$("peopleCount").textContent=peopleCount;updatePriorityPreview()};
+
+function selectedNeeds(){
+ const names={children:"Children",elderly:"Older adults",medical:"Medical assistance",special:"Mobility / special assistance",pregnancy:"Pregnancy",injury:"Injury",nonSwimmer:"Cannot swim",medicines:"Urgent medicines"};
+ return Object.keys(needs).filter(k=>needs[k]).map(k=>names[k]);
+}
+function currentRequester(){
+ const u=getStoredUser();
+ return{requesterName:loggedIn()==="true"&&u?u.name:"Emergency User",requesterPhone:$("requesterPhone").value.trim()||(loggedIn()==="true"&&u?u.mobile:"")};
+}
+function saveRequests(){localStorage.setItem("floodhelp_sos",JSON.stringify(sosRequests))}
 async function finishSOS(){
- let d=getPriorityData();addLiveSOS(d.priority);
- try{await fetch("http://192.168.1.18/on",{method:"GET",mode:"no-cors"});console.log("ESP32 emergency alarm request sent.")}
- catch(error){console.error("ESP32 alarm connection failed:",error)}
- openScreen("rescue");renderRescueDashboard();
- alert("🚨 SOS SENT!\n\nPriority: "+d.priority+"\nPeople: "+peopleCount+"\n\n📍 "+(userLat!==null?"GPS location attached.":"GPS location unavailable.")+"\n\n🔊 Emergency alarm request sent.")
+ if(!emergencyType){toast("Choose the emergency type first.","error");return}
+ const d=getPriority(),person=currentRequester(),num=++nextSosNumber;
+ const titleMap={trapped:"Person trapped by floodwater",medical:"Medical emergency",rescue:"People need rescue",home:"Flooded home"};
+ const r={
+  id:"SOS #"+num,priority:d.priority,title:titleMap[emergencyType]||"Emergency assistance",
+  type:emergencyType,notes:$("emergencyNotes").value.trim(),people:peopleCount,
+  needs:selectedNeeds(),specialCareNotes:$("specialCareNotes").value.trim(),
+  lat:userLat,lng:userLng,time:new Date().toLocaleString(),status:"SOS SENT",
+  requesterName:person.requesterName,requesterPhone:person.requesterPhone,
+  assigned:false,completed:false,createdAt:Date.now(),progress:0
+ };
+ sosRequests.unshift(r);saveRequests();updateRescue();updateHome();
+ if(navigator.onLine&&window.saveSOSToFirestore){
+  window.saveSOSToFirestore(r).then(id=>{if(id)console.log("Saved SOS to Firestore:",id)});
+ }
+ // Keep the existing alarm URL supplied in the original app.
+ try{await fetch("http://192.168.1.18/on",{method:"GET",mode:"no-cors"})}
+ catch(e){console.warn("Existing ESP32 alarm endpoint was not reachable.",e)}
+ toast("SOS request saved on this device.","success");
+ go("rescue");
+ showDetails(r.id);
 }
-function viewRequest(id){
- let r=sosRequests.find(x=>x.id===id);if(!r)return;let x=getRescueSimulation(r);
- alert(`${r.id}\n\n${r.title}\n\n👤 ${r.requesterName||"Unknown User"}\n📞 ${r.requesterPhone||"No number"}\n\nPriority: ${r.priority}\nPeople: ${r.people}\nStatus: ${x.status}\nBoat distance: ${x.distance.toFixed(1)} km\nETA: ~${x.eta} min`)
+$("requestBtn").onclick=finishSOS;
+
+function statusFor(r){
+ if(r.completed)return"RESCUE COMPLETED";
+ return r.status||"SOS SENT";
+}
+function priorityOrder(p){return({CRITICAL:0,HIGH:1,MEDIUM:2,LOW:3})[p]??4}
+function getActiveBoatRequest(){
+ return sosRequests.filter(r=>!r.completed).sort((a,b)=>priorityOrder(a.priority)-priorityOrder(b.priority)||Number(b.createdAt||0)-Number(a.createdAt||0))[0]||null;
+}
+function getAllRescuers(){return[...demoRescuers,...registeredRescuers]}
+function methodLabel(m){return m==="boat"?"🚤 Boat":m==="vehicle"?"🚑 Vehicle":"🚶 On foot"}
+function saveRescuers(){localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers))}
+
+function updateHome(){
+ $("homeTotal").textContent=sosRequests.length;
+ $("homeActive").textContent=sosRequests.filter(r=>!r.completed).length;
+ $("homeBoat").textContent=boatState==="READY"?"READY":boatState==="RETURNING"?"RETURNING":"ACTIVE";
+ $("homeBoatNote").textContent=boatState==="READY"?"Waiting at camp":boatState==="RETURNING"?"Return requested":"Mission in progress";
+ $("homeCamps").textContent=camps.length;
+ const hasNew=sosRequests.some(r=>!r.viewed);
+ $("sideAlert").hidden=!hasNew;$("mobileAlert").classList.toggle("show",hasNew);
+}
+function updateRescue(){
+ const counts={CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0};
+ sosRequests.forEach(r=>counts[r.priority]=(counts[r.priority]||0)+1);
+ $("criticalCount").textContent=counts.CRITICAL;$("highCount").textContent=counts.HIGH;
+ $("mediumCount").textContent=counts.MEDIUM;$("lowCount").textContent=counts.LOW;
+ $("totalRescueCount").textContent=sosRequests.length;
+ $("activeRescueCount").textContent=sosRequests.filter(r=>!r.completed).length;
+ renderRequestCards();renderRescuers();renderBoat();updateHome();
+}
+function requestDistance(r){
+ if(userLat===null||r.lat==null||r.lng==null)return"Unavailable";
+ return distanceKm(userLat,userLng,Number(r.lat),Number(r.lng)).toFixed(1)+" km";
+}
+function renderRequestCards(){
+ const host=$("requestList");host.innerHTML="";
+ if(!sosRequests.length){
+  host.innerHTML='<div class="empty-state"><div class="empty-icon">🛟</div><h3>No SOS requests yet</h3><p>When a request is submitted, it will appear here. Use the SOS button to create a demonstration request.</p><button class="btn btn-primary" style="margin-top:15px" data-go="sos">Create SOS request</button></div>';
+  host.querySelector("[data-go]").onclick=()=>go("sos");return;
+ }
+ [...sosRequests].sort((a,b)=>priorityOrder(a.priority)-priorityOrder(b.priority)||Number(b.createdAt||0)-Number(a.createdAt||0)).forEach(r=>{
+  const card=document.createElement("article");card.className="request-card"+(!r.viewed?" is-new":"");
+  const location=r.lat!=null&&r.lng!=null?`${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}`:"GPS location unavailable";
+  card.innerHTML=`
+   <div class="request-head"><span class="badge ${escapeHTML(r.priority)}">${escapeHTML(r.priority)}</span><span class="request-id">${escapeHTML(r.id)}</span></div>
+   <h3>${escapeHTML(r.title)}</h3>
+   <div class="request-summary">👤 ${escapeHTML(r.requesterName||"Unknown")}<br>👥 ${Number(r.people)||1} people · ${escapeHTML(statusFor(r))}<br>📍 ${escapeHTML(location)}<br>🕒 ${escapeHTML(r.time||"Time unavailable")}<br>🩺 ${escapeHTML((r.needs||[]).length? r.needs.join(", "):"No additional care needs selected")}</div>
+   <div class="progress-wrap"><div class="progress-top"><strong>${escapeHTML(statusFor(r))}</strong><span>${r.completed?"Completed":"Request record"}</span></div><div class="progressbar"><div style="width:${r.completed?100:r.assigned?50:10}%"></div></div><div class="progress-note">${r.completed?"This request has been marked completed.":r.assigned?"A rescuer has been assigned in this demo.":"Awaiting assignment. Progress is not a live GPS or physical boat measurement."}</div></div>
+   <div class="request-actions"><button class="btn btn-secondary" data-action="view">📋 View details</button><button class="btn btn-secondary" data-action="map">🗺️ View map</button>${r.completed?'<button class="btn btn-success" disabled>✓ Completed</button>':'<button class="btn btn-primary" data-action="assign">Assign rescuer</button><button class="btn btn-success" data-action="complete">Mark completed</button>'}</div>`;
+  card.querySelector('[data-action="view"]').onclick=()=>showDetails(r.id);
+  card.querySelector('[data-action="map"]').onclick=()=>showSOSOnMap(r.id);
+  const assign=card.querySelector('[data-action="assign"]');if(assign)assign.onclick=()=>assignRescuer(r.id);
+  const complete=card.querySelector('[data-action="complete"]');if(complete)complete.onclick=()=>completeRequest(r.id);
+  host.appendChild(card);
+ });
+}
+function assignRescuer(id){
+ const r=sosRequests.find(x=>x.id===id);if(!r)return;
+ const available=getAllRescuers().filter(x=>x.status==="AVAILABLE");
+ if(!available.length){toast("No rescuers are currently marked available.","error");return}
+ const options=available.map((x,i)=>`${i+1}. ${x.name} (${methodLabel(x.method)})`).join("\n");
+ const answer=prompt("Select an available rescuer by number:\n"+options,"1");
+ if(answer===null)return;
+ const chosen=available[Number(answer)-1];if(!chosen){toast("Choose a valid rescuer number.","error");return}
+ r.assigned=true;r.assignedRescuerId=chosen.id;r.assignedRescuerName=chosen.name;r.status="RESCUE ASSIGNED";r.assignedAt=Date.now();
+ const registered=registeredRescuers.find(x=>x.id===chosen.id);if(registered)registered.status="BUSY";
+ saveRescuers();saveRequests();boatState="ACTIVE";updateRescue();toast("Rescuer assigned in the demo.","success");
+}
+function completeRequest(id){
+ const r=sosRequests.find(x=>x.id===id);if(!r)return;
+ if(!confirm("Mark "+r.id+" as completed?"))return;
+ r.completed=true;r.status="RESCUE COMPLETED";r.completedAt=Date.now();
+ const rescuer=registeredRescuers.find(x=>x.id===r.assignedRescuerId);if(rescuer)rescuer.status="AVAILABLE";
+ boatState="RETURNING";saveRescuers();saveRequests();updateRescue();toast("Request marked completed. Use RETURN TO CAMP on the boat panel for the demo return action.","success");
+}
+$("refreshRescue").onclick=()=>{renderRescue();toast("Dashboard refreshed.")};
+function renderRescue(){updateRescue();}
+
+function showDetails(id){
+ const r=sosRequests.find(x=>x.id===id);if(!r)return;
+ selectedDetailsId=id;r.viewed=true;saveRequests();updateHome();
+ const location=r.lat!=null&&r.lng!=null?`${Number(r.lat).toFixed(6)}, ${Number(r.lng).toFixed(6)}`:"GPS coordinates were not recorded";
+ const needsText=(r.needs||[]).length?r.needs.join(", "):"No additional care needs selected";
+ $("detailsTitle").textContent=r.id+" · "+r.title;
+ $("detailsContent").innerHTML=`
+  <div class="priority-banner"><div><strong>Emergency priority</strong><small>${escapeHTML(statusFor(r))}</small></div><span class="badge ${escapeHTML(r.priority)}">${escapeHTML(r.priority)}</span></div>
+  <div class="detail-list">
+   <div class="detail-item"><small>REQUESTER</small><strong>${escapeHTML(r.requesterName||"Unknown")}</strong></div>
+   <div class="detail-item"><small>CONTACT PHONE</small><strong>${escapeHTML(r.requesterPhone||"Not provided")}</strong></div>
+   <div class="detail-item"><small>PEOPLE AFFECTED</small><strong>${Number(r.people)||1} people</strong></div>
+   <div class="detail-item"><small>TIME RECEIVED</small><strong>${escapeHTML(r.time||"Not recorded")}</strong></div>
+   <div class="detail-item"><small>GPS LOCATION</small><strong>${escapeHTML(location)}</strong></div>
+   <div class="detail-item"><small>RESCUE STATUS</small><strong>${escapeHTML(statusFor(r))}</strong></div>
+  </div>
+  <div class="special-box"><h3>🩺 Special Care & assistance</h3><p><strong>Selected needs:</strong> ${escapeHTML(needsText)}</p><p><strong>Additional notes:</strong>\n${escapeHTML(r.specialCareNotes||"No additional Special Care notes were entered.")}</p></div>
+  <div class="special-box"><h3>🆘 Emergency description</h3><p><strong>Emergency type:</strong> ${escapeHTML(r.type||"Not recorded")}</p><p><strong>Details provided:</strong>\n${escapeHTML(r.notes||"No additional description was entered.")}</p></div>
+  <div class="special-box"><h3>🚤 Rescue assignment</h3><p>${r.assigned?"Assigned to: "+escapeHTML(r.assignedRescuerName||"Rescue team"):"No rescuer has been assigned yet."}</p></div>`;
+ $("detailsOverlay").classList.remove("hidden");
+}
+$("detailMapBtn").onclick=()=>{const id=selectedDetailsId;$("detailsOverlay").classList.add("hidden");if(id)showSOSOnMap(id)};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$ (b.dataset.close).classList.add("hidden"));
+document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)o.classList.add("hidden")}));
+addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".overlay").forEach(o=>o.classList.add("hidden"))});
+
+function renderRescuers(){
+ const host=$("rescuerList");host.innerHTML="";
+ const all=getAllRescuers();
+ if(!all.length){host.innerHTML='<div class="empty-state"><h3>No rescuers listed</h3></div>';return}
+ all.forEach(r=>{
+  const c=document.createElement("div");c.className="rescuer-card";
+  const d=userLat!==null&&Number.isFinite(Number(r.lat))?distanceKm(userLat,userLng,Number(r.lat),Number(r.lng)).toFixed(1)+" km away":"Distance unavailable";
+  c.innerHTML=`<div class="rescuer-top"><div><h3>${escapeHTML(r.name)}</h3><div class="request-id">${escapeHTML(methodLabel(r.method))}</div></div><span class="badge ${r.status==="AVAILABLE"?"LOW":"HIGH"}">${escapeHTML(r.status)}</span></div><div class="rescuer-meta">☎ ${escapeHTML(r.phone)}<br>📍 ${escapeHTML(d)}</div><div class="request-actions"><a class="btn btn-secondary" href="tel:${encodeURIComponent(r.phone)}">☎ Call rescuer</a></div>`;
+  host.appendChild(c);
+ });
+}
+$("beRescuerBtn").onclick=()=>{
+ const u=getStoredUser();$("rescuerName").value=u?.name||"";$("rescuerPhone").value=u?.mobile||"";
+ $("rescuerError").textContent="";$("rescuerOverlay").classList.remove("hidden");
+};
+$("shareRescuerLocation").onclick=()=>requestLocation(true);
+$("saveRescuer").onclick=()=>{
+ const name=$("rescuerName").value.trim(),phone=$("rescuerPhone").value.replace(/\D/g,"");
+ if(name.length<2||phone.length<10){$("rescuerError").textContent="Enter a name and valid phone number.";return}
+ if(userLat===null){$("rescuerError").textContent="Share your device location first.";return}
+ const existing=registeredRescuers.find(x=>x.phone===phone);
+ const record={id:existing?.id||"R"+Date.now(),name,phone,method:$("rescuerMethod").value,lat:userLat,lng:userLng,status:"AVAILABLE",registered:true};
+ if(existing)Object.assign(existing,record);else registeredRescuers.push(record);
+ localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers));
+ $("rescuerOverlay").classList.add("hidden");renderRescuers();toast("Rescuer registration saved on this device.","success");
+};
+
+function renderCamps(){
+ const host=$("campList");host.innerHTML="";
+ const list=[...camps].sort((a,b)=>{
+  if(userLat===null)return 0;
+  return distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng);
+ });
+ list.forEach(c=>{
+  const distance=userLat===null?"Distance unavailable":distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away";
+  const el=document.createElement("article");el.className="camp-card";
+  el.innerHTML=`<div class="camp-top"><div><div class="quick-icon">🏕️</div><h3>${escapeHTML(c.name)}</h3></div><span class="vacancy">${c.vacancy}% vacancy*</span></div><p>📏 ${escapeHTML(distance)}<br>💧 Water: ${c.water?"Listed":"Not listed"}<br>🍱 Food: ${c.food?"Listed":"Not listed"}<br>💊 Medicine: ${c.medicine?"Listed":"Not listed"}</p><button class="btn btn-primary btn-block">🛣️ Open directions</button>`;
+  el.querySelector("button").onclick=()=>routeToCamp(c);host.appendChild(el);
+ });
+}
+$("refreshCamps").onclick=()=>{renderCamps();toast("Camp list refreshed. Demo records only.")};
+function routeToCamp(c){
+ if(userLat===null){toast("Share your location first to use directions.","error");requestLocation(false);return}
+ window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=walking`,"_blank","noopener");
 }
 
-/* SAFE TEXT FOR POPUPS AND GENERATED MARKUP */
-function escapePopupText(value){
- return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))
+function circleIcon(type){
+ const colors={sos:"#ef4050",camp:"#32c779",you:"#168dd0"};
+ return L.divIcon({className:"",html:`<div style="width:25px;height:25px;border-radius:50%;background:${colors[type]};border:4px solid white;box-shadow:0 2px 12px #0008"></div>`,iconSize:[25,25],iconAnchor:[12,12]});
 }
-function createCircleIcon(type){
- let bg=type==="sos"?"#ef4050":type==="camp"?"#32c779":"#168dd0";
- return L.divIcon({className:"customMarker",html:`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:4px solid white;box-shadow:0 2px 8px #0007"></div>`,iconSize:[30,30],iconAnchor:[15,15]})
-}
-
-/* CAMP POPUP — PREMIUM DETAILS + ROUTE ACTIONS */
-function createCampPopup(c,index){
- let dist=userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away":"Enable location for distance";
- return `<div class="fh-popup-inner">
- <div class="fh-popup-head"><div class="fh-popup-icon camp">🏕️</div><div><div class="fh-popup-title">${escapePopupText(c.name)}</div><div class="fh-popup-sub">FLOODHELP RELIEF CENTRE</div></div></div>
- <div class="fh-popup-badge green">● RELIEF CAMP</div>
- <div class="fh-popup-grid">
- <div class="fh-popup-stat"><small>🛏️ AVAILABLE SPACE</small><strong>${c.vacancy}% vacancy</strong></div>
- <div class="fh-popup-stat"><small>📏 DISTANCE</small><strong>${escapePopupText(dist)}</strong></div>
- </div>
- <div class="fh-popup-resources">💧 Drinking water: <b>${c.water?"Available":"Unavailable"}</b><br>🍱 Food: <b>${c.food?"Available":"Unavailable"}</b><br>💊 Medicine: <b>${c.medicine?"Available":"Unavailable"}</b><br>📍 ${Number(c.lat).toFixed(5)}, ${Number(c.lng).toFixed(5)}</div>
- <div class="fh-popup-actions"><button class="fh-popup-btn primary" onclick="routeToCampByIndex(${index})">🛣️ ROUTE</button><button class="fh-popup-btn green" onclick="focusCamp(${index})">📍 FOCUS CAMP</button></div>
- <div class="fh-popup-foot">Check local conditions before travelling. This map does not verify real-time shelter availability.</div>
- </div>`
-}
-function routeToCampByIndex(index){let c=camps[index];if(c)routeToCamp(c)}
-function focusCamp(index){
- let c=camps[index];if(!c||!map)return;
- map.setView([c.lat,c.lng],16);
- let marker=campMarkers[index];if(marker)marker.openPopup()
-}
-
-/* MAP INITIALIZATION */
 function initializeMap(){
- if(map){map.invalidateSize();updateMapLocation();updateAllSOSMarkers();return}
- if(typeof L==="undefined"){alert("Map library needs internet access.");return}
+ if(map){map.invalidateSize();updateMapLocation();updateSosMarkers();return}
+ if(typeof L==="undefined"){$("map").innerHTML="Map library is unavailable. Check your internet connection.";return}
  map=L.map("map").setView([11.073,76.073],13);
  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(map);
- campMarkers=[];
- camps.forEach((c,i)=>{
-  let marker=L.marker([c.lat,c.lng],{icon:createCircleIcon("camp")}).addTo(map);
-  marker.bindPopup(createCampPopup(c,i),{className:"fh-popup",maxWidth:280,minWidth:235});
-  campMarkers.push(marker)
+ campMarkers=camps.map(c=>{
+  const m=L.marker([c.lat,c.lng],{icon:circleIcon("camp")}).addTo(map);
+  m.bindPopup(`<div class="popup-title">🏕️ ${escapeHTML(c.name)}</div><div class="popup-text">Vacancy: ${c.vacancy}%*<br>Water: ${c.water?"Listed":"Not listed"}<br>Food: ${c.food?"Listed":"Not listed"}<br>Medicine: ${c.medicine?"Listed":"Not listed"}</div><button class="btn btn-primary" style="margin-top:9px" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${c.lat}%2C${c.lng}','_blank','noopener')">Directions</button>`,{className:"fh-popup"});
+  return m;
  });
- updateMapLocation();updateAllSOSMarkers()
+ updateMapLocation();updateSosMarkers();
 }
 function updateMapLocation(){
  if(!map||userLat===null)return;
  if(userMarker)userMarker.setLatLng([userLat,userLng]);
- else userMarker=L.marker([userLat,userLng],{icon:createCircleIcon("you")}).addTo(map).bindPopup('<div class="fh-popup-inner"><div class="fh-popup-head"><div class="fh-popup-icon camp">📍</div><div><div class="fh-popup-title">You are here</div><div class="fh-popup-sub">YOUR CURRENT LOCATION</div></div></div><div class="fh-popup-foot">Location supplied by your device, if permission is enabled.</div></div>',{className:"fh-popup"})
+ else userMarker=L.marker([userLat,userLng],{icon:circleIcon("you")}).addTo(map).bindPopup("📍 Your device location");
 }
-
-/* SOS POPUP — PRIORITY, REQUEST DETAILS, ROUTING */
-function createSOSPopup(r){
- let d=r.lat!==null&&r.lng!==null?`${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}`:"GPS unavailable";
- let status=r.completed?"RESCUE COMPLETED":r.status||"SOS SENT";
- let action=r.lat!==null&&r.lng!==null?`<button class="fh-popup-btn primary" onclick="routeToSOS(${Number(r.lat)},${Number(r.lng)})">🛣️ ROUTE TO SOS</button>`:`<button class="fh-popup-btn" onclick="viewRequest('${escapePopupText(r.id)}')">VIEW REQUEST</button>`;
- return `<div class="fh-popup-inner">
- <div class="fh-popup-head"><div class="fh-popup-icon sos">🚨</div><div><div class="fh-popup-title">${escapePopupText(r.id)}</div><div class="fh-popup-sub">EMERGENCY REQUEST</div></div></div>
- <div class="fh-popup-badge red">● ${escapePopupText(r.priority||"MEDIUM")} PRIORITY</div>
- <div class="fh-popup-grid">
- <div class="fh-popup-stat"><small>📊 STATUS</small><strong>${escapePopupText(status)}</strong></div>
- <div class="fh-popup-stat"><small>👥 PEOPLE</small><strong>${Number(r.people)||1}</strong></div>
- </div>
- <div class="fh-popup-resources"><b>${escapePopupText(r.title||"Emergency assistance required")}</b><br>👤 ${escapePopupText(r.requesterName||"Unknown requester")}<br>🕐 ${escapePopupText(r.time||"Time unavailable")}<br>📍 ${escapePopupText(d)}</div>
- <div class="fh-popup-actions">${action}<button class="fh-popup-btn green" onclick="viewRequest('${escapePopupText(r.id)}')">📋 DETAILS</button></div>
- <div class="fh-popup-foot">SOS marker information is based on the request stored in this browser.</div>
- </div>`
-}
-function updateAllSOSMarkers(){
+function updateSosMarkers(){
  if(!map)return;
  sosMarkers.forEach(m=>map.removeLayer(m));sosMarkers=[];
  sosRequests.forEach(r=>{
-  if(r.lat===null||r.lng===null||!Number.isFinite(Number(r.lat))||!Number.isFinite(Number(r.lng)))return;
-  let m=L.marker([Number(r.lat),Number(r.lng)],{icon:createCircleIcon("sos")}).addTo(map);
-  m.bindPopup(createSOSPopup(r),{className:"fh-popup",maxWidth:280,minWidth:235});
-  sosMarkers.push(m)
- })
+  if(r.lat==null||r.lng==null||!Number.isFinite(Number(r.lat))||!Number.isFinite(Number(r.lng)))return;
+  const m=L.marker([Number(r.lat),Number(r.lng)],{icon:circleIcon("sos")}).addTo(map);
+  m.bindPopup(`<div class="popup-title">🚨 ${escapeHTML(r.id)}</div><div class="popup-text">${escapeHTML(r.title)}<br>Priority: ${escapeHTML(r.priority)}<br>People: ${Number(r.people)||1}<br>Status: ${escapeHTML(statusFor(r))}</div><button class="btn btn-primary" style="margin-top:9px" onclick="window.floodHelpViewRequest('${escapeHTML(r.id)}')">View details</button>`,{className:"fh-popup"});
+  sosMarkers.push(m);
+ });
 }
-function routeToSOS(lat,lng){
- if(userLat===null){getLocation();alert("Please allow location access first, then select the route again.");return}
- window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}&travelmode=walking`,"_blank")
-}
+window.floodHelpViewRequest=showDetails;
 function showSOSOnMap(id){
- let r=sosRequests.find(x=>x.id===id);
- if(!r||r.lat===null||r.lng===null){alert("Exact GPS location unavailable.");return}
- openScreen("mapScreen");initializeMap();
- setTimeout(()=>{if(map){map.setView([Number(r.lat),Number(r.lng)],16);updateAllSOSMarkers();let marker=sosMarkers.find(m=>{let p=m.getLatLng();return Math.abs(p.lat-Number(r.lat))<0.000001&&Math.abs(p.lng-Number(r.lng))<0.000001});if(marker)marker.openPopup()}},300)
+ const r=sosRequests.find(x=>x.id===id);
+ if(!r||r.lat==null||r.lng==null){toast("This request has no recorded GPS coordinates.","error");return}
+ go("mapScreen");initializeMap();
+ setTimeout(()=>{if(map){map.setView([Number(r.lat),Number(r.lng)],16);updateSosMarkers();const m=sosMarkers.find(x=>{const p=x.getLatLng();return Math.abs(p.lat-Number(r.lat))<1e-6&&Math.abs(p.lng-Number(r.lng))<1e-6});if(m)m.openPopup()}},250);
 }
 
-function getActiveBoatRequest(){
- let order={CRITICAL:1,HIGH:2,MEDIUM:3,LOW:4};
- return sosRequests.filter(r=>!r.completed).sort((a,b)=>(order[a.priority]-order[b.priority])||sosRequests.indexOf(a)-sosRequests.indexOf(b))[0]||null
+function renderBoat(){
+ const r=getActiveBoatRequest();
+ $("boatTotal").textContent="1";
+ $("boatActive").textContent=boatState==="READY"?"0":"1";
+ $("boatReady").textContent=boatState==="READY"?"1":"0";
+ $("boatProgress").textContent=boatState==="READY"?"0%":boatState==="RETURNING"?"—":"ACTIVE";
+ $("boatHeroStatus").textContent=boatState==="READY"?"READY AT CAMP":boatState==="RETURNING"?"RETURN TO CAMP":"RESCUE ACTIVE";
+ $("boatHeroNote").textContent=boatState==="READY"?"Waiting for a rescue mission.":boatState==="RETURNING"?"Return command selected in the demo interface.":"An active mission is selected in the dashboard.";
+ $("boatCurrentStatus").textContent=boatState;
+ $("boatCurrentStatus").style.color=boatState==="READY"?"var(--green)":boatState==="RETURNING"?"var(--cyan)":"var(--amber)";
+ $("boatCurrentLocation").textContent=boatState==="READY"?"Waiting at camp":boatState==="RETURNING"?"Return to camp requested":"Travelling to rescue (demo state)";
+ $("boatMissionStatus").textContent=r?r.id:"No active mission";
+ $("boatConnectionStatus").textContent="Demo interface — hardware command not configured";
+ const host=$("boatMissionContainer");
+ if(!r&&boatState!=="RETURNING"){
+  host.innerHTML='<div class="panel" style="margin-top:16px;text-align:center;padding:27px"><div style="font-size:40px">🚤</div><h2 style="margin-top:12px">No active rescue mission</h2><p>The boat status is ready. New SOS requests will appear in the rescue dashboard.</p><button class="btn btn-secondary" data-go="rescue">Open rescue dashboard</button></div>';
+  host.querySelector("button").onclick=()=>go("rescue");return;
+ }
+ if(boatState==="RETURNING"){
+  host.innerHTML='<div class="panel" style="margin-top:16px"><div class="eyebrow">RETURN MODE</div><h2 style="margin-top:9px">🏕️ Return to camp selected</h2><p>The interface status has changed. This does not confirm the physical boat received or completed a return command.</p><button class="btn btn-secondary" id="resetBoat">Set demo status to READY</button></div>';
+  $("resetBoat").onclick=()=>{boatState="READY";renderBoat();updateHome()};return;
+ }
+ host.innerHTML=`<div class="panel" style="margin-top:16px"><div class="eyebrow">ACTIVE MISSION</div><h2 style="margin-top:9px">${escapeHTML(r.id)} · ${escapeHTML(r.priority)}</h2><p>${escapeHTML(r.title)}</p><div class="detail-list"><div class="detail-item"><small>PEOPLE AFFECTED</small><strong>${Number(r.people)||1}</strong></div><div class="detail-item"><small>GPS DISTANCE</small><strong>${escapeHTML(requestDistance(r))}</strong></div><div class="detail-item"><small>REQUEST STATUS</small><strong>${escapeHTML(statusFor(r))}</strong></div><div class="detail-item"><small>SPECIAL CARE</small><strong>${escapeHTML((r.needs||[]).join(", ")||"None selected")}</strong></div></div><div class="boat-actions"><button class="btn btn-primary" id="boatViewDetails">📋 View SOS details</button><button class="btn btn-secondary" id="boatViewMap">🗺️ View location</button><button class="btn btn-secondary" id="launchDemo">🚤 Set active demo state</button><button class="btn btn-danger" id="returnBoatBtn">🏕️ RETURN TO CAMP</button></div>`;
+ $("boatViewDetails").onclick=()=>showDetails(r.id);
+ $("boatViewMap").onclick=()=>showSOSOnMap(r.id);
+ $("launchDemo").onclick=()=>{boatState="ACTIVE";renderBoat();updateHome();toast("Demo boat status set to ACTIVE. No hardware command was sent.")};
+ $("returnBoatBtn").onclick=returnBoat;
 }
-function renderBoatPage(){
- let r=getActiveBoatRequest();boatTotal.textContent=1;boatActive.textContent=boatState==="READY"?0:1;boatReady.textContent=boatState==="READY"?1:0;
- boatLiveStatus.textContent=boatState==="READY"?"● READY":boatState==="ACTIVE"?"● ON RESCUE":"● RETURNING TO CAMP";
- let c=boatMissionContainer;c.innerHTML="";
- if(boatState==="RETURNING"){c.innerHTML=`<div class="returningMission"><div class="returningIcon">🚤</div><h2>🏕️ RETURNING TO CAMP</h2><p>Rescue mission completed successfully.</p><div class="returningBadge">● RETURNING TO CAMP</div></div>`;boatMissionStatus.textContent="Returning to camp";boatCurrentStatus.textContent="RETURNING";boatCurrentStatus.className="statusReturning";boatCurrentLocation.textContent="Returning to camp";return}
- if(!r){c.innerHTML=`<div class="noMission">🚤 <strong>No active rescue mission</strong><br><br>The boat is ready and waiting at the relief camp.<br><br>🟢 READY FOR NEXT RESCUE</div>`;boatMissionStatus.textContent="No active mission";boatCurrentStatus.textContent="READY";boatCurrentStatus.className="statusReady";boatCurrentLocation.textContent="Waiting at camp";return}
- let x=getRescueSimulation(r),phone=r.assignedRescuerPhone||"9876543213";
- c.innerHTML=`<div class="boatMission"><div class="boatMissionTitle">🚨 ACTIVE RESCUE — ${escapePopupText(r.priority)}</div><h2>${escapePopupText(r.title)}</h2><div class="boatInfo">🆔 ${escapePopupText(r.id)}<br>👤 ${escapePopupText(r.requesterName||"Unknown")}<br>👥 ${r.people} people<br>📏 ${getRescueDistance(r)}<br>🚤 ${escapePopupText(x.status)}<br>🚤 Boat distance: ${x.distance.toFixed(1)} km<br>⏱️ ETA: ~${x.eta} min</div><div class="boatActions"><button class="primaryBoat" onclick="boatGoToRescue('${escapePopupText(r.id)}')">🗺️ GO TO RESCUE</button><a class="callBoat" href="tel:${encodeURIComponent(phone)}">📞 CALL RESCUER</a><button class="secondaryBoat" onclick="launchBoat('${escapePopupText(r.id)}')">🚤 LAUNCH RESCUE</button><button class="secondaryBoat" onclick="returnBoat()">🏕️ RETURN TO CAMP</button></div></div>`;
- boatMissionStatus.textContent=r.id;boatCurrentStatus.textContent=boatState==="READY"?"READY":boatState==="ACTIVE"?"ON RESCUE":"RETURNING TO CAMP";
- boatCurrentStatus.className=boatState==="READY"?"statusReady":boatState==="ACTIVE"?"statusActive":"statusReturning";
- boatCurrentLocation.textContent=boatState==="READY"?"Waiting at camp":boatState==="ACTIVE"?"Travelling to SOS":"Returning to camp"
+function returnBoat(){
+ if(!confirm("Set the boat interface to RETURNING TO CAMP? This is a demo status change; the supplied code has no configured physical boat-return endpoint."))return;
+ boatState="RETURNING";renderBoat();updateHome();
+ toast("Return mode selected in the interface. Physical boat command is not connected.","error");
 }
-function boatGoToRescue(id){let r=sosRequests.find(x=>x.id===id);if(r&&r.lat!==null&&r.lng!==null){openScreen("mapScreen");initializeMap();setTimeout(()=>{map.setView([r.lat,r.lng],16);updateAllSOSMarkers()},300)}}
-function launchBoat(id){
- let r=sosRequests.find(x=>x.id===id);if(!r)return;boatState="ACTIVE";r.rescueStartTime=Date.now();r.status="BOAT ON THE WAY";r.assigned=true;saveSOSLocal();renderBoatPage();renderRescueDashboard();alert("🚤 RESCUE BOAT LAUNCHED\n\n"+r.id+"\n"+r.title)
-}
-function returnBoat(){boatState="RETURNING";renderBoatPage();setTimeout(()=>{boatState="READY";renderBoatPage()},3000);alert("🏕️ Boat returning to the relief camp.")}
-
-/* AUTH */
-const authOverlay=$("authOverlay"),loginPanel=$("loginPanel"),registerPanel=$("registerPanel");
-function updateUserDisplay(){let s=localStorage.getItem("floodhelp_logged_in"),u=getStoredUser();userNameDisplay.textContent=s==="emergency"?"🚨 Emergency User":s==="true"&&u?"👤 "+u.name:"Guest";logoutBtn.style.display=s?"block":"none"}
-function showLogin(){authOverlay.classList.remove("hidden");loginPanel.classList.remove("hidden");registerPanel.classList.add("hidden")}
-showRegisterBtn.onclick=()=>{loginPanel.classList.add("hidden");registerPanel.classList.remove("hidden")};
-backToLoginBtn.onclick=showLogin;
-registerBtn.onclick=()=>{
- let n=registerName.value.trim(),m=registerMobile.value.replace(/\D/g,""),p=registerPassword.value;
- if(!n||m.length<10||p.length<4||p!==registerConfirm.value){registerError.textContent="Please enter valid details and matching password.";return}
- localStorage.setItem("floodhelp_user",JSON.stringify({name:n,mobile:m,password:p}));localStorage.setItem("floodhelp_logged_in","true");updateUserDisplay();authOverlay.classList.add("hidden");alert("✅ Account created successfully. Welcome to FloodHelp, "+n+"!")
-};
-loginBtn.onclick=()=>{
- let u=getStoredUser(),m=loginMobile.value.replace(/\D/g,"");
- if(!u||u.mobile!==m||u.password!==loginPassword.value){loginError.textContent="Incorrect mobile number or password.";return}
- localStorage.setItem("floodhelp_logged_in","true");updateUserDisplay();authOverlay.classList.add("hidden");openScreen("home")
-};
-emergencyAccessBtn.onclick=()=>{localStorage.setItem("floodhelp_logged_in","emergency");updateUserDisplay();authOverlay.classList.add("hidden");openScreen("home")};
-logoutBtn.onclick=()=>{if(confirm("Do you want to logout from FloodHelp?")){localStorage.removeItem("floodhelp_logged_in");updateUserDisplay();showLogin()}};
-
 function restoreRequests(){
- sosRequests.forEach(r=>{
+ sosRequests.forEach((r,i)=>{
+  if(!r.id)r.id="SOS #"+(1043+i);
+  if(!r.priority)r.priority="MEDIUM";
+  if(!r.title)r.title="Emergency assistance";
+  if(!Array.isArray(r.needs))r.needs=[];
+  if(r.specialCareNotes===undefined)r.specialCareNotes="";
+  if(r.notes===undefined)r.notes="";
+  if(r.viewed===undefined)r.viewed=false;
   if(r.completed===undefined)r.completed=false;
   if(r.assigned===undefined)r.assigned=false;
-  if(r.requesterName===undefined)r.requesterName="Unknown User";
-  if(r.requesterPhone===undefined)r.requesterPhone="";
-  if(r.progress===undefined)r.progress=0;
-  if(r.boatDistance===undefined)r.boatDistance=3;
-  if(r.eta===undefined)r.eta=10;
-  if(!r.rescueStartTime)r.rescueStartTime=Date.now()
+  if(r.people===undefined)r.people=1;
+  if(r.createdAt===undefined)r.createdAt=Date.now();
+  const n=Number(String(r.id).replace(/\D/g,""));if(n>nextSosNumber)nextSosNumber=n;
  });
- saveSOSLocal()
+ saveRequests();
 }
-restoreRequests();updateCamps();renderRescuers();renderRescueDashboard();renderBoatPage();updateUserDisplay();
-if(!localStorage.getItem("floodhelp_logged_in"))showLogin();else authOverlay.classList.add("hidden");
+$("refreshRescue").onclick=()=>{renderRescue();toast("Rescue dashboard updated.")};
+restoreRequests();updateConnection();updateUserDisplay();renderCamps();renderRescue();renderBoat();updateHome();updatePriorityPreview();
+if(!loggedIn())$("authOverlay").classList.remove("hidden");else $("authOverlay").classList.add("hidden");
 </script>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getFirestore,collection,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
 const firebaseConfig={
  apiKey:"AIzaSyAwBbj_86ubh5lpXGJw9wOEBhC5m78E1wE",
  authDomain:"floodhelp-ce595.firebaseapp.com",
@@ -601,12 +892,24 @@ const firebaseConfig={
  appId:"1:826307857233:web:4d8396595728b1c99c2170"
 };
 try{
- const app=initializeApp(firebaseConfig),db=getFirestore(app);
+ const app=initializeApp(firebaseConfig);
+ const db=getFirestore(app);
  window.saveSOSToFirestore=async function(request){
-  try{const{id,...data}=request;const doc=await addDoc(collection(db,"sosRequests"),{...data,localId:id,createdAt:serverTimestamp()});console.log("SOS saved to Firestore:",doc.id);return doc.id}
-  catch(error){console.error("Firestore SOS save failed:",error);return null}
- }
-}catch(error){console.error("Firebase initialization failed:",error)}
+  try{
+   const {id,...data}=request;
+   const doc=await addDoc(collection(db,"sosRequests"),{
+    ...data,localId:id,createdAt:serverTimestamp()
+   });
+   console.log("SOS saved to Firestore:",doc.id);
+   return doc.id;
+  }catch(error){
+   console.error("Firestore SOS save failed:",error);
+   return null;
+  }
+ };
+}catch(error){
+ console.error("Firebase initialization failed:",error);
+}
 </script>
 </body>
 </html>
