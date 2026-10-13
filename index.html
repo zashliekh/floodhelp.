@@ -3437,6 +3437,7 @@ function updateSOSFirebase(r){
   );
 
   return false;
+ });
 }
 
 /* =========================================================
@@ -4325,48 +4326,59 @@ async function finishSOS(){
 
 function viewRequest(id){
 
- let r=
-  sosRequests.find(
-   x=>x.id===id
-  );
+ // Accept either the request ID used by the dashboard button
+ // or a request object passed directly by another part of the app.
+ let r = (id && typeof id === "object")
+  ? id
+  : sosRequests.find(x => String(x.id) === String(id));
 
- if(!r)return;
+ // Never fail silently if the request cannot be found.
+ if(!r){
+  alert("This SOS request could not be found. Please refresh the rescue dashboard and try again.");
+  return;
+ }
 
- let x=
-  getRescueSimulation(r);
+ // Support the saved format used by this app, plus older records.
+ let rawCare = r.vulnerable ?? r.additionalCare ?? r.needs ?? "";
+ let additionalCare = "None selected";
 
- // Show the care options saved with this exact SOS request.
- let additionalCare=
-  typeof r.vulnerable==="string" && r.vulnerable.trim()
-   ? r.vulnerable.replace(/^\s*•\s*/, "")
-   : Array.isArray(r.vulnerable) && r.vulnerable.length
-    ? r.vulnerable.join(", ")
-    : "None selected";
+ if(Array.isArray(rawCare)){
+  if(rawCare.length) additionalCare = rawCare.join(", ");
+ }else if(typeof rawCare === "object" && rawCare !== null){
+  const careNames = {
+   children: "👶 Child",
+   elderly: "👴 Elderly",
+   medical: "🏥 Medical",
+   special: "♿ Special assistance"
+  };
+  const selectedCare = Object.keys(careNames)
+   .filter(key => rawCare[key])
+   .map(key => careNames[key]);
+  if(selectedCare.length) additionalCare = selectedCare.join(", ");
+ }else if(String(rawCare).trim()){
+  additionalCare = String(rawCare).replace(/^\s*•\s*/, "").trim();
+ }
+
+ // Keep details visible even if the rescue simulation cannot calculate.
+ let x = {status:r.status || "SOS SENT", distance:Number(r.boatDistance ?? 3), eta:Number(r.eta ?? 10)};
+ try{
+  if(typeof getRescueSimulation === "function") x = getRescueSimulation(r) || x;
+ }catch(error){
+  console.error("FloodHelp VIEW request details:", error);
+ }
 
  alert(
-
- `${r.id}
-
-${r.title}
-
-📍 Area: ${r.area||"Not selected"}
-
-👤 ${r.requesterName||"Unknown User"}
-
-📞 ${r.requesterPhone||"No number"}
-
-Priority: ${r.priority}
-
-People: ${r.people}
-
-Additional Care: ${additionalCare}
-
-Status: ${x.status}
-
-Boat distance: ${x.distance.toFixed(1)} km
-
-ETA: ~${x.eta} min`
-
+  `${r.id || "SOS request"}\n\n`+
+  `${r.title || r.emergency || "Emergency assistance required"}\n\n`+
+  `📍 Area: ${r.area || "Not selected"}\n\n`+
+  `👤 ${r.requesterName || "Unknown User"}\n`+
+  `📞 ${r.requesterPhone || "No number"}\n\n`+
+  `Priority: ${r.priority || r.p || "Not set"}\n`+
+  `People: ${r.people ?? "Not specified"}\n`+
+  `Additional Care: ${additionalCare}\n`+
+  `Status: ${x.status || r.status || "SOS SENT"}\n`+
+  `Boat distance: ${Number(x.distance ?? r.boatDistance ?? 3).toFixed(1)} km\n`+
+  `ETA: ~${x.eta ?? r.eta ?? 10} min`
  );
 }
 
