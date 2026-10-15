@@ -1086,6 +1086,12 @@ button:active{transform:scale(.97)}
  }
  .priorityGrid{gap:4px}
 }
+
+/* SOS urgency highlighting */
+.request.request-alert{border:2px solid #ef4050!important;box-shadow:0 0 0 2px #ef405022,0 8px 26px #ef405022;position:relative}
+.request.request-alert:before{content:"🚨 ACTIVE SOS";display:block;background:#ef4050;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;padding:7px 11px;margin:-1px -1px 12px;border-radius:10px 10px 5px 5px}
+.googleMapsBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1769aa;color:#fff;border:0;border-radius:9px;padding:10px 12px;font-weight:800;font-size:11px;text-decoration:none;cursor:pointer;margin-top:8px}
+
 </style>
 
 </head>
@@ -3178,7 +3184,7 @@ function createRequestCard(r){
  let card=
   document.createElement("div");
 
- card.className="request";
+ card.className="request"+(!r.completed&&["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase())?" request-alert":"");
 
  let x=
   getRescueSimulation(r);
@@ -3361,6 +3367,8 @@ function createRequestCard(r){
  onclick="showSOSOnMap('${r.id}')">
  🗺️ VIEW ON MAP
  </button>
+
+ ${r.lat!==null&&r.lat!==undefined&&r.lng!==null&&r.lng!==undefined?`<button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">📍 GOOGLE MAPS</button>`:""}
 
  </div>
 
@@ -3795,6 +3803,12 @@ function createCircleIcon(type){
  });
 }
 
+function openGoogleMaps(lat,lng){
+ lat=Number(lat);lng=Number(lng);
+ if(!Number.isFinite(lat)||!Number.isFinite(lng)){alert("This location has no valid GPS coordinates.");return;}
+ window.open("https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(lat+","+lng)+"&travelmode=driving","_blank","noopener");
+}
+
 function drawDirectRoute(lat,lng,label){
  if(!Number.isFinite(lat)||!Number.isFinite(lng)){alert("This location does not have valid coordinates.");return;}
  if(!map){openScreen("mapScreen");initializeMap();}
@@ -3872,7 +3886,8 @@ function initializeMap(){
   👥 Vacancy: ${c.vacancy}%<br>
   💧 Water: ${c.water?"Available":"Unavailable"}<br>
   🍱 Food: ${c.food?"Available":"Unavailable"}<br>
-  💊 Medicine: ${c.medicine?"Available":"Unavailable"}
+  💊 Medicine: ${c.medicine?"Available":"Unavailable"}<br><br>
+  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">📍 OPEN IN GOOGLE MAPS</button>
 
   `);
 
