@@ -1350,8 +1350,8 @@ One place to find safety.
 </div>
 
 <div class="offline">
-📡 <b id="offlineText">Connecting...</b><br>
-SOS requests are synchronized through the FloodHelp rescue system.
+📡 <b id="offlineText">Local mode ready</b><br>
+Requests are stored locally on this device. Cross-device sync is disabled.
 </div>
 
 </section>
@@ -1883,55 +1883,7 @@ CANCEL
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database-compat.js"></script>
-
 <script>
-
-/* =========================================================
-   FIREBASE CONFIG
-   ========================================================= */
-
-const firebaseConfig={
- apiKey:"AIzaSyClMo6MhjKULCrYIoG_hLnDEe5M-2sC_A0",
- authDomain:"floodhelp-bacd2.firebaseapp.com",
-
- /* IMPORTANT:
-    This is the Realtime Database URL.
-    If Firebase Console shows another URL, replace ONLY this line.
- */
- databaseURL:"https://floodhelp-bacd2-default-rtdb.firebaseio.com",
-
- projectId:"floodhelp-bacd2",
- storageBucket:"floodhelp-bacd2.firebasestorage.app",
- messagingSenderId:"101110366938",
- appId:"1:101110366938:web:cbd62bccbcecdd7f131be3",
- measurementId:"G-CBM4YBG2H7"
-};
-
-let firebaseReady=false;
-let firebaseDB=null;
-let firebaseConnected=false;
-
-try{
-
- firebase.initializeApp(firebaseConfig);
-
- firebaseDB=firebase.database();
-
- firebaseReady=true;
-
- console.log("FloodHelp Firebase initialized.");
-
-}catch(error){
-
- console.error(
-  "Firebase initialization failed:",
-  error
- );
-
-}
 
 /* =========================================================
    BASIC HELPERS
@@ -2064,129 +2016,15 @@ findCampBtn.onclick=()=>{
 };
 
 /* =========================================================
-   CONNECTION STATUS
+   LOCAL / OFFLINE STATUS
    ========================================================= */
-
-function setFirebaseStatus(message,isError=false){
-
- if(isError){
-
-  systemStatus.textContent="Firebase error";
-
-  offlineText.textContent=
-   "FIREBASE ERROR — CHECK DATABASE";
-
-  return;
- }
-
- if(firebaseConnected){
-
-  systemStatus.textContent=
-   "Live rescue system connected";
-
-  offlineText.textContent=
-   "LIVE — Firebase connected";
-
- }else if(navigator.onLine){
-
-  systemStatus.textContent=
-   "Connecting to Firebase...";
-
-  offlineText.textContent=
-   "CONNECTING TO FIREBASE";
-
- }else{
-
-  systemStatus.textContent=
-   "Offline mode";
-
-  offlineText.textContent=
-   "OFFLINE";
- }
-}
-
 function updateConnection(){
-
- if(!navigator.onLine){
-
-  firebaseConnected=false;
-
-  systemStatus.textContent="Offline mode";
-
-  offlineText.textContent="OFFLINE";
-
-  return;
- }
-
- if(firebaseReady){
-
-  setFirebaseStatus();
-
- }else{
-
-  systemStatus.textContent="System ready";
-
-  offlineText.textContent="Offline-ready";
- }
+ systemStatus.textContent=navigator.onLine?"Local rescue system ready":"Offline mode";
+ offlineText.textContent=navigator.onLine?"LOCAL MODE — REQUESTS SAVED ON THIS DEVICE":"OFFLINE — REQUESTS SAVED ON THIS DEVICE";
 }
-
 addEventListener("online",updateConnection);
-
 addEventListener("offline",updateConnection);
-
 updateConnection();
-
-/* =========================================================
-   FIREBASE CONNECTION MONITOR
-   ========================================================= */
-
-function startFirebaseConnectionMonitor(){
-
- if(!firebaseReady||!firebaseDB)
-  return;
-
- firebaseDB
- .ref(".info/connected")
- .on(
-  "value",
-
-  snapshot=>{
-
-   firebaseConnected=
-    snapshot.val()===true;
-
-   if(firebaseConnected){
-
-    setFirebaseStatus();
-
-    console.log(
-     "FloodHelp Firebase connected."
-    );
-
-   }else{
-
-    setFirebaseStatus();
-
-    console.log(
-     "FloodHelp Firebase disconnected."
-    );
-   }
-  },
-
-  error=>{
-
-   console.error(
-    "Firebase connection monitor error:",
-    error
-   );
-
-   setFirebaseStatus(
-    "Firebase error",
-    true
-   );
-  }
- );
-}
 
 /* =========================================================
    SOS
@@ -2336,6 +2174,8 @@ function calculatePriority(){
 let userLat=null;
 let userLng=null;
 
+let activeRouteLine=null;
+let activeRouteMarkers=[];
 let map=null;
 let userMarker=null;
 let sosMarkers=[];
@@ -2543,24 +2383,8 @@ function renderCamps(list=camps){
 }
 
 function routeToCamp(c){
-
- if(userLat===null){
-
-  alert(
-   "Please allow location access first."
-  );
-
-  getLocation();
-
-  return;
- }
-
- window.open(
-
-  `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=walking`,
-
-  "_blank"
- );
+ if(!c)return;
+ drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name);
 }
 
 bestRoute.onclick=()=>{
@@ -2729,40 +2553,11 @@ function renderRescuers(){
 }
 
 function locateRescuer(i){
-
- let r=allRescuers()[i];
-
+ const r=allRescuers()[i];
  if(!r)return;
-
  openScreen("mapScreen");
-
  initializeMap();
-
- setTimeout(()=>{
-
-  if(map){
-
-   map.setView(
-    [r.lat,r.lng],
-    16
-   );
-
-   L.marker(
-    [r.lat,r.lng],
-    {
-     icon:createCircleIcon("you")
-    }
-   )
-   .addTo(map)
-   .bindPopup(
-    `<strong>🚑 ${r.name}</strong>
-     <br>${methodName(r.method)}
-     <br>📞 ${r.phone}`
-   )
-   .openPopup();
-  }
-
- },400);
+ setTimeout(()=>drawDirectRoute(Number(r.lat),Number(r.lng),"🚑 "+r.name),350);
 }
 
 /* =========================================================
@@ -3014,232 +2809,33 @@ function requester(){
 }
 
 /* =========================================================
-   FIREBASE SOS MERGE
-   ========================================================= */
-
-/*
- This is important.
-
- Firebase is the shared source between phones.
- localStorage is only the local/offline backup.
-
- We merge them instead of replacing local data
- with an empty Firebase snapshot.
- */
-
-function mergeSOSData(remoteList){
-
- let byKey=new Map();
-
- sosRequests.forEach(r=>{
-
-  let key=
-   r.firebaseKey||
-   r.id||
-   ("local-"+r.timestamp);
-
-  byKey.set(key,r);
- });
-
- remoteList.forEach(r=>{
-
-  let key=
-   r.firebaseKey||
-   r.id||
-   ("remote-"+r.timestamp);
-
-  byKey.set(key,r);
- });
-
- let merged=[...byKey.values()];
-
- merged.sort(
-  (a,b)=>
-   Number(b.timestamp||0)-
-   Number(a.timestamp||0)
- );
-
- sosRequests=merged;
-
- saveSOS();
-
- return merged;
-}
-
-/* =========================================================
    CREATE SOS
    ========================================================= */
 
 async function addLiveSOS(priority){
-
  sosNumber++;
-
- let names={
-
-  trapped:"🌊 Person trapped by floodwater",
-
-  medical:"🏥 Medical emergency",
-
-  rescue:"👥 People need rescue",
-
-  home:"🏠 Flooded home"
-
- };
-
- let v=[];
-
- if(needs.children)
-  v.push("👶 Child");
-
- if(needs.elderly)
-  v.push("👴 Elderly");
-
- if(needs.medical)
-  v.push("🏥 Medical");
-
- if(needs.special)
-  v.push("♿ Special assistance");
-
- let u=requester();
-
- let selectedArea=getUserArea();
-
- /*
-  Use timestamp + random part so two different
-  phones cannot accidentally create the same ID.
- */
- let uniqueId=
-  "SOS #"+
-  sosNumber+
-  "-"+
-  String(Date.now()).slice(-6)+
-  "-"+
-  Math.random()
-   .toString(36)
-   .slice(2,6)
-   .toUpperCase();
-
- let r={
-
-  id:uniqueId,
-
+ const names={trapped:"🌊 Person trapped by floodwater",medical:"🏥 Medical emergency",rescue:"👥 People need rescue",home:"🏠 Flooded home"};
+ const v=[];
+ if(needs.children)v.push("👶 Child");
+ if(needs.elderly)v.push("👴 Elderly");
+ if(needs.medical)v.push("🏥 Medical");
+ if(needs.special)v.push("♿ Special assistance");
+ const u=requester();
+ const r={
+  id:"SOS #"+sosNumber+"-"+String(Date.now()).slice(-6)+"-"+Math.random().toString(36).slice(2,6).toUpperCase(),
   priority,
-
-  title:
-   names[emergencyType]||
-   "🆘 Emergency assistance required",
-
+  title:names[emergencyType]||"🆘 Emergency assistance required",
   people:peopleCount,
-
-  vulnerable:
-   v.length
-   ?" • "+v.join(", ")
-   :"",
-
-  lat:userLat,
-  lng:userLng,
-
-  area:selectedArea,
-
-  time:new Date()
-   .toLocaleTimeString(),
-
-  timestamp:Date.now(),
-
-  status:"SOS SENT",
-
-  rescueStartTime:Date.now(),
-
-  progress:0,
-
-  boatDistance:3,
-
-  eta:10,
-
-  assigned:false,
-
-  completed:false,
-
-  requesterName:u.s,
-
-  requesterPhone:u.p,
-
-  firebaseSynced:false
+  vulnerable:v.length?" • "+v.join(", "):"",
+  lat:userLat,lng:userLng,area:getUserArea(),
+  time:new Date().toLocaleTimeString(),timestamp:Date.now(),
+  status:"SOS SENT",rescueStartTime:Date.now(),progress:0,
+  boatDistance:3,eta:10,assigned:false,completed:false,
+  requesterName:u.s,requesterPhone:u.p
  };
-
- /*
-  Put it locally immediately.
-  This makes the app usable even if internet fails.
- */
  sosRequests.unshift(r);
-
  saveSOS();
-
- /*
-  IMPORTANT:
-  Actually wait for Firebase to confirm the write.
- */
- if(firebaseReady&&firebaseDB){
-
-  try{
-
-   let ref=
-    firebaseDB
-    .ref("sosRequests")
-    .push();
-
-   let key=ref.key;
-
-   r.firebaseKey=key;
-
-   /*
-    Store the Firebase key locally too.
-   */
-   saveSOS();
-
-   await ref.set(r);
-
-   r.firebaseSynced=true;
-
-   saveSOS();
-
-   console.log(
-    "SOS successfully written to Firebase:",
-    key
-   );
-
-   return{
-    success:true,
-    record:r
-   };
-
-  }catch(error){
-
-   r.firebaseSynced=false;
-
-   saveSOS();
-
-   console.error(
-    "SOS Firebase WRITE FAILED:",
-    error
-   );
-
-   return{
-    success:false,
-    record:r,
-    error
-   };
-  }
-
- }
-
- return{
-  success:false,
-  record:r,
-  error:new Error(
-   "Firebase is not initialized."
-  )
- };
+ return {success:true,record:r};
 }
 
 function saveSOS(){
@@ -3248,196 +2844,6 @@ function saveSOS(){
   "floodhelp_sos",
   JSON.stringify(sosRequests)
  );
-}
-
-/* =========================================================
-   FIREBASE REAL-TIME LISTENER
-   ========================================================= */
-
-function startFirebaseListener(){
-
- if(!firebaseReady||!firebaseDB){
-
-  console.error(
-   "Firebase listener could not start."
-  );
-
-  return;
- }
-
- const sosRef=
-  firebaseDB.ref("sosRequests");
-
- sosRef.on(
-
-  "value",
-
-  snapshot=>{
-
-   const data=
-    snapshot.val()||{};
-
-   let incoming=[];
-
-   Object.keys(data)
-   .forEach(key=>{
-
-    let r=data[key];
-
-    if(!r)return;
-
-    r.firebaseKey=key;
-
-    r.firebaseSynced=true;
-
-    incoming.push(r);
-   });
-
-   incoming.sort(
-    (a,b)=>
-     Number(b.timestamp||0)-
-     Number(a.timestamp||0)
-   );
-
-   /*
-    Merge Firebase data with local backup.
-   */
-   mergeSOSData(incoming);
-
-   if(incoming.length>0){
-
-    navAlert.classList.add("show");
-
-    liveStatus.classList.add("alert");
-
-    liveStatus.textContent=
-     "● LIVE UPDATE";
-
-    setTimeout(()=>{
-
-     liveStatus.classList.remove(
-      "alert"
-     );
-
-     liveStatus.textContent="● LIVE";
-
-    },3000);
-   }
-
-   updateRescueCounts();
-
-   updateDashboardSummary();
-
-   updateRescueCards();
-
-   renderBoatPage();
-
-   if(map)
-    updateAllSOSMarkers();
-
-  },
-
-  error=>{
-
-   console.error(
-    "Firebase SOS listener error:",
-    error
-   );
-
-   firebaseConnected=false;
-
-   systemStatus.textContent=
-    "Firebase permission error";
-
-   offlineText.textContent=
-    "FIREBASE ERROR — CHECK RULES";
-
-   liveStatus.classList.add("alert");
-
-   liveStatus.textContent=
-    "● FIREBASE ERROR";
-
-  }
- );
-}
-
-/* =========================================================
-   FIREBASE UPDATE
-   ========================================================= */
-
-function updateSOSFirebase(r){
-
- if(
-  !firebaseReady||
-  !firebaseDB||
-  !r||
-  !r.firebaseKey
- ){
-
-  return Promise.reject(
-   new Error(
-    "Firebase key unavailable."
-   )
-  );
- }
-
- return firebaseDB
- .ref(
-  "sosRequests/"+r.firebaseKey
- )
- .update({
-
-  status:r.status,
-
-  assigned:
-   r.assigned,
-
-  completed:
-   r.completed,
-
-  assignedRescuerId:
-   r.assignedRescuerId||null,
-
-  assignedRescuerName:
-   r.assignedRescuerName||null,
-
-  assignedRescuerPhone:
-   r.assignedRescuerPhone||null,
-
-  assignedRescuerMethod:
-   r.assignedRescuerMethod||null,
-
-  rescueStartTime:
-   r.rescueStartTime||Date.now(),
-
-  progress:
-   r.progress||0,
-
-  boatDistance:
-   r.boatDistance||0,
-
-  eta:
-   r.eta||0
-
- })
- .then(()=>{
-
-  r.firebaseSynced=true;
-
-  saveSOS();
-
-  return true;
-
- })
- .catch(error=>{
-
-  console.error(
-   "Firebase SOS UPDATE FAILED:",
-   error
-  );
-
-  return false;
- });
 }
 
 /* =========================================================
@@ -3569,7 +2975,7 @@ function getRescueSimulation(r){
 
   saveSOS();
 
-  updateSOSFirebase(r);
+  saveSOS();
 
   if(!completedReturnTimers[r.id]){
 
@@ -4172,25 +3578,13 @@ async function assignRequest(btn,id){
  saveSOS();
 
  let synced=
-  await updateSOSFirebase(r)
-  .catch(()=>false);
+  saveSOS();
 
  renderRescueDashboard();
 
  renderBoatPage();
 
- if(synced===false){
-
-  alert(
-   "⚠️ Rescue assigned locally, but Firebase update failed. Check Firebase Rules."
-  );
-
- }else{
-
-  console.log(
-   "Rescue assignment synchronized."
-  );
- }
+ 
 }
 
 /* =========================================================
@@ -4295,28 +3689,10 @@ async function finishSOS(){
    "\nPriority: "+d.priority+
    "\nPeople: "+peopleCount+
    "\n\n"+
-   "✅ SOS synchronized with Firebase."
+   "✅ SOS saved on this device. Cross-device sync is disabled."
 
   );
 
- }else{
-
-  openScreen("rescue");
-
-  renderRescueDashboard();
-
-  alert(
-
-   "⚠️ SOS SAVED LOCALLY\n\n"+
-   "The SOS was created, but Firebase did not confirm the upload.\n\n"+
-   "Check:\n"+
-   "1. Firebase Realtime Database exists\n"+
-   "2. Database URL is correct\n"+
-   "3. Firebase Database Rules allow read/write\n"+
-   "4. Internet connection is available\n\n"+
-   "The request remains saved on this device."
-
-  );
  }
 }
 
@@ -4419,6 +3795,24 @@ function createCircleIcon(type){
  });
 }
 
+function drawDirectRoute(lat,lng,label){
+ if(!Number.isFinite(lat)||!Number.isFinite(lng)){alert("This location does not have valid coordinates.");return;}
+ if(!map){openScreen("mapScreen");initializeMap();}
+ if(userLat===null||userLng===null){alert("Allow location access first, then select the camp or rescuer again.");getLocation();return;}
+ if(!map)return;
+ if(activeRouteLine)map.removeLayer(activeRouteLine);
+ activeRouteMarkers.forEach(m=>map.removeLayer(m));
+ activeRouteMarkers=[];
+ const start=[Number(userLat),Number(userLng)],end=[lat,lng];
+ activeRouteLine=L.polyline([start,end],{color:"#00bfa6",weight:5,opacity:0.9,dashArray:"10 8"}).addTo(map);
+ activeRouteMarkers.push(
+  L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),
+  L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label)
+ );
+ map.fitBounds(L.latLngBounds(start,end),{padding:[40,40],maxZoom:15});
+ activeRouteMarkers[1].openPopup();
+}
+
 function initializeMap(){
 
  if(map){
@@ -4466,6 +3860,7 @@ function initializeMap(){
    }
   )
   .addTo(map)
+  .on("click",()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name))
   .bindPopup(`
 
   <strong>
@@ -4584,20 +3979,7 @@ function updateAllSOSMarkers(){
 }
 
 function routeToSOS(lat,lng){
-
- if(userLat===null){
-
-  getLocation();
-
-  return;
- }
-
- window.open(
-
-  `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}&travelmode=walking`,
-
-  "_blank"
- );
+ drawDirectRoute(Number(lat),Number(lng),"🚨 SOS location");
 }
 
 function showSOSOnMap(id){
@@ -4903,8 +4285,7 @@ async function launchBoat(id){
 
  saveSOS();
 
- await updateSOSFirebase(r)
- .catch(()=>false);
+ saveSOS();
 
  renderBoatPage();
 
@@ -5238,13 +4619,7 @@ function restoreRequests(){
     Date.now();
 
   if(r.area===undefined)
-   r.area="";
-
-  if(r.firebaseSynced===undefined)
-   r.firebaseSynced=
-    !!r.firebaseKey;
-
- });
+   r.area="";});
 
  saveSOS();
 }
@@ -5283,13 +4658,8 @@ if(
 
 }
 
-/* =========================================================
-   START FIREBASE
-   ========================================================= */
-
-startFirebaseConnectionMonitor();
-
-startFirebaseListener();
+/* Local-only startup: all requests are stored on this device. */
+updateConnection();
 
 </script>
 
