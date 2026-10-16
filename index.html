@@ -2389,38 +2389,30 @@ function renderCamps(list=camps){
 }
 
 function routeToCamp(c){
- if(!c)return;
- drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name);
+ // Open Google Maps directly from the user click. Do not require the
+ // Leaflet map to be open or wait for location permission first.
+ if(!c){
+  alert("No relief camp is available for routing right now.");
+  return;
+ }
+ openGoogleMaps(Number(c.lat),Number(c.lng));
 }
 
-bestRoute.onclick=()=>{
-
- let c=[...camps].sort(
-
-  (a,b)=>
-   (userLat===null
-    ?0
-    :distanceKm(
-       userLat,
-       userLng,
-       a.lat,
-       a.lng
-      )
-   )-
-   (userLat===null
-    ?0
-    :distanceKm(
-       userLat,
-       userLng,
-       b.lat,
-       b.lng
-      )
-   )
-
- )[0];
-
- routeToCamp(c);
-};
+const bestRouteButton = document.getElementById("bestRoute");
+if(bestRouteButton){
+ bestRouteButton.addEventListener("click", function(){
+  // Choose the nearest camp when GPS is available. If GPS is unavailable,
+  // use the app's first configured camp so Google Maps still opens.
+  let c = camps[0];
+  if(userLat !== null && userLng !== null){
+   c = [...camps].sort((a,b)=>
+    distanceKm(userLat,userLng,a.lat,a.lng) -
+    distanceKm(userLat,userLng,b.lat,b.lng)
+   )[0];
+  }
+  routeToCamp(c);
+ });
+}
 
 /* =========================================================
    RESCUERS
