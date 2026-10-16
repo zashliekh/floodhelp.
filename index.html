@@ -3499,20 +3499,28 @@ function updateRescueCards(){
  }
 
  /*
-  Newest SOS first so the request just submitted is always at the top.
-  Priority is used only when two requests have the same timestamp.
+  Ordering for the dashboard:
+  1. Red-highlighted active SOS requests first (new alerts / CRITICAL / HIGH).
+  2. Other active requests next, newest first.
+  3. Completed requests always last.
  */
- let order={
-  CRITICAL:1,
-  HIGH:2,
-  MEDIUM:3,
-  LOW:4
- };
+ const isHighlightedActive=r=>
+  !r.completed&&(
+   r.newAlert||
+   ["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase())
+  );
 
- list.sort((a,b)=>
-  Number(b.timestamp||0)-Number(a.timestamp||0)||
-  (order[a.priority]||9)-(order[b.priority]||9)
- );
+ list.sort((a,b)=>{
+  if(Boolean(a.completed)!==Boolean(b.completed))
+   return a.completed?1:-1;
+
+  const aHighlighted=isHighlightedActive(a);
+  const bHighlighted=isHighlightedActive(b);
+  if(aHighlighted!==bHighlighted)
+   return aHighlighted?-1:1;
+
+  return Number(b.timestamp||0)-Number(a.timestamp||0);
+ });
 
  list.forEach(r=>{
 
