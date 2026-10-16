@@ -1089,12 +1089,6 @@ button:active{transform:scale(.97)}
 
 /* SOS urgency highlighting */
 .request.request-alert{border:2px solid #ef4050!important;box-shadow:0 0 0 2px #ef405022,0 8px 26px #ef405022;position:relative}
-.request.demoRequest{border-style:dashed!important;border-color:#70d5e5!important}
-.demoSOSControls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0;padding:13px;background:#102832;border:1px dashed #70d5e5;border-radius:13px}
-.demoSOSControls strong{display:block;color:#70d5e5;font-size:11px;letter-spacing:.6px}
-.demoSOSControls small{display:block;color:#8fa8b0;font-size:10px;line-height:1.5;margin-top:4px;max-width:220px}
-#addDemoSOSBtn{border:0;border-radius:9px;padding:11px 13px;background:#176276;color:#fff;font-weight:800;font-size:10px;cursor:pointer}
-.demoRequest .requestId:after{content:" · DEMO ONLY";color:#70d5e5;font-weight:bold}
 .request-alert:before{content:"🚨 ACTIVE SOS";display:block;background:#ef4050;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;padding:7px 11px;margin:-1px -1px 12px;border-radius:10px 10px 5px 5px}
 .googleMapsBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1769aa;color:#fff;border:0;border-radius:9px;padding:10px 12px;font-weight:800;font-size:11px;text-decoration:none;cursor:pointer;margin-top:8px}
 
@@ -1727,11 +1721,6 @@ Showing SOS requests from your area.
 PRIORITISED SOS REQUESTS
 </div>
 
-<div class="demoSOSControls">
- <div><strong>🧪 DEMO MODE</strong><small>Practice the full rescue flow without connecting to the real boat.</small></div>
- <button id="addDemoSOSBtn" type="button" onclick="addSimulatedSOS()">＋ ADD SIMULATED SOS</button>
-</div>
-
 <div id="requestList"></div>
 
 </section>
@@ -1812,6 +1801,23 @@ No active mission
 </strong>
 </div>
 
+</div>
+
+<div class="boatStatusBox">
+ <h3>🛟 Safety & system checks</h3>
+ <div class="boatStatusLine"><span>Battery estimate</span><strong id="boatBatteryStatus" class="statusActive">82% · SIMULATED</strong></div>
+ <div class="boatStatusLine"><span>Communication</span><strong id="boatCommsStatus">LOCAL PROTOTYPE</strong></div>
+ <div class="boatStatusLine"><span>Obstacle sensors</span><strong id="boatObstacleStatus">NOT CONNECTED</strong></div>
+ <p style="font-size:10px;margin:10px 0 0">Demonstration indicators only. This app receives no live battery, signal, or sensor readings from the physical boat.</p>
+ <div class="boatActions">
+  <button class="secondaryBoat" id="boatStopBtn" type="button" onclick="stopBoatSimulation()">⛔ SIMULATED STOP</button>
+  <button class="primaryBoat" id="boatResumeBtn" type="button" onclick="resumeBoatSimulation()" style="display:none">▶ RESUME DEMO</button>
+ </div>
+</div>
+
+<div class="boatStatusBox">
+ <h3>📋 Recent mission history</h3>
+ <div id="boatMissionHistory" class="boatInfo">No missions recorded yet.</div>
 </div>
 
 </section>
@@ -2860,62 +2866,27 @@ async function addLiveSOS(priority){
  return {success:true,record:r};
 }
 
-function addSimulatedSOS(){
- const area=getUserArea();
- if(!area){
-  alert("Select your area first so the demo SOS appears in the correct rescue dashboard.");
-  return;
- }
- const baseLat=userLat!==null&&Number.isFinite(Number(userLat))?Number(userLat):Number(camps[0].lat);
- const baseLng=userLng!==null&&Number.isFinite(Number(userLng))?Number(userLng):Number(camps[0].lng);
- const now=Date.now();
- const n=sosRequests.filter(r=>r.demo===true&&String(r.area||"").toLowerCase()===area.toLowerCase()).length+1;
- const samples=[
-  {priority:"CRITICAL",title:"[SIMULATION] 🌊 Family trapped by floodwater",people:4,offset:0},
-  {priority:"HIGH",title:"[SIMULATION] 🏥 Medical help required",people:2,offset:0.006},
-  {priority:"MEDIUM",title:"[SIMULATION] 🏠 Flooded home — rescue requested",people:3,offset:-0.005},
-  {priority:"HIGH",title:"[SIMULATION] 👵 Elderly person needs evacuation",people:1,offset:0.003}
- ];
- const d=samples[(n-1)%samples.length];
- const r={
-  id:"DEMO-SOS-"+area.replace(/[^A-Z0-9]/gi,"").toUpperCase()+"-"+n,
-  demo:true,demoOnly:true,priority:d.priority,title:d.title,people:d.people,vulnerable:"",
-  lat:baseLat+d.offset,lng:baseLng+d.offset,area,time:new Date(now).toLocaleTimeString(),timestamp:now,
-  status:"SOS SENT",rescueStartTime:now,progress:0,boatDistance:3,eta:10,
-  assigned:false,completed:false,requesterName:"FloodHelp Demo User "+n,requesterPhone:""
- };
- sosRequests.unshift(r);
- saveSOS();
- boatState="ACTIVE";
- updateRescueCounts();
- updateDashboardSummary();
- updateRescueCards();
- renderBoatPage();
- if(map)updateAllSOSMarkers();
- alert("🧪 Simulated SOS added. Watch the dashboard stages; this is prototype-only and does not control the physical boat.");
-}
-
 function seedDemoSOSForArea(){
  const area=getUserArea();
  if(!area)return;
- if(sosRequests.some(r=>r.demo===true && String(r.area||"").toLowerCase()===area.toLowerCase()))return;
+ const existing=sosRequests.filter(r=>r.demo===true && String(r.area||'').toLowerCase()===area.toLowerCase()).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0));
+ // Keep one sample request per area so the dashboard is not crowded.
+ if(existing.length>1){
+  const removeIds=new Set(existing.slice(1).map(r=>r.id));
+  sosRequests=sosRequests.filter(r=>!removeIds.has(r.id));
+  saveSOS();
+ }
+ if(existing.length)return;
  const baseLat=Number.isFinite(userLat)?userLat:camps[0].lat;
  const baseLng=Number.isFinite(userLng)?userLng:camps[0].lng;
  const now=Date.now();
- const demos=[
-  {priority:"CRITICAL",title:"[SIMULATION] 🌊 Family trapped by floodwater",people:4,offset:0,age:2000},
-  {priority:"HIGH",title:"[SIMULATION] 🏥 Medical help required",people:2,offset:0.006,age:14000},
-  {priority:"MEDIUM",title:"[SIMULATION] 🏠 Flooded home — rescue requested",people:3,offset:-0.005,age:27000}
- ];
- demos.forEach((d,i)=>{
-  sosRequests.unshift({
-   id:"DEMO-SOS-"+area.replace(/[^A-Z0-9]/gi,"").toUpperCase()+"-"+(i+1),
-   demo:true,priority:d.priority,title:d.title,people:d.people,vulnerable:"",
-   lat:baseLat+d.offset,lng:baseLng+d.offset,area,
-   time:new Date(now-d.age).toLocaleTimeString(),timestamp:now-d.age,
-   status:"SOS SENT",rescueStartTime:now-d.age,progress:0,boatDistance:3,eta:10,
-   assigned:false,completed:false,requesterName:"FloodHelp Demo User "+(i+1),requesterPhone:"",demoOnly:true
-  });
+ sosRequests.unshift({
+  id:'DEMO-SOS-'+area.replace(/[^A-Z0-9]/gi,'').toUpperCase(),
+  demo:true,demoOnly:true,priority:'HIGH',title:'🧪 DEMO SCENARIO — Family needs flood rescue',
+  people:3,vulnerable:'',lat:baseLat,lng:baseLng,area,
+  time:new Date(now).toLocaleTimeString(),timestamp:now,status:'SOS SENT',
+  rescueStartTime:now,progress:0,boatDistance:3,eta:10,assigned:false,completed:false,
+  requesterName:'FloodHelp Demo User',requesterPhone:''
  });
  saveSOS();
  updateRescueCounts();
@@ -2924,7 +2895,6 @@ function seedDemoSOSForArea(){
  renderBoatPage();
  if(map)updateAllSOSMarkers();
 }
-
 function saveSOS(){
 
  localStorage.setItem(
@@ -3001,6 +2971,17 @@ function getRescueSimulation(r){
    message:
     "Rescue simulation complete. The boat has returned to the relief camp."
 
+  };
+ }
+
+ if(r.pausedAt){
+  return{
+   status:"SIMULATED EMERGENCY STOP — MISSION PAUSED",
+   progress:Number(r.progress||0),
+   distance:Number(r.boatDistance??3),
+   eta:Number(r.eta??10),
+   stage:Math.min(5,Math.floor(Number(r.progress||0)/20)),
+   message:"Prototype mission paused. Resume the demo to continue."
   };
  }
 
@@ -3273,8 +3254,7 @@ function createRequestCard(r){
  let card=
   document.createElement("div");
 
- card.className="request"+(!r.completed&&["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase())?" request-alert":"");
- if(r.demo)card.classList.add("demoRequest");
+ card.className="request"+(!r.completed&&(r.newAlert||["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase()))?" request-alert":"");
 
  let x=
   getRescueSimulation(r);
@@ -3646,10 +3626,12 @@ async function assignRequest(btn,id){
   res.method;
 
  r.assigned=true;
+ r.newAlert=false;
 
  r.status="RESCUE ASSIGNED";
 
  r.rescueStartTime=Date.now();
+ delete r.pausedAt;
 
  if(
   registeredRescuers
@@ -3770,6 +3752,11 @@ async function finishSOS(){
 
  if(result.success){
 
+  if(result.record){
+   result.record.newAlert=true;
+   saveSOS();
+  }
+
   navAlert.classList.add("show");
 
   liveStatus.classList.add("alert");
@@ -3781,16 +3768,7 @@ async function finishSOS(){
 
   renderRescueDashboard();
 
-  alert(
-
-   "🚨 SOS SENT!\n\n"+
-   "Area: "+area+
-   "\nPriority: "+d.priority+
-   "\nPeople: "+peopleCount+
-   "\n\n"+
-   "✅ SOS saved on this device. Cross-device sync is disabled."
-
-  );
+  // The red-highlighted SOS appears directly in the dashboard without a blocking popup.
 
  }
 }
@@ -4180,6 +4158,8 @@ function renderBoatPage(){
   ?"● READY"
   :boatState==="ACTIVE"
   ?"● ON RESCUE"
+  :boatState==="STOPPED"
+  ?"⛔ SIMULATION PAUSED"
   :"● RETURNING TO CAMP";
 
  let c=
@@ -4321,25 +4301,20 @@ function renderBoatPage(){
   r.id;
 
  boatCurrentStatus.textContent=
-  boatState==="READY"
-  ?"READY"
-  :boatState==="ACTIVE"
-  ?"ON RESCUE"
-  :"RETURNING";
-
- boatCurrentStatus.className=
-  boatState==="READY"
-  ?"statusReady"
-  :boatState==="ACTIVE"
-  ?"statusActive"
-  :"statusReturning";
-
- boatCurrentLocation.textContent=
-  boatState==="READY"
-  ?"Waiting at camp"
-  :boatState==="ACTIVE"
-  ?"Travelling to SOS"
-  :"Returning to camp";
+  boatState==="READY"?"READY":
+  boatState==="ACTIVE"?"ON RESCUE":
+  boatState==="STOPPED"?"SIMULATION PAUSED":"RETURNING";
+ boatCurrentStatus.className=boatState==="READY"?"statusReady":boatState==="ACTIVE"||boatState==="STOPPED"?"statusActive":"statusReturning";
+ boatCurrentLocation.textContent=boatState==="READY"?"Waiting at camp":boatState==="ACTIVE"?"Travelling to SOS":boatState==="STOPPED"?"Stopped in prototype simulation":"Returning to camp";
+ if(boatStopBtn)boatStopBtn.style.display=boatState==="STOPPED"?"none":"block";
+ if(boatResumeBtn)boatResumeBtn.style.display=boatState==="STOPPED"?"block":"none";
+ if(boatCommsStatus)boatCommsStatus.textContent="LOCAL PROTOTYPE · NO HARDWARE LINK";
+ if(boatObstacleStatus)boatObstacleStatus.textContent="NOT CONNECTED TO WEB APP";
+ if(boatBatteryStatus)boatBatteryStatus.textContent="82% · SIMULATED";
+ if(boatMissionHistory){
+  const history=sosRequests.filter(x=>x.completed||x.assigned).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0)).slice(0,3);
+  boatMissionHistory.innerHTML=history.length?history.map(x=>"<div style='padding:8px 0;border-bottom:1px solid #ffffff0a'><strong>"+x.id+"</strong><br>"+x.title+"<br><span style='color:#70d5e5'>"+(x.completed?"Completed — boat returned to camp":(x.status||"Assigned rescue"))+"</span></div>").join(""):"No assigned or completed missions yet.";
+ }
 }
 
 function boatGoToRescue(id){
@@ -4408,6 +4383,29 @@ async function launchBoat(id){
   (r.area||"Unknown")
 
  );
+}
+
+function stopBoatSimulation(){
+ const r=getActiveBoatRequest();
+ if(!r||r.completed){alert("There is no active prototype mission to pause.");return;}
+ r.pausedAt=Date.now();
+ boatState="STOPPED";
+ r.status="SIMULATED EMERGENCY STOP — MISSION PAUSED";
+ saveSOS();
+ renderBoatPage();
+ renderRescueDashboard();
+ alert("⛔ Prototype simulation paused. This control is not connected to the physical boat.");
+}
+
+function resumeBoatSimulation(){
+ const r=getActiveBoatRequest();
+ if(!r||!r.pausedAt){boatState="ACTIVE";renderBoatPage();return;}
+ r.rescueStartTime=Number(r.rescueStartTime||Date.now())+(Date.now()-Number(r.pausedAt));
+ delete r.pausedAt;
+ boatState="ACTIVE";
+ saveSOS();
+ renderBoatPage();
+ renderRescueDashboard();
 }
 
 function returnBoat(){
