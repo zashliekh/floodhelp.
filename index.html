@@ -3499,22 +3499,19 @@ function updateRescueCards(){
  }
 
  /*
-  Highest priority first.
+  Newest SOS first so the request just submitted is always at the top.
+  Priority is used only when two requests have the same timestamp.
  */
  let order={
-
   CRITICAL:1,
   HIGH:2,
   MEDIUM:3,
   LOW:4
-
  };
 
  list.sort((a,b)=>
-  (order[a.priority]||9)-
-  (order[b.priority]||9)||
-  Number(b.timestamp||0)-
-  Number(a.timestamp||0)
+  Number(b.timestamp||0)-Number(a.timestamp||0)||
+  (order[a.priority]||9)-(order[b.priority]||9)
  );
 
  list.forEach(r=>{
