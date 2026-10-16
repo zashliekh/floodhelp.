@@ -1089,7 +1089,11 @@ button:active{transform:scale(.97)}
 
 /* SOS urgency highlighting */
 .request.request-alert{border:2px solid #ef4050!important;box-shadow:0 0 0 2px #ef405022,0 8px 26px #ef405022;position:relative}
-.request..demoRequest{border-style:dashed!important;border-color:#70d5e5!important}
+.request.demoRequest{border-style:dashed!important;border-color:#70d5e5!important}
+.demoSOSControls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0;padding:13px;background:#102832;border:1px dashed #70d5e5;border-radius:13px}
+.demoSOSControls strong{display:block;color:#70d5e5;font-size:11px;letter-spacing:.6px}
+.demoSOSControls small{display:block;color:#8fa8b0;font-size:10px;line-height:1.5;margin-top:4px;max-width:220px}
+#addDemoSOSBtn{border:0;border-radius:9px;padding:11px 13px;background:#176276;color:#fff;font-weight:800;font-size:10px;cursor:pointer}
 .demoRequest .requestId:after{content:" · DEMO ONLY";color:#70d5e5;font-weight:bold}
 .request-alert:before{content:"🚨 ACTIVE SOS";display:block;background:#ef4050;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;padding:7px 11px;margin:-1px -1px 12px;border-radius:10px 10px 5px 5px}
 .googleMapsBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1769aa;color:#fff;border:0;border-radius:9px;padding:10px 12px;font-weight:800;font-size:11px;text-decoration:none;cursor:pointer;margin-top:8px}
@@ -1721,6 +1725,11 @@ Showing SOS requests from your area.
 
 <div class="rescueTitle">
 PRIORITISED SOS REQUESTS
+</div>
+
+<div class="demoSOSControls">
+ <div><strong>🧪 DEMO MODE</strong><small>Practice the full rescue flow without connecting to the real boat.</small></div>
+ <button id="addDemoSOSBtn" type="button" onclick="addSimulatedSOS()">＋ ADD SIMULATED SOS</button>
 </div>
 
 <div id="requestList"></div>
@@ -2849,6 +2858,41 @@ async function addLiveSOS(priority){
  sosRequests.unshift(r);
  saveSOS();
  return {success:true,record:r};
+}
+
+function addSimulatedSOS(){
+ const area=getUserArea();
+ if(!area){
+  alert("Select your area first so the demo SOS appears in the correct rescue dashboard.");
+  return;
+ }
+ const baseLat=userLat!==null&&Number.isFinite(Number(userLat))?Number(userLat):Number(camps[0].lat);
+ const baseLng=userLng!==null&&Number.isFinite(Number(userLng))?Number(userLng):Number(camps[0].lng);
+ const now=Date.now();
+ const n=sosRequests.filter(r=>r.demo===true&&String(r.area||"").toLowerCase()===area.toLowerCase()).length+1;
+ const samples=[
+  {priority:"CRITICAL",title:"[SIMULATION] 🌊 Family trapped by floodwater",people:4,offset:0},
+  {priority:"HIGH",title:"[SIMULATION] 🏥 Medical help required",people:2,offset:0.006},
+  {priority:"MEDIUM",title:"[SIMULATION] 🏠 Flooded home — rescue requested",people:3,offset:-0.005},
+  {priority:"HIGH",title:"[SIMULATION] 👵 Elderly person needs evacuation",people:1,offset:0.003}
+ ];
+ const d=samples[(n-1)%samples.length];
+ const r={
+  id:"DEMO-SOS-"+area.replace(/[^A-Z0-9]/gi,"").toUpperCase()+"-"+n,
+  demo:true,demoOnly:true,priority:d.priority,title:d.title,people:d.people,vulnerable:"",
+  lat:baseLat+d.offset,lng:baseLng+d.offset,area,time:new Date(now).toLocaleTimeString(),timestamp:now,
+  status:"SOS SENT",rescueStartTime:now,progress:0,boatDistance:3,eta:10,
+  assigned:false,completed:false,requesterName:"FloodHelp Demo User "+n,requesterPhone:""
+ };
+ sosRequests.unshift(r);
+ saveSOS();
+ boatState="ACTIVE";
+ updateRescueCounts();
+ updateDashboardSummary();
+ updateRescueCards();
+ renderBoatPage();
+ if(map)updateAllSOSMarkers();
+ alert("🧪 Simulated SOS added. Watch the dashboard stages; this is prototype-only and does not control the physical boat.");
 }
 
 function seedDemoSOSForArea(){
