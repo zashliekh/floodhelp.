@@ -884,7 +884,7 @@ button:active{transform:scale(.97)}
 }
 .progressSteps{
  display:grid;
- grid-template-columns:repeat(5,1fr);
+ grid-template-columns:repeat(6,minmax(0,1fr));
  gap:3px;
  margin-top:10px
 }
@@ -1089,7 +1089,9 @@ button:active{transform:scale(.97)}
 
 /* SOS urgency highlighting */
 .request.request-alert{border:2px solid #ef4050!important;box-shadow:0 0 0 2px #ef405022,0 8px 26px #ef405022;position:relative}
-.request.request-alert:before{content:"🚨 ACTIVE SOS";display:block;background:#ef4050;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;padding:7px 11px;margin:-1px -1px 12px;border-radius:10px 10px 5px 5px}
+.request..demoRequest{border-style:dashed!important;border-color:#70d5e5!important}
+.demoRequest .requestId:after{content:" · DEMO ONLY";color:#70d5e5;font-weight:bold}
+.request-alert:before{content:"🚨 ACTIVE SOS";display:block;background:#ef4050;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;padding:7px 11px;margin:-1px -1px 12px;border-radius:10px 10px 5px 5px}
 .googleMapsBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1769aa;color:#fff;border:0;border-radius:9px;padding:10px 12px;font-weight:800;font-size:11px;text-decoration:none;cursor:pointer;margin-top:8px}
 
 </style>
@@ -1584,6 +1586,8 @@ See your location, SOS locations and relief camps.
 <small>
 Your location, active SOS requests and relief camps are shown separately.
 </small>
+
+<button id="mapRouteButton" class="googleMapsBtn" type="button">🛣️ ROUTE TO NEAREST CAMP IN GOOGLE MAPS</button>
 
 </div>
 
@@ -2398,6 +2402,17 @@ function routeToCamp(c){
  openGoogleMaps(Number(c.lat),Number(c.lng));
 }
 
+const mapRouteButton = document.getElementById("mapRouteButton");
+if(mapRouteButton){
+ mapRouteButton.addEventListener("click", function(){
+  let c=camps[0];
+  if(userLat!==null && userLng!==null){
+   c=[...camps].sort((a,b)=>distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng))[0];
+  }
+  routeToCamp(c);
+ });
+}
+
 const bestRouteButton = document.getElementById("bestRoute");
 if(bestRouteButton){
  bestRouteButton.addEventListener("click", function(){
@@ -2717,7 +2732,7 @@ let sosRequests=
   )||"[]"
  );
 
-const RESCUE_DEMO_DURATION=30000;
+const RESCUE_DEMO_DURATION=45000;
 
 let boatState="READY";
 
@@ -2836,6 +2851,36 @@ async function addLiveSOS(priority){
  return {success:true,record:r};
 }
 
+function seedDemoSOSForArea(){
+ const area=getUserArea();
+ if(!area)return;
+ if(sosRequests.some(r=>r.demo===true && String(r.area||"").toLowerCase()===area.toLowerCase()))return;
+ const baseLat=Number.isFinite(userLat)?userLat:camps[0].lat;
+ const baseLng=Number.isFinite(userLng)?userLng:camps[0].lng;
+ const now=Date.now();
+ const demos=[
+  {priority:"CRITICAL",title:"[SIMULATION] 🌊 Family trapped by floodwater",people:4,offset:0,age:2000},
+  {priority:"HIGH",title:"[SIMULATION] 🏥 Medical help required",people:2,offset:0.006,age:14000},
+  {priority:"MEDIUM",title:"[SIMULATION] 🏠 Flooded home — rescue requested",people:3,offset:-0.005,age:27000}
+ ];
+ demos.forEach((d,i)=>{
+  sosRequests.unshift({
+   id:"DEMO-SOS-"+area.replace(/[^A-Z0-9]/gi,"").toUpperCase()+"-"+(i+1),
+   demo:true,priority:d.priority,title:d.title,people:d.people,vulnerable:"",
+   lat:baseLat+d.offset,lng:baseLng+d.offset,area,
+   time:new Date(now-d.age).toLocaleTimeString(),timestamp:now-d.age,
+   status:"SOS SENT",rescueStartTime:now-d.age,progress:0,boatDistance:3,eta:10,
+   assigned:false,completed:false,requesterName:"FloodHelp Demo User "+(i+1),requesterPhone:"",demoOnly:true
+  });
+ });
+ saveSOS();
+ updateRescueCounts();
+ updateDashboardSummary();
+ updateRescueCards();
+ renderBoatPage();
+ if(map)updateAllSOSMarkers();
+}
+
 function saveSOS(){
 
  localStorage.setItem(
@@ -2899,7 +2944,7 @@ function getRescueSimulation(r){
 
   return{
 
-   status:"RESCUE COMPLETED",
+   status:"RESCUE COMPLETED — BOAT BACK AT CAMP",
 
    progress:100,
 
@@ -2907,10 +2952,10 @@ function getRescueSimulation(r){
 
    eta:0,
 
-   stage:4,
+   stage:5,
 
    message:
-    "Rescue completed successfully. Boat is returning to the relief camp."
+    "Rescue simulation complete. The boat has returned to the relief camp."
 
   };
  }
@@ -2928,28 +2973,36 @@ function getRescueSimulation(r){
   );
 
  let stage=
-  e<4000?0:
-  e<8000?1:
-  e<22000?2:3;
+  e<5000?0:
+  e<10000?1:
+  e<20000?2:
+  e<28000?3:
+  e<36000?4:5;
 
  let status=[
 
-  "SOS SENT",
-  "RESCUE ASSIGNED",
+  "SOS RECEIVED",
+  "RESCUE TEAM ASSIGNED",
   "BOAT ON THE WAY",
-  "RESCUE ARRIVING"
+  "BOAT APPROACHING SOS",
+  "PERSON RESCUED",
+  "BOAT RETURNING TO CAMP"
 
  ][stage];
 
  let msg=[
 
-  "Emergency request received. Rescue team is being notified.",
+  "Demo SOS received. The rescue process has started.",
 
-  "Rescue team assigned to this emergency.",
+  "A simulated rescue team has been assigned to this emergency.",
 
-  "Rescue boat is travelling toward the SOS location.",
+  "The simulated boat is travelling toward the SOS location.",
 
-  "Rescue boat is approaching the emergency location."
+  "The simulated boat is approaching the emergency location.",
+
+  "The simulated person has been rescued. Preparing the return trip.",
+
+  "The simulated boat is returning to the relief camp."
 
  ][stage];
 
@@ -3002,10 +3055,10 @@ function getRescueSimulation(r){
 
    eta:0,
 
-   stage:4,
+   stage:5,
 
    message:
-    "Rescue completed successfully. Boat is returning to the relief camp."
+    "Rescue simulation complete. The boat has returned to the relief camp."
 
   };
  }
@@ -3177,6 +3230,7 @@ function createRequestCard(r){
   document.createElement("div");
 
  card.className="request"+(!r.completed&&["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase())?" request-alert":"");
+ if(r.demo)card.classList.add("demoRequest");
 
  let x=
   getRescueSimulation(r);
@@ -3251,7 +3305,8 @@ function createRequestCard(r){
   "ASSIGNED",
   "ON THE WAY",
   "ARRIVING",
-  "COMPLETE"
+  "RESCUED",
+  "RETURN TO CAMP"
 
  ];
 
@@ -3290,7 +3345,7 @@ function createRequestCard(r){
  ${x.stage>=i?"active":""}
  ${x.stage===i?"current":""}">
 
- ${["🚨","🚑","🚤","📍","🏕️"][i]}
+ ${["🚨","🚑","🚤","📍","🛟","🏕️"][i]}
  <br>
  ${s}
 
@@ -4361,6 +4416,7 @@ function updateUserDisplay(){
   s?"block":"none";
 
  updateSavedAreaDisplays();
+ seedDemoSOSForArea();
 }
 
 function showLogin(){
@@ -4622,8 +4678,17 @@ function restoreRequests(){
    r.eta=10;
 
   if(!r.rescueStartTime)
-   r.rescueStartTime=
-    Date.now();
+   r.rescueStartTime=Date.now();
+
+  // This is a local prototype simulation. Restart unfinished missions
+  // that were left open past the demo duration so the steps play again.
+  if(!r.completed && Date.now()-Number(r.rescueStartTime)>=RESCUE_DEMO_DURATION){
+   r.rescueStartTime=Date.now();
+   r.progress=0;
+   r.boatDistance=3;
+   r.eta=10;
+   r.status="SOS SENT";
+  }
 
   if(r.area===undefined)
    r.area="";});
