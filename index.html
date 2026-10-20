@@ -2181,6 +2181,14 @@ let hazardMarkers=[];
 let pendingRoute=null;
 const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
 
+// Two map-only rescue examples for testing the marker and Google Maps button.
+// These are visibly labelled simulations and are never added to the real SOS list.
+const demoRescuePeople=[
+ {id:"SIM-01",name:"Simulation Person 1",lat:11.076,lng:76.070,area:"Demo location A"},
+ {id:"SIM-02",name:"Simulation Person 2",lat:11.069,lng:76.079,area:"Demo location B"}
+];
+let demoRescueMarkers=[];
+
 function getLocation(){
 
  if(!navigator.geolocation){
@@ -3916,6 +3924,20 @@ function initializeMap(){
   }
 
  ).addTo(map);
+
+ // Show two clearly labelled simulation people for demonstrating rescue-map behaviour.
+ demoRescueMarkers.forEach(m=>map.removeLayer(m));
+ demoRescueMarkers=[];
+ demoRescuePeople.forEach(person=>{
+  const marker=L.marker([person.lat,person.lng],{icon:createCircleIcon("sos")}).addTo(map);
+  marker.bindPopup(
+   "<strong>🧪 SIMULATION — NOT A REAL SOS</strong><br><br>"+
+   person.name+"<br>"+
+   "📍 "+person.area+"<br><br>"+
+   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>📍 TEST ROUTE IN GOOGLE MAPS</button>"
+  );
+  demoRescueMarkers.push(marker);
+ });
 
  camps.forEach(c=>{
 
