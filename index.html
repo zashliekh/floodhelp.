@@ -1604,7 +1604,7 @@ Your location, active SOS requests, relief camps and clearly labelled sample haz
 
 </div>
 
-<div class="mapSafetyNote"><b>FLOOD-SAFETY NOTICE:</b> The road line uses a public routing service and is not verified as flood-safe. This prototype has no verified live flood, water-level or road-closure feed. Hazard pins are simulated examples and are not used to guarantee a safe route. Follow official emergency instructions.</div>
+<div class="mapSafetyNote"><b>FLOOD-SAFETY NOTICE:</b> The road line uses a public routing service and is not verified as flood-safe. Selecting an in-app route sends your start and destination coordinates to that routing service. This prototype has no verified live flood, water-level or road-closure feed. Hazard pins are simulated examples and are not used to guarantee a safe route. Follow official emergency instructions.</div>
 
 <div id="map"></div>
 
@@ -2424,13 +2424,13 @@ function renderCamps(list=camps){
   x.innerHTML=`
 
   <h3>🏕️ ${c.name}</h3>
-
+  <div class="label">SAMPLE DATA — NOT VERIFIED LIVE</div>
   <p>
   📏 ${d}<br>
-  👥 Vacancy: ${c.vacancy}%<br>
-  💧 Water: ${c.water?"Available":"Unavailable"}<br>
-  🍱 Food: ${c.food?"Available":"Unavailable"}<br>
-  💊 Medicine: ${c.medicine?"Available":"Unavailable"}
+  👥 Vacancy: ${c.vacancy}% (sample)<br>
+  💧 Water: ${c.water?"Available":"Unavailable"} (sample)<br>
+  🍱 Food: ${c.food?"Available":"Unavailable"} (sample)<br>
+  💊 Medicine: ${c.medicine?"Available":"Unavailable"} (sample)
   </p>
 
   <button>
