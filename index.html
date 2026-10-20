@@ -596,6 +596,15 @@ button:active{transform:scale(.97)}
 .youDot{background:#168dd0}
 .sosDot{background:#ef4050}
 .campDot{background:#32c779}
+.hazardDot{background:#ff6b35}
+.mapActionRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.mapActionRow button{flex:1;min-width:145px}
+.mapSafetyNote{background:#38241a;border:1px solid #74452d;color:#ffd8bf;border-radius:12px;padding:12px;margin-top:12px;font-size:11px;line-height:1.6}
+.routeStatus{background:#102832;border:1px solid #1d414c;border-radius:14px;padding:14px;margin-top:12px;font-size:12px;line-height:1.6;color:#c2d8df}
+.routeStatus strong{display:block;color:#fff;font-size:13px;margin-bottom:5px}
+.routeCaution{color:#ffd39b;margin-top:6px}
+.hazardToggle{display:inline-flex;align-items:center;gap:6px;background:#102832;border:1px solid #1d414c;color:#d7e8ed;border-radius:10px;padding:9px 11px;font-size:11px;margin-top:12px}
+@media(max-width:380px){.mapActionRow button{min-width:100%}}
 
 /* RESCUE */
 .rescueHeader{
@@ -1554,8 +1563,10 @@ Food
 </div>
 
 <button class="primary" id="bestRoute">
-🛣️ SAFEST ROUTE
+🛣️ SHOW ROAD ROUTE IN APP
 </button>
+<button class="googleMapsBtn" id="bestGoogleRoute" type="button">📍 OPEN ROUTE IN GOOGLE MAPS</button>
+<div class="mapSafetyNote">Camp locations, vacancy and supplies are sample data until verified. A road route is not automatically flood-safe.</div>
 
 </div>
 
@@ -1579,17 +1590,25 @@ See your location, SOS locations and relief camps.
 
 <div class="mapIntro">
 
-<strong>LIVE EMERGENCY MAP</strong>
+<strong>INTERACTIVE EMERGENCY MAP</strong>
 
 <small>
-Your location, active SOS requests and relief camps are shown separately.
+Your location, active SOS requests, relief camps and clearly labelled sample hazard reports.
 </small>
 
-<button id="mapRouteButton" class="googleMapsBtn" type="button">🛣️ ROUTE TO NEAREST CAMP IN GOOGLE MAPS</button>
+<div class="mapActionRow">
+<button id="mapRouteInsideButton" class="primary" type="button">🛣️ SHOW NEAREST CAMP ROUTE HERE</button>
+<button id="mapRouteButton" class="googleMapsBtn" type="button">📍 NAVIGATE IN GOOGLE MAPS</button>
+</div>
+<label class="hazardToggle"><input id="hazardToggle" type="checkbox" checked onchange="toggleHazardLayer()"> Show simulated hazard reports</label>
 
 </div>
 
+<div class="mapSafetyNote"><b>FLOOD-SAFETY NOTICE:</b> The road line uses a public routing service and is not verified as flood-safe. This prototype has no verified live flood, water-level or road-closure feed. Hazard pins are simulated examples and are not used to guarantee a safe route. Follow official emergency instructions.</div>
+
 <div id="map"></div>
+
+<div id="mapRouteStatus" class="routeStatus" aria-live="polite"><strong>No route selected</strong>Choose a camp or SOS marker, then select a route option. Sample camps and hazards are not verified live data.</div>
 
 <div class="mapLegend">
 
@@ -1605,20 +1624,26 @@ SOS location
 
 <div class="legendItem">
 <span class="legendDot campDot"></span>
-Relief camp
+Relief camp (sample data)
 </div>
 
 <div class="legendItem">
-🛣️ Safest route
+<span class="legendDot hazardDot"></span>
+Simulated hazard (not verified)
+</div>
+
+<div class="legendItem">
+🛣️ Road route (flood safety unverified)
 </div>
 
 </div>
 
 <div class="mapInfo">
-📍 Blue = You<br>
-🚨 Red = Active SOS<br>
-🏕️ Green = Relief camp<br>
-🛣️ Select a marker for details
+📍 Blue = Your location<br>
+🚨 Red = Active SOS location<br>
+🏕️ Green = Relief camp — sample coordinates/resources<br>
+⚠️ Orange = Simulated hazard report — not verified<br>
+🛣️ Select a marker for route choices. A road route does not mean the road is safe during flooding.
 </div>
 
 </section>
@@ -2204,6 +2229,13 @@ let activeRouteMarkers=[];
 let map=null;
 let userMarker=null;
 let sosMarkers=[];
+let hazardMarkers=[];
+let pendingRoute=null;
+const demoHazards=[
+ {name:"Sample flooded-road report",lat:11.076,lng:76.077,kind:"Possible flooded road"},
+ {name:"Sample blocked-road report",lat:11.069,lng:76.068,kind:"Possible road blockage"},
+ {name:"Sample high-water warning",lat:11.081,lng:76.074,kind:"Possible high water"}
+];
 
 function getLocation(){
 
@@ -2248,6 +2280,12 @@ function getLocation(){
 
    if(map)
     updateMapLocation();
+
+   if(pendingRoute){
+    const next=pendingRoute;
+    pendingRoute=null;
+    drawDirectRoute(next.lat,next.lng,next.label);
+   }
   },
 
   ()=>{
@@ -2417,32 +2455,21 @@ function routeToCamp(c){
  openGoogleMaps(Number(c.lat),Number(c.lng));
 }
 
-const mapRouteButton = document.getElementById("mapRouteButton");
-if(mapRouteButton){
- mapRouteButton.addEventListener("click", function(){
-  let c=camps[0];
-  if(userLat!==null && userLng!==null){
-   c=[...camps].sort((a,b)=>distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng))[0];
-  }
-  routeToCamp(c);
- });
+const mapRouteButton=document.getElementById("mapRouteButton");
+function nearestCampForRoute(){
+ let c=camps[0];
+ if(userLat!==null&&userLng!==null)c=[...camps].sort((a,b)=>distanceKm(userLat,userLng,a.lat,a.lng)-distanceKm(userLat,userLng,b.lat,b.lng))[0];
+ return c;
 }
+if(mapRouteButton)mapRouteButton.addEventListener("click",function(){const c=nearestCampForRoute();openGoogleMaps(Number(c.lat),Number(c.lng));});
+const mapRouteInsideButton=document.getElementById("mapRouteInsideButton");
+if(mapRouteInsideButton)mapRouteInsideButton.addEventListener("click",function(){const c=nearestCampForRoute();openScreen("mapScreen");setTimeout(()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name),120);});
+const bestRouteButton=document.getElementById("bestRoute");
+if(bestRouteButton)bestRouteButton.addEventListener("click",function(){const c=nearestCampForRoute();openScreen("mapScreen");setTimeout(()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name),120);});
+const bestGoogleRouteButton=document.getElementById("bestGoogleRoute");
+if(bestGoogleRouteButton)bestGoogleRouteButton.addEventListener("click",function(){const c=nearestCampForRoute();openGoogleMaps(Number(c.lat),Number(c.lng));});
 
-const bestRouteButton = document.getElementById("bestRoute");
-if(bestRouteButton){
- bestRouteButton.addEventListener("click", function(){
-  // Choose the nearest camp when GPS is available. If GPS is unavailable,
-  // use the app's first configured camp so Google Maps still opens.
-  let c = camps[0];
-  if(userLat !== null && userLng !== null){
-   c = [...camps].sort((a,b)=>
-    distanceKm(userLat,userLng,a.lat,a.lng) -
-    distanceKm(userLat,userLng,b.lat,b.lng)
-   )[0];
-  }
-  routeToCamp(c);
- });
-}
+
 
 /* =========================================================
    RESCUERS
@@ -3880,26 +3907,59 @@ function createCircleIcon(type){
 function openGoogleMaps(lat,lng){
  lat=Number(lat);lng=Number(lng);
  if(!Number.isFinite(lat)||!Number.isFinite(lng)){alert("This location has no valid GPS coordinates.");return;}
- window.open("https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(lat+","+lng)+"&travelmode=driving","_blank","noopener");
+ const origin=(userLat!==null&&userLng!==null)?"&origin="+encodeURIComponent(userLat+","+userLng):"";
+ window.open("https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(lat+","+lng)+origin+"&travelmode=driving","_blank","noopener");
 }
 
-function drawDirectRoute(lat,lng,label){
+async function drawDirectRoute(lat,lng,label){
+ lat=Number(lat);lng=Number(lng);
  if(!Number.isFinite(lat)||!Number.isFinite(lng)){alert("This location does not have valid coordinates.");return;}
  if(!map){openScreen("mapScreen");initializeMap();}
- if(userLat===null||userLng===null){alert("Allow location access first, then select the camp or rescuer again.");getLocation();return;}
  if(!map)return;
+ if(userLat===null||userLng===null){
+  pendingRoute={lat:lat,lng:lng,label:label};
+  setMapRouteStatus("Waiting for your location","Allow location access to calculate a road route from your current position.","If location is unavailable, use Google Maps or check the destination manually.");
+  getLocation();return;
+ }
  if(activeRouteLine)map.removeLayer(activeRouteLine);
- activeRouteMarkers.forEach(m=>map.removeLayer(m));
- activeRouteMarkers=[];
+ activeRouteMarkers.forEach(m=>map.removeLayer(m));activeRouteMarkers=[];
  const start=[Number(userLat),Number(userLng)],end=[lat,lng];
- activeRouteLine=L.polyline([start,end],{color:"#00bfa6",weight:5,opacity:0.9,dashArray:"10 8"}).addTo(map);
- activeRouteMarkers.push(
-  L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),
-  L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label)
- );
- map.fitBounds(L.latLngBounds(start,end),{padding:[40,40],maxZoom:15});
- activeRouteMarkers[1].openPopup();
+ setMapRouteStatus("Finding road route…","Requesting a driving route to "+label+".","Road routing does not verify flood conditions.");
+ const url="https://router.project-osrm.org/route/v1/driving/"+start[1]+","+start[0]+";"+end[1]+","+end[0]+"?overview=full&geometries=geojson&steps=true";
+ try{
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+  let response;try{response=await fetch(url,{signal:controller.signal,headers:{Accept:"application/json"}});}finally{clearTimeout(timeout);}
+  if(!response.ok)throw new Error("Routing service returned HTTP "+response.status);
+  const data=await response.json();if(data.code!=="Ok"||!data.routes||!data.routes.length)throw new Error("No road route was returned.");
+  const route=data.routes[0],coords=route.geometry.coordinates.map(p=>[p[1],p[0]]);
+  activeRouteLine=L.polyline(coords,{color:"#00bfa6",weight:6,opacity:.95}).addTo(map);
+  activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
+  map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:16});
+  const km=(route.distance/1000).toFixed(1),minutes=Math.max(1,Math.round(route.duration/60));
+  const nearHazards=demoHazards.filter(h=>coords.some(p=>distanceKm(p[0],p[1],h.lat,h.lng)<0.2));
+  const warning=nearHazards.length?"Route passes near "+nearHazards.map(h=>h.name).join(", ")+". These are SIMULATED reports only; the route service has not avoided them.":"Simulated hazard reports are not used by the routing service.";
+  setMapRouteStatus("Road route loaded — FLOOD SAFETY UNVERIFIED","Approx. "+km+" km • "+minutes+" min driving estimate. Destination: "+label+".",warning+" Check current road and flood conditions with official local sources before travelling.");
+ }catch(err){
+  activeRouteLine=L.polyline([start,end],{color:"#ffb454",weight:4,dashArray:"8 8",opacity:.95}).addTo(map);
+  activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
+  map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:15});
+  setMapRouteStatus("Road routing unavailable","The dashed line is only a straight-line direction — NOT a road route.","Try Google Maps navigation. This line is not a safe evacuation route. Details: "+(err.name==="AbortError"?"routing request timed out":err.message));
+ }
 }
+
+function setMapRouteStatus(title,message,caution){
+ const el=document.getElementById("mapRouteStatus");if(!el)return;
+ el.replaceChildren();const strong=document.createElement("strong");strong.textContent=title;
+ const body=document.createElement("div");body.textContent=message;el.append(strong,body);
+ if(caution){const note=document.createElement("div");note.className="routeCaution";note.textContent=caution;el.appendChild(note);}
+}
+function toggleHazardLayer(){
+ if(!map)return;
+ const visible=document.getElementById("hazardToggle").checked;
+ hazardMarkers.forEach(m=>{if(visible)m.addTo(map);else map.removeLayer(m);});
+}
+
+
 
 function initializeMap(){
 
@@ -3948,27 +4008,28 @@ function initializeMap(){
    }
   )
   .addTo(map)
-  .on("click",()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name))
   .bindPopup(`
 
-  <strong>
-  🏕️ ${c.name}
-  </strong>
-
-  <br><br>
-
-  👥 Vacancy: ${c.vacancy}%<br>
-  💧 Water: ${c.water?"Available":"Unavailable"}<br>
-  🍱 Food: ${c.food?"Available":"Unavailable"}<br>
-  💊 Medicine: ${c.medicine?"Available":"Unavailable"}<br><br>
+  <strong>🏕️ ${c.name}</strong><br><br>
+  <span style="color:#ffbf69;font-weight:bold">SAMPLE CAMP DATA — NOT VERIFIED</span><br>
+  👥 Vacancy: ${c.vacancy}% (sample)<br>
+  💧 Water: ${c.water?"Available":"Unavailable"} (sample)<br>
+  🍱 Food: ${c.food?"Available":"Unavailable"} (sample)<br>
+  💊 Medicine: ${c.medicine?"Available":"Unavailable"} (sample)<br><br>
+  <button class="googleMapsBtn" onclick="drawDirectRoute(${Number(c.lat)},${Number(c.lng)},'🏕️ ${c.name}')">🛣️ SHOW ROAD ROUTE IN APP</button>
   <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">📍 OPEN IN GOOGLE MAPS</button>
 
   `);
 
  });
 
+ demoHazards.forEach(h=>{
+  const marker=L.circleMarker([h.lat,h.lng],{radius:9,color:"#fff",weight:2,fillColor:"#ff6b35",fillOpacity:.95}).addTo(map);
+  marker.bindPopup("<strong>⚠️ "+h.name+"</strong><br><span style='color:#ffbf69;font-weight:bold'>SIMULATED — NOT VERIFIED</span><br>"+h.kind+". This sample report is not a confirmed road closure and is not used to calculate routes.");
+  hazardMarkers.push(marker);
+ });
+ if(!document.getElementById("hazardToggle").checked)toggleHazardLayer();
  updateMapLocation();
-
  updateAllSOSMarkers();
 }
 
