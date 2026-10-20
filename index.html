@@ -1581,70 +1581,18 @@ Food
 <section id="mapScreen" class="screen">
 
 <button class="back" id="backMap">← Back</button>
-
-<h1>🗺️ Map & Routes</h1>
-
-<p>
-See your location, SOS locations and relief camps.
-</p>
-
-<div class="mapIntro">
-
-<strong>INTERACTIVE EMERGENCY MAP</strong>
-
-<small>
-Your location, active SOS requests, relief camps and clearly labelled sample hazard reports.
-</small>
-
-<div class="mapActionRow">
-<button id="mapRouteInsideButton" class="primary" type="button">🛣️ SHOW NEAREST CAMP ROUTE HERE</button>
-<button id="mapRouteButton" class="googleMapsBtn" type="button">📍 NAVIGATE IN GOOGLE MAPS</button>
-</div>
-<label class="hazardToggle"><input id="hazardToggle" type="checkbox" checked onchange="toggleHazardLayer()"> Show simulated hazard reports</label>
-
-</div>
-
-<div class="mapSafetyNote"><b>FLOOD-SAFETY NOTICE:</b> The road line uses a public routing service and is not verified as flood-safe. Selecting an in-app route sends your start and destination coordinates to that routing service. This prototype has no verified live flood, water-level or road-closure feed. Hazard pins are simulated examples and are not used to guarantee a safe route. Follow official emergency instructions.</div>
+<h1>🗺️ Rescue Map</h1>
+<p>Tap a red SOS marker to open the person's location in Google Maps.</p>
 
 <div id="map"></div>
 
-<div id="mapRouteStatus" class="routeStatus" aria-live="polite"><strong>No route selected</strong>Choose a camp or SOS marker, then select a route option. Sample camps and hazards are not verified live data.</div>
-
 <div class="mapLegend">
-
-<div class="legendItem">
-<span class="legendDot youDot"></span>
-Your location
+  <div class="legendItem"><span class="legendDot youDot"></span> Your location</div>
+  <div class="legendItem"><span class="legendDot sosDot"></span> Person needing rescue</div>
+  <div class="legendItem"><span class="legendDot campDot"></span> Relief camp</div>
 </div>
 
-<div class="legendItem">
-<span class="legendDot sosDot"></span>
-SOS location
-</div>
-
-<div class="legendItem">
-<span class="legendDot campDot"></span>
-Relief camp (sample data)
-</div>
-
-<div class="legendItem">
-<span class="legendDot hazardDot"></span>
-Simulated hazard (not verified)
-</div>
-
-<div class="legendItem">
-🛣️ Road route (flood safety unverified)
-</div>
-
-</div>
-
-<div class="mapInfo">
-📍 Blue = Your location<br>
-🚨 Red = Active SOS location<br>
-🏕️ Green = Relief camp — sample coordinates/resources<br>
-⚠️ Orange = Simulated hazard report — not verified<br>
-🛣️ Select a marker for route choices. A road route does not mean the road is safe during flooding.
-</div>
+<div class="mapSafetyNote">Only SOS requests with a GPS location appear on the map. Google Maps provides the route; check local flood conditions and follow official emergency instructions.</div>
 
 </section>
 
@@ -2231,11 +2179,7 @@ let userMarker=null;
 let sosMarkers=[];
 let hazardMarkers=[];
 let pendingRoute=null;
-const demoHazards=[
- {name:"Sample flooded-road report",lat:11.076,lng:76.077,kind:"Possible flooded road"},
- {name:"Sample blocked-road report",lat:11.069,lng:76.068,kind:"Possible road blockage"},
- {name:"Sample high-water warning",lat:11.081,lng:76.074,kind:"Possible high water"}
-];
+const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
 
 function getLocation(){
 
@@ -2894,33 +2838,7 @@ async function addLiveSOS(priority){
 }
 
 function seedDemoSOSForArea(){
- const area=getUserArea();
- if(!area)return;
- const existing=sosRequests.filter(r=>r.demo===true && String(r.area||'').toLowerCase()===area.toLowerCase()).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0));
- // Keep one sample request per area so the dashboard is not crowded.
- if(existing.length>1){
-  const removeIds=new Set(existing.slice(1).map(r=>r.id));
-  sosRequests=sosRequests.filter(r=>!removeIds.has(r.id));
-  saveSOS();
- }
- if(existing.length)return;
- const baseLat=Number.isFinite(userLat)?userLat:camps[0].lat;
- const baseLng=Number.isFinite(userLng)?userLng:camps[0].lng;
- const now=Date.now();
- sosRequests.unshift({
-  id:'DEMO-SOS-'+area.replace(/[^A-Z0-9]/gi,'').toUpperCase(),
-  demo:true,demoOnly:true,priority:'HIGH',title:'🧪 DEMO SCENARIO — Family needs flood rescue',
-  people:3,vulnerable:'',lat:baseLat,lng:baseLng,area,
-  time:new Date(now).toLocaleTimeString(),timestamp:now,status:'SOS SENT',
-  rescueStartTime:now,progress:0,boatDistance:3,eta:10,assigned:false,completed:false,
-  requesterName:'FloodHelp Demo User',requesterPhone:''
- });
- saveSOS();
- updateRescueCounts();
- updateDashboardSummary();
- updateRescueCards();
- renderBoatPage();
- if(map)updateAllSOSMarkers();
+ // Real SOS requests only. Do not generate demo people or fake emergencies.
 }
 function saveSOS(){
 
@@ -4023,12 +3941,6 @@ function initializeMap(){
 
  });
 
- demoHazards.forEach(h=>{
-  const marker=L.circleMarker([h.lat,h.lng],{radius:9,color:"#fff",weight:2,fillColor:"#ff6b35",fillOpacity:.95}).addTo(map);
-  marker.bindPopup("<strong>⚠️ "+h.name+"</strong><br><span style='color:#ffbf69;font-weight:bold'>SIMULATED — NOT VERIFIED</span><br>"+h.kind+". This sample report is not a confirmed road closure and is not used to calculate routes.");
-  hazardMarkers.push(marker);
- });
- if(!document.getElementById("hazardToggle").checked)toggleHazardLayer();
  updateMapLocation();
  updateAllSOSMarkers();
 }
@@ -4102,25 +4014,10 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
 
-  <strong>
-  🚨 ${r.id}
-  </strong>
-
-  <br><br>
-
+  <strong>🚨 Person needs rescue</strong><br><br>
   ${r.title}<br>
-
-  ⚡ ${r.priority}<br>
-
-  📍 Area:
-  ${r.area||"Unknown"}<br>
-
-  👤
-  ${r.requesterName||"Unknown"}<br>
-
-  🚤
-  ${r.status}
-
+  📍 Area: ${r.area||"Unknown"}<br><br>
+  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">📍 OPEN ROUTE IN GOOGLE MAPS</button>
   `);
 
   sosMarkers.push(m);
@@ -4524,7 +4421,7 @@ function updateUserDisplay(){
   s?"block":"none";
 
  updateSavedAreaDisplays();
- seedDemoSOSForArea();
+
 }
 
 function showLogin(){
@@ -4760,6 +4657,8 @@ logoutBtn.onclick=()=>{
    ========================================================= */
 
 function restoreRequests(){
+
+ sosRequests=sosRequests.filter(r=>!r.demo && !r.demoOnly);
 
  sosRequests.forEach(r=>{
 
