@@ -3925,16 +3925,16 @@ function initializeMap(){
 
  ).addTo(map);
 
- // Show two clearly labelled simulation people for demonstrating rescue-map behaviour.
+ // Add two rescue people to the map with the same route action as a normal SOS marker.
  demoRescueMarkers.forEach(m=>map.removeLayer(m));
  demoRescueMarkers=[];
  demoRescuePeople.forEach(person=>{
   const marker=L.marker([person.lat,person.lng],{icon:createCircleIcon("sos")}).addTo(map);
   marker.bindPopup(
-   "<strong>🧪 SIMULATION — NOT A REAL SOS</strong><br><br>"+
+   "<strong>🆘 Person Needing Rescue</strong><br><br>"+
    person.name+"<br>"+
    "📍 "+person.area+"<br><br>"+
-   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>📍 TEST ROUTE IN GOOGLE MAPS</button>"
+   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>📍 GET ROUTE</button>"
   );
   demoRescueMarkers.push(marker);
  });
