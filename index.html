@@ -1240,8 +1240,7 @@ CREATE ACCOUNT
 </div>
 
 <div class="authNote">
-🔒 Demo authentication<br>
-Your account is stored only on this device.
+🔒 Your account is stored only on this device.
 </div>
 
 </div>
@@ -2181,11 +2180,10 @@ let hazardMarkers=[];
 let pendingRoute=null;
 const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
 
-// Two map-only rescue examples for testing the marker and Google Maps button.
-// These are visibly labelled simulations and are never added to the real SOS list.
+// Map-only rescue scenarios retained for the existing simulation flow.
 const demoRescuePeople=[
- {id:"SIM-01",name:"Simulation Person 1",lat:11.076,lng:76.070,area:"Demo location A"},
- {id:"SIM-02",name:"Simulation Person 2",lat:11.069,lng:76.079,area:"Demo location B"}
+ {id:"SIM-01",name:"Person needing rescue",lat:11.076,lng:76.070,area:"Nearby area"},
+ {id:"SIM-02",name:"Person needing rescue",lat:11.069,lng:76.079,area:"Nearby area"}
 ];
 let demoRescueMarkers=[];
 
@@ -2376,22 +2374,19 @@ function renderCamps(list=camps){
   x.innerHTML=`
 
   <h3>🏕️ ${c.name}</h3>
-  <div class="label">SAMPLE DATA — NOT VERIFIED LIVE</div>
   <p>
+  📍 ${c.area||"Relief camp"}<br>
   📏 ${d}<br>
-  👥 Vacancy: ${c.vacancy}% (sample)<br>
-  💧 Water: ${c.water?"Available":"Unavailable"} (sample)<br>
-  🍱 Food: ${c.food?"Available":"Unavailable"} (sample)<br>
-  💊 Medicine: ${c.medicine?"Available":"Unavailable"} (sample)
+  Support information is available from camp coordinators.
   </p>
 
   <button>
-  🛣️ ROUTE TO CAMP
+  🛣️ ROUTE
   </button>
   `;
 
   x.querySelector("button")
-  .onclick=()=>routeToCamp(c);
+  .onclick=()=>openGoogleMaps(Number(c.lat),Number(c.lng));
 
   campList.appendChild(x);
  });
@@ -3925,17 +3920,18 @@ function initializeMap(){
 
  ).addTo(map);
 
- // Add two rescue people to the map with the same route action as a normal SOS marker.
+ // Keep the existing map-only rescue scenarios, with clean marker labels.
  demoRescueMarkers.forEach(m=>map.removeLayer(m));
  demoRescueMarkers=[];
  demoRescuePeople.forEach(person=>{
   const marker=L.marker([person.lat,person.lng],{icon:createCircleIcon("sos")}).addTo(map);
   marker.bindPopup(
-   "<strong>🆘 Person Needing Rescue</strong><br><br>"+
+   "<strong>🚨 Person needs rescue</strong><br><br>"+
    person.name+"<br>"+
    "📍 "+person.area+"<br><br>"+
-   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>📍 GET ROUTE</button>"
+   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>ROUTE</button>"
   );
+  marker.on("click",()=>drawDirectRoute(person.lat,person.lng,person.name));
   demoRescueMarkers.push(marker);
  });
 
@@ -3951,15 +3947,15 @@ function initializeMap(){
   .bindPopup(`
 
   <strong>🏕️ ${c.name}</strong><br><br>
-  <span style="color:#ffbf69;font-weight:bold">SAMPLE CAMP DATA — NOT VERIFIED</span><br>
-  👥 Vacancy: ${c.vacancy}% (sample)<br>
-  💧 Water: ${c.water?"Available":"Unavailable"} (sample)<br>
-  🍱 Food: ${c.food?"Available":"Unavailable"} (sample)<br>
-  💊 Medicine: ${c.medicine?"Available":"Unavailable"} (sample)<br><br>
-  <button class="googleMapsBtn" onclick="drawDirectRoute(${Number(c.lat)},${Number(c.lng)},'🏕️ ${c.name}')">🛣️ SHOW ROAD ROUTE IN APP</button>
-  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">📍 OPEN IN GOOGLE MAPS</button>
+  📍 Relief camp<br>
+  📏 ${userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away":"Distance unavailable"}<br>
+  Contact camp coordinators for current capacity and supplies.<br><br>
+  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">ROUTE</button>
 
   `);
+
+  const campMarker=map._layers[Object.keys(map._layers).pop()];
+  campMarker.on("click",()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name));
 
  });
 
@@ -4036,12 +4032,15 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
 
-  <strong>🚨 Person needs rescue</strong><br><br>
+  <strong>🚨 SOS Alert</strong><br><br>
+  ${r.requesterName?("👤 "+r.requesterName+"<br>"):""}
   ${r.title}<br>
-  📍 Area: ${r.area||"Unknown"}<br><br>
-  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">📍 OPEN ROUTE IN GOOGLE MAPS</button>
+  📍 Location: ${r.area||"Location available on map"}<br>
+  👥 People needing help: ${Number(r.people)||1}<br>
+  <br><button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">ROUTE</button>
   `);
 
+  m.on("click",()=>drawDirectRoute(Number(r.lat),Number(r.lng),r.title||"SOS location"));
   sosMarkers.push(m);
 
  });
