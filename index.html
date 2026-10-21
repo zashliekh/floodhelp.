@@ -1565,7 +1565,7 @@ Food
 🛣️ SHOW ROAD ROUTE IN APP
 </button>
 <button class="googleMapsBtn" id="bestGoogleRoute" type="button">📍 OPEN ROUTE IN GOOGLE MAPS</button>
-<div class="mapSafetyNote">Camp locations, vacancy and supplies are sample data until verified. A road route is not automatically flood-safe.</div>
+<div class="mapSafetyNote">Route guidance may not reflect current flood conditions.</div>
 
 </div>
 
@@ -2277,30 +2277,18 @@ const camps=[
   name:"Community Relief Camp",
   lat:11.073,
   lng:76.073,
-  vacancy:65,
-  water:true,
-  food:true,
-  medicine:true
  },
 
  {
   name:"Emergency Shelter Centre",
   lat:11.079,
   lng:76.080,
-  vacancy:42,
-  water:true,
-  food:true,
-  medicine:false
  },
 
  {
   name:"Safe Haven Camp",
   lat:11.067,
   lng:76.064,
-  vacancy:25,
-  water:true,
-  food:false,
-  medicine:true
  }
 
 ];
@@ -2333,7 +2321,7 @@ function updateCamps(){
  bestName.textContent=b.name;
 
  bestVacancy.textContent=
-  b.vacancy+"%";
+  "Contact camp";
 
  if(userLat!==null){
 
@@ -3926,10 +3914,10 @@ function initializeMap(){
  demoRescuePeople.forEach(person=>{
   const marker=L.marker([person.lat,person.lng],{icon:createCircleIcon("sos")}).addTo(map);
   marker.bindPopup(
-   "<strong>🚨 Person needs rescue</strong><br><br>"+
-   person.name+"<br>"+
-   "📍 "+person.area+"<br><br>"+
-   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>ROUTE</button>"
+   "<strong>🆘 Rescue request</strong><br><br>"+
+   "📍 "+person.area+"<br>"+
+   "Status: Awaiting rescue<br><br>"+
+   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>OPEN IN GOOGLE MAPS</button>"
   );
   marker.on("click",()=>drawDirectRoute(person.lat,person.lng,person.name));
   demoRescueMarkers.push(marker);
@@ -3949,8 +3937,8 @@ function initializeMap(){
   <strong>🏕️ ${c.name}</strong><br><br>
   📍 Relief camp<br>
   📏 ${userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away":"Distance unavailable"}<br>
-  Contact camp coordinators for current capacity and supplies.<br><br>
-  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">ROUTE</button>
+  Capacity and available supplies: Contact camp coordinators.<br><br>
+  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">OPEN IN GOOGLE MAPS</button>
 
   `);
 
@@ -4031,12 +4019,12 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
 
-  <strong>🚨 SOS Alert</strong><br><br>
+  <strong>🆘 SOS Alert</strong><br><br>
   ${r.requesterName?("👤 "+r.requesterName+"<br>"):""}
   ${r.title}<br>
   📍 Location: ${r.area||"Location available on map"}<br>
   👥 People needing help: ${Number(r.people)||1}<br>
-  <br><button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">ROUTE</button>
+  <br><button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
   `);
 
   m.on("click",()=>drawDirectRoute(Number(r.lat),Number(r.lng),r.title||"SOS location"));
