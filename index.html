@@ -3937,14 +3937,14 @@ function initializeMap(){
 
  camps.forEach(c=>{
 
-  L.marker(
+  const campMarker=L.marker(
    [c.lat,c.lng],
    {
     icon:createCircleIcon("camp")
    }
-  )
-  .addTo(map)
-  .bindPopup(`
+  ).addTo(map);
+
+  campMarker.bindPopup(`
 
   <strong>🏕️ ${c.name}</strong><br><br>
   📍 Relief camp<br>
@@ -3954,7 +3954,6 @@ function initializeMap(){
 
   `);
 
-  const campMarker=map._layers[Object.keys(map._layers).pop()];
   campMarker.on("click",()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name));
 
  });
