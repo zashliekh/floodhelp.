@@ -2390,8 +2390,8 @@ const camps=[
   food:70,
   water:80,
   medical:50,
-  contact:"",
-  contactLabel:""
+  contact:"04942400114",
+  contactLabel:"School office"
  },
 
  {
@@ -2404,8 +2404,8 @@ const camps=[
   food:65,
   water:75,
   medical:45,
-  contact:"",
-  contactLabel:""
+  contact:"04832714211",
+  contactLabel:"School office"
  },
 
  {
@@ -2452,7 +2452,7 @@ function updateCamps(){
  bestName.textContent=b.name;
 
  bestVacancy.textContent=
-  b.available+" / "+b.capacity+" beds";
+  b.available+" / "+b.capacity+" beds · "+Math.round((b.available/b.capacity)*100)+"% free";
  document.getElementById("bestFood").textContent=b.food+"%";
  document.getElementById("bestWater").textContent=b.water+"%";
 
