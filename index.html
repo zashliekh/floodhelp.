@@ -594,10 +594,59 @@ button:active{transform:scale(.97)}
 }
 .campInfoNotice p{margin:5px 0 0;color:#c9c1a8}
 .campDataNote{
- margin:10px 0 0;
- color:#9bb4bd;
- font-size:10px;
- line-height:1.6
+ margin:8px 0 0;
+ color:#829da6;
+ font-size:9px;
+ line-height:1.4
+}
+.campDemoTag{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ padding:4px 7px;
+ border-radius:20px;
+ background:#f0b44b18;
+ border:1px solid #f0b44b55;
+ color:#f2c879;
+ font-size:9px;
+ letter-spacing:.5px;
+ font-weight:700
+}
+.campMetric{
+ margin:10px 0;
+}
+.campMetricHead{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+ color:#cfe2e7;
+ font-size:11px;
+ margin-bottom:5px
+}
+.campBar{
+ height:6px;
+ border-radius:10px;
+ background:#ffffff16;
+ overflow:hidden
+}
+.campBar span{
+ display:block;
+ height:100%;
+ border-radius:10px;
+ background:linear-gradient(90deg,#12a6a0,#66d5b1)
+}
+.campContactLink{
+ color:#70d8e8;
+ text-decoration:none;
+ font-weight:700
+}
+.campMeta{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:8px;
+ flex-wrap:wrap;
+ margin:8px 0
 }
 #map{
  height:440px;
@@ -1585,24 +1634,24 @@ PPMHSS Kottukkara
 <div class="campStats">
 
 <div>
-<strong id="bestVacancy">Not reported</strong>
-Capacity & vacancy
+<strong id="bestVacancy">80 / 250 beds</strong>
+Beds available
 </div>
 
 <div>
-<strong>Check</strong>
-Water & food
+<strong id="bestFood">75%</strong>
+Food stock
 </div>
 
 <div>
-<strong>Check</strong>
-Medical support
+<strong id="bestWater">85%</strong>
+Water stock
 </div>
 
 </div>
 <div class="campInfoNotice">
-<strong>Camp information status</strong>
-<p>Live vacancy, available supplies and coordinator contact details have not been connected yet. Please verify these details with local authorities before travelling.</p>
+<strong>DEMO MODE</strong>
+<p>Sample figures are shown for the prototype and are not live camp availability.</p>
 </div>
 
 <button class="primary" id="bestRoute">
@@ -2319,34 +2368,58 @@ const camps=[
 
  {
   name:"PPMHSS Kottukkara",
-  area:"Kottukkara, Kondotty, Malappuram",
+  area:"Kottukkara, Kondotty",
   lat:11.140000,
   lng:75.982000,
-  contact:""
+  capacity:250,
+  available:80,
+  food:75,
+  water:85,
+  medical:60,
+  contact:"04832711374",
+  contactLabel:"School office"
  },
 
  {
-  name:"Puthoor UP School (AMUPS Puthurpallikkal)",
-  area:"Puthur Pallikkal, Pullikkal, Malappuram",
+  name:"Puthoor UP School",
+  area:"Puthur Pallikkal, Pullikkal",
   lat:11.125240,
   lng:75.918960,
-  contact:""
+  capacity:120,
+  available:45,
+  food:70,
+  water:80,
+  medical:50,
+  contact:"",
+  contactLabel:""
  },
 
  {
   name:"GMUPS Chirayil Chungam",
-  area:"Chirayil Chungam, Karipur, Malappuram",
+  area:"Chirayil Chungam, Karipur",
   lat:11.128501,
   lng:75.974926,
-  contact:""
+  capacity:100,
+  available:35,
+  food:65,
+  water:75,
+  medical:45,
+  contact:"",
+  contactLabel:""
  },
 
  {
   name:"PKMMHSS Edarikode",
-  area:"Pottippara, Edarikode, Malappuram",
+  area:"Pottippara, Edarikode",
   lat:11.001420,
   lng:75.983970,
-  contact:""
+  capacity:300,
+  available:90,
+  food:80,
+  water:85,
+  medical:70,
+  contact:"04832648526",
+  contactLabel:"School office"
  }
 
 ];
@@ -2379,7 +2452,9 @@ function updateCamps(){
  bestName.textContent=b.name;
 
  bestVacancy.textContent=
-  "Not reported";
+  b.available+" / "+b.capacity+" beds";
+ document.getElementById("bestFood").textContent=b.food+"%";
+ document.getElementById("bestWater").textContent=b.water+"%";
 
  if(userLat!==null){
 
@@ -2417,23 +2492,32 @@ function renderCamps(list=camps){
 
   x.className="camp";
 
-  x.innerHTML=`
+  const vacancyPct=Math.round((c.available/c.capacity)*100);
+  const metric=(label,value)=>`
+   <div class="campMetric">
+    <div class="campMetricHead"><span>${label}</span><strong>${value}%</strong></div>
+    <div class="campBar"><span style="width:${value}%"></span></div>
+   </div>`;
 
-  <h3>🏕️ ${c.name}</h3>
-  <p>
-  📍 ${c.area||"Area details not verified"}<br>
-  📏 ${d}
-  </p>
-  <div class="campDetails">
-   <div class="campDetail"><strong>Capacity & vacancy</strong><span>Not reported</span></div>
-   <div class="campDetail"><strong>Water & food</strong><span>Confirm with coordinator</span></div>
-   <div class="campDetail"><strong>Medical assistance</strong><span>Not confirmed</span></div>
-   <div class="campDetail"><strong>Camp contact number</strong><span>${c.contact?`<a href="tel:${c.contact}">${c.contact}</a>`:"Not provided"}</span></div>
+  x.innerHTML=`
+  <div class="campMeta">
+   <span class="campDemoTag">● DEMO DATA</span>
+   <span class="distance">${d} away</span>
   </div>
-  <p class="campDataNote">Proposed camp location only. This school is not confirmed as an active relief camp. Capacity, supplies, medical support and camp contact number must be verified before anyone travels.</p>
-  <button>
-  🛣️ ROUTE
-  </button>
+  <h3>🏕️ ${c.name}</h3>
+  <p>📍 ${c.area}</p>
+  <div class="campDetails">
+   <div class="campDetail"><strong>Beds available</strong><span>${c.available} of ${c.capacity} (${vacancyPct}%)</span></div>
+   <div class="campDetail"><strong>Medical support</strong><span>${c.medical}% provision</span></div>
+  </div>
+  ${metric("Food stock",c.food)}
+  ${metric("Drinking water",c.water)}
+  <div class="campMeta">
+   <span style="font-size:11px;color:#cfe2e7">${c.contact?c.contactLabel:"Contact"}</span>
+   ${c.contact?`<a class="campContactLink" href="tel:${c.contact}">☎ ${c.contact}</a>`:"<span style='font-size:11px;color:#9bb4bd'>Number not listed</span>"}
+  </div>
+  <button>🛣️ GET DIRECTIONS</button>
+  <p class="campDataNote">Sample figures for prototype only · Contact shown is the school office, not a verified camp coordinator.</p>
   `;
 
   x.querySelector("button")
@@ -3997,11 +4081,12 @@ function initializeMap(){
 
   campMarker.bindPopup(`
 
-  <strong>🏕️ ${c.name}</strong><br><br>
-  📍 Proposed camp location — activation not confirmed<br>
-  📏 ${userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away":"Distance unavailable"}<br>
-  Capacity, supplies and camp contact number: Not confirmed.<br><br>
-  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">OPEN IN GOOGLE MAPS</button>
+  <strong>🏕️ ${c.name}</strong><br>
+  <small>DEMO DATA</small><br><br>
+  Beds: ${c.available}/${c.capacity} (${Math.round(c.available/c.capacity*100)}%)<br>
+  Food: ${c.food}% · Water: ${c.water}%<br>
+  ${c.contact?c.contactLabel+": "+c.contact:"Contact: Not listed"}<br><br>
+  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">GET DIRECTIONS</button>
 
   `);
 
