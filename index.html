@@ -1681,7 +1681,7 @@ Water stock
   <div class="legendItem"><span class="legendDot campDot"></span> Relief camp</div>
 </div>
 
-<div class="mapSafetyNote">🧪 Test SOS markers are fictional demonstration records with test coordinates. They are not real emergencies or live locations. Real prototype SOS requests are stored only on this device.</div>
+<div class="mapSafetyNote">Training records use fictional names and locations and are not live incidents. Real SOS submissions are saved only on this device and are not sent to rescue teams.</div>
 
 </section>
 
@@ -1708,7 +1708,7 @@ RESCUE CONTROL
 </div>
 
 <p>
-SOS requests are prioritised for this prototype. 🧪 Three TEST SOS records are shown for demonstration only; they are not real emergencies.
+Requests are prioritised by urgency. Training records are clearly identified.
 </p>
 
 <div class="filterBox">
@@ -1867,13 +1867,13 @@ No active mission
 
 <div class="boatStatusBox">
  <h3>🛟 Safety & system checks</h3>
- <div class="boatStatusLine"><span>Battery estimate</span><strong id="boatBatteryStatus" class="statusActive">82% · SIMULATED</strong></div>
- <div class="boatStatusLine"><span>Communication</span><strong id="boatCommsStatus">LOCAL PROTOTYPE</strong></div>
- <div class="boatStatusLine"><span>Obstacle sensors</span><strong id="boatObstacleStatus">NOT CONNECTED</strong></div>
- <p style="font-size:10px;margin:10px 0 0">Demonstration indicators only. This app receives no live battery, signal, or sensor readings from the physical boat.</p>
+ <div class="boatStatusLine"><span>Battery estimate</span><strong id="boatBatteryStatus" class="statusActive">82% · ILLUSTRATIVE</strong></div>
+ <div class="boatStatusLine"><span>Communication</span><strong id="boatCommsStatus">NO LIVE CONNECTION</strong></div>
+ <div class="boatStatusLine"><span>Obstacle sensors</span><strong id="boatObstacleStatus">NOT LINKED</strong></div>
+ <p style="font-size:10px;margin:10px 0 0">Status indicators are illustrative. Battery, communication and sensor readings are not received from the boat.</p>
  <div class="boatActions">
-  <button class="secondaryBoat" id="boatStopBtn" type="button" onclick="stopBoatSimulation()">⛔ SIMULATED STOP</button>
-  <button class="primaryBoat" id="boatResumeBtn" type="button" onclick="resumeBoatSimulation()" style="display:none">▶ RESUME DEMO</button>
+  <button class="secondaryBoat" id="boatStopBtn" type="button" onclick="stopBoatSimulation()">⛔ PAUSE MISSION</button>
+  <button class="primaryBoat" id="boatResumeBtn" type="button" onclick="resumeBoatSimulation()" style="display:none">▶ RESUME MISSION</button>
  </div>
 </div>
 
@@ -2106,8 +2106,8 @@ findCampBtn.onclick=()=>{
    LOCAL / OFFLINE STATUS
    ========================================================= */
 function updateConnection(){
- systemStatus.textContent=navigator.onLine?"Prototype ready — this device only":"Offline mode — this device only";
- offlineText.textContent=navigator.onLine?"PROTOTYPE — SOS IS NOT SENT TO RESCUE TEAMS":"OFFLINE — SOS IS NOT SENT TO RESCUE TEAMS";
+ systemStatus.textContent=navigator.onLine?"Ready · local device":"Offline mode — this device only";
+ offlineText.textContent=navigator.onLine?"LOCAL ONLY — SOS NOT SENT TO RESCUE TEAMS":"OFFLINE — SOS IS NOT SENT TO RESCUE TEAMS";
 }
 addEventListener("online",updateConnection);
 addEventListener("offline",updateConnection);
@@ -3002,19 +3002,19 @@ function getRescueSimulation(r){
    stage:5,
 
    message:
-    "Rescue simulation complete. The boat has returned to the relief camp."
+    "Training sequence complete. Physical rescue has not been confirmed."
 
   };
  }
 
  if(r.pausedAt){
   return{
-   status:"SIMULATED EMERGENCY STOP — MISSION PAUSED",
+   status:"MISSION PAUSED — DISPLAY ONLY",
    progress:Number(r.progress||0),
    distance:Number(r.boatDistance??3),
    eta:Number(r.eta??10),
    stage:Math.min(5,Math.floor(Number(r.progress||0)/20)),
-   message:"Prototype mission paused. Resume the demo to continue."
+   message:"Training sequence paused. Resume to continue."
   };
  }
 
@@ -3038,7 +3038,7 @@ function getRescueSimulation(r){
   e<36000?4:5;
 
  let status=[
-  "SIMULATED: SOS RECEIVED","SIMULATED: TEAM ASSIGNED","SIMULATED: BOAT ON THE WAY","SIMULATED: BOAT APPROACHING","SIMULATION: RESCUE NOT CONFIRMED","SIMULATION: RETURN SEQUENCE"
+  "TRAINING: SOS RECEIVED","TRAINING: TEAM ASSIGNMENT","TRAINING: BOAT EN ROUTE","TRAINING: BOAT APPROACH","RESCUE NOT CONFIRMED","TRAINING: RETURN SEQUENCE"
  ][stage];
 
  let msg=[
@@ -3052,9 +3052,9 @@ function getRescueSimulation(r){
 
  if(p>=100){
   r.progress=100;r.boatDistance=0;r.eta=0;
-  r.status="SIMULATION COMPLETE — RESCUE NOT CONFIRMED";
+  r.status="TRAINING COMPLETE — RESCUE NOT CONFIRMED";
   saveSOS();
-  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Prototype sequence ended. No real rescue, dispatch or boat movement has been confirmed."};
+  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Training sequence ended. No real rescue, dispatch or boat movement has been confirmed."};
  }
 
  let d=Math.max(
@@ -4014,7 +4014,7 @@ function updateAllSOSMarkers(){
   const area=mapPopupText(r.area||"Location available on map");
   const people=Math.max(1,Number(r.people)||1);
   const care=mapPopupText(String(r.vulnerable||"").replace(/^\\s*•\\s*/,"").trim()||"No additional needs selected");
-  const status=mapPopupText(r.isDemo?"🧪 TEST ONLY — NOT REAL":(r.status||"SOS SENT"));
+  const status=mapPopupText(r.isDemo?"TRAINING RECORD — FICTIONAL":(r.status||"SOS SENT"));
   const reported=mapPopupText(r.time||"Time unavailable");
 
   let m=
@@ -4031,7 +4031,7 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
    <div style="min-width:190px;max-width:240px;line-height:1.55">
-    <strong>🆘 ${r.isDemo?"🧪 TEST SOS — NOT REAL":"Person needing help"}</strong><br>
+    <strong>🆘 ${r.isDemo?"TRAINING RECORD — FICTIONAL":"Person needing help"}</strong><br>
     <strong>👤 ${personName}</strong><br>
     ${emergency}<br>
     📍 ${area}<br>
@@ -4039,7 +4039,7 @@ function updateAllSOSMarkers(){
     🩺 Additional needs: ${care}<br>
     <span style="color:#b45309;font-weight:700">● ${status}</span><br>
     <small>Reported: ${reported}</small><br>
-     ${r.isDemo?'<strong style="color:#b45309">FICTIONAL TEST LOCATION & NUMBER — DO NOT CALL</strong><br>':""}
+     ${r.isDemo?'<strong style="color:#b45309">FICTIONAL LOCATION · CONTACT IS NOT CALLABLE</strong><br>':""}
     <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
    </div>
   `);
@@ -4288,13 +4288,13 @@ function renderBoatPage(){
  boatCurrentStatus.textContent=
   boatState==="READY"?"READY":
   boatState==="ACTIVE"?"ON RESCUE":
-  boatState==="STOPPED"?"SIMULATION PAUSED":"RETURNING";
+  boatState==="STOPPED"?"MISSION PAUSED":"RETURNING";
  boatCurrentStatus.className=boatState==="READY"?"statusReady":boatState==="ACTIVE"||boatState==="STOPPED"?"statusActive":"statusReturning";
- boatCurrentLocation.textContent=boatState==="READY"?"Waiting at camp":boatState==="ACTIVE"?"Travelling to SOS":boatState==="STOPPED"?"Stopped in prototype simulation":"Returning to camp";
+ boatCurrentLocation.textContent=boatState==="READY"?"Waiting at camp":boatState==="ACTIVE"?"Travelling to SOS":boatState==="STOPPED"?"Mission paused · display only":"Returning to camp";
  if(boatStopBtn)boatStopBtn.style.display=boatState==="STOPPED"?"none":"block";
  if(boatResumeBtn)boatResumeBtn.style.display=boatState==="STOPPED"?"block":"none";
- if(boatCommsStatus)boatCommsStatus.textContent="LOCAL PROTOTYPE · NO HARDWARE LINK";
- if(boatObstacleStatus)boatObstacleStatus.textContent="NOT CONNECTED TO WEB APP";
+ if(boatCommsStatus)boatCommsStatus.textContent="NO HARDWARE CONNECTION";
+ if(boatObstacleStatus)boatObstacleStatus.textContent="NOT LINKED TO APP";
  if(boatBatteryStatus)boatBatteryStatus.textContent="82% · SIMULATED";
  if(boatMissionHistory){
   const history=sosRequests.filter(x=>x.completed||x.assigned).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0)).slice(0,3);
@@ -4372,14 +4372,14 @@ async function launchBoat(id){
 
 function stopBoatSimulation(){
  const r=getActiveBoatRequest();
- if(!r||r.completed){alert("There is no active prototype mission to pause.");return;}
+ if(!r||r.completed){alert("There is no active mission to pause.");return;}
  r.pausedAt=Date.now();
  boatState="STOPPED";
  r.status="SIMULATED EMERGENCY STOP — MISSION PAUSED";
  saveSOS();
  renderBoatPage();
  renderRescueDashboard();
- alert("⛔ Prototype simulation paused. This control is not connected to the physical boat.");
+ alert("⛔ Mission display paused. This control does not operate the physical boat.");
 }
 
 function resumeBoatSimulation(){
