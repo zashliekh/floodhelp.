@@ -1681,7 +1681,7 @@ Water stock
   <div class="legendItem"><span class="legendDot campDot"></span> Relief camp</div>
 </div>
 
-<div class="mapSafetyNote">Training records use fictional names and locations and are not live incidents. Real SOS submissions are saved only on this device and are not sent to rescue teams.</div>
+<div class="mapSafetyNote">SOS reports are saved on this device only. Rescue teams are not notified.</div>
 
 </section>
 
@@ -1708,7 +1708,7 @@ RESCUE CONTROL
 </div>
 
 <p>
-Requests are prioritised by urgency. Training records are clearly identified.
+Requests are prioritised by urgency.
 </p>
 
 <div class="filterBox">
@@ -2798,13 +2798,7 @@ let sosRequests=
   )||"[]"
  );
 
-// Fictional, local-only sample records for the school demonstration.
-const demoSOSRequests=[
- {id:"TRN-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-180000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"",demoPhone:"00000 00001"},
- {id:"TRN-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-120000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"",demoPhone:"00000 00002"},
- {id:"TRN-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-60000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"",demoPhone:"00000 00003"}
-];
-function getAllSOSRequests(){return [...sosRequests,...demoSOSRequests];}
+function getAllSOSRequests(){return sosRequests;}
 
 const RESCUE_DEMO_DURATION=45000;
 
@@ -3124,7 +3118,7 @@ setInterval(()=>{
 function getFilteredRequests(){
  let area=getUserArea();
  const real=area?sosRequests.filter(r=>String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase()):[];
- return [...demoSOSRequests,...real];
+ return real;
 }
 
 /* =========================================================
@@ -3348,7 +3342,6 @@ function createRequestCard(r){
 
  </div>
 
- ${r.isDemo?'<div class="campDemoTag">TRAINING RECORD · FICTIONAL</div>':""}
  <h3>
  ${r.title}
  </h3>
@@ -3356,9 +3349,8 @@ function createRequestCard(r){
  <div class="requestInfo">
 
  👤 ${r.requesterName||"Unknown User"}<br>
- ${r.isDemo?'<span class="campDemoTag">TRAINING RECORD · FICTIONAL</span><br>':""}
 
- 📞 ${r.isDemo?"Training contact · "+r.demoPhone:(r.requesterPhone||"No number")}<br>
+ 📞 ${r.requesterPhone||"No number"}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3395,7 +3387,7 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
-  ${r.isDemo?'<span class="callRequester" style="opacity:.65">TRAINING CONTACT · NOT CALLABLE</span>':'<a class="callRequester" href="'+(r.requesterPhone?"tel:"+r.requesterPhone:"#")+'">📞 CALL</a>'}
+  ${r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
 
  ${assign}
 
@@ -4008,7 +4000,7 @@ function updateAllSOSMarkers(){
   const area=mapPopupText(r.area||"Location available on map");
   const people=Math.max(1,Number(r.people)||1);
   const care=mapPopupText(String(r.vulnerable||"").replace(/^\\s*•\\s*/,"").trim()||"No additional needs selected");
-  const status=mapPopupText(r.isDemo?"TRAINING RECORD — FICTIONAL":(r.status||"SOS SENT"));
+  const status=mapPopupText(r.status||"SOS SENT");
   const reported=mapPopupText(r.time||"Time unavailable");
 
   let m=
@@ -4025,7 +4017,7 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
    <div style="min-width:190px;max-width:240px;line-height:1.55">
-    <strong>🆘 ${r.isDemo?"TRAINING RECORD — FICTIONAL":"Person needing help"}</strong><br>
+    <strong>🆘 Person needing help</strong><br>
     <strong>👤 ${personName}</strong><br>
     ${emergency}<br>
     📍 ${area}<br>
@@ -4033,7 +4025,6 @@ function updateAllSOSMarkers(){
     🩺 Additional needs: ${care}<br>
     <span style="color:#b45309;font-weight:700">● ${status}</span><br>
     <small>Reported: ${reported}</small><br>
-     ${r.isDemo?'<strong style="color:#b45309">FICTIONAL LOCATION · CONTACT IS NOT CALLABLE</strong><br>':""}
     <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
    </div>
   `);
