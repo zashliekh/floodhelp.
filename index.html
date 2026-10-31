@@ -2108,8 +2108,8 @@ findCampBtn.onclick=()=>{
    LOCAL / OFFLINE STATUS
    ========================================================= */
 function updateConnection(){
- systemStatus.textContent=navigator.onLine?"Local rescue system ready":"Offline mode";
- offlineText.textContent=navigator.onLine?"LOCAL MODE — REQUESTS SAVED ON THIS DEVICE":"OFFLINE — REQUESTS SAVED ON THIS DEVICE";
+ systemStatus.textContent=navigator.onLine?"Prototype ready — this device only":"Offline mode — this device only";
+ offlineText.textContent=navigator.onLine?"PROTOTYPE — SOS IS NOT SENT TO RESCUE TEAMS":"OFFLINE — SOS IS NOT SENT TO RESCUE TEAMS";
 }
 addEventListener("online",updateConnection);
 addEventListener("offline",updateConnection);
@@ -2273,12 +2273,7 @@ let hazardMarkers=[];
 let pendingRoute=null;
 const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
 
-// Map-only rescue scenarios retained for the existing simulation flow.
-const demoRescuePeople=[
- {id:"SIM-01",name:"Person needing rescue",lat:11.076,lng:76.070,area:"Nearby area"},
- {id:"SIM-02",name:"Person needing rescue",lat:11.069,lng:76.079,area:"Nearby area"}
-];
-let demoRescueMarkers=[];
+// Only SOS records with GPS coordinates are shown on the map.
 
 function getLocation(){
 
@@ -2557,49 +2552,10 @@ if(bestGoogleRouteButton)bestGoogleRouteButton.addEventListener("click",function
    RESCUERS
    ========================================================= */
 
-const rescuers=[
+// No fictitious rescue teams or phone numbers are listed as available.
+const rescuers=[];
 
- {
-  id:"demo1",
-  name:"Rescue Unit 01",
-  phone:"9876543210",
-  lat:11.0745,
-  lng:76.075,
-  status:"AVAILABLE",
-  method:"vehicle"
- },
-
- {
-  id:"demo2",
-  name:"Rescue Unit 02",
-  phone:"9876543211",
-  lat:11.0805,
-  lng:76.0815,
-  status:"AVAILABLE",
-  method:"vehicle"
- },
-
- {
-  id:"demo3",
-  name:"Rescue Unit 03",
-  phone:"9876543212",
-  lat:11.068,
-  lng:76.0655,
-  status:"AVAILABLE",
-  method:"foot"
- },
-
- {
-  id:"demo4",
-  name:"Rescue Boat Team",
-  phone:"9876543213",
-  lat:11.0715,
-  lng:76.07,
-  status:"AVAILABLE",
-  method:"boat"
- }
-
-];
+let registeredRescuers=
 
 let registeredRescuers=
  JSON.parse(
@@ -3088,87 +3044,23 @@ function getRescueSimulation(r){
   e<36000?4:5;
 
  let status=[
-
-  "SOS RECEIVED",
-  "RESCUE TEAM ASSIGNED",
-  "BOAT ON THE WAY",
-  "BOAT APPROACHING SOS",
-  "PERSON RESCUED",
-  "BOAT RETURNING TO CAMP"
-
+  "SIMULATED: SOS RECEIVED","SIMULATED: TEAM ASSIGNED","SIMULATED: BOAT ON THE WAY","SIMULATED: BOAT APPROACHING","SIMULATION: RESCUE NOT CONFIRMED","SIMULATION: RETURN SEQUENCE"
  ][stage];
 
  let msg=[
-
-  "Demo SOS received. The rescue process has started.",
-
-  "A simulated rescue team has been assigned to this emergency.",
-
-  "The simulated boat is travelling toward the SOS location.",
-
-  "The simulated boat is approaching the emergency location.",
-
-  "The simulated person has been rescued. Preparing the return trip.",
-
-  "The simulated boat is returning to the relief camp."
-
+  "Prototype timeline only. This request is stored on this device.",
+  "A simulated rescue team is shown; no real team was notified.",
+  "Simulated boat movement only; no hardware command was sent.",
+  "Simulated approach only; no live location is received.",
+  "Simulation finished. A real rescue has NOT been confirmed.",
+  "Simulated return sequence only; confirm rescue independently."
  ][stage];
 
  if(p>=100){
-
-  r.completed=true;
-
-  r.assigned=true;
-
-  r.status="RESCUE COMPLETED";
-
-  r.progress=100;
-
-  r.boatDistance=0;
-
-  r.eta=0;
-
-  releaseRescuer(r);
-
-  boatState="RETURNING";
-
+  r.progress=100;r.boatDistance=0;r.eta=0;
+  r.status="SIMULATION COMPLETE — RESCUE NOT CONFIRMED";
   saveSOS();
-
-  saveSOS();
-
-  if(!completedReturnTimers[r.id]){
-
-   completedReturnTimers[r.id]=1;
-
-   setTimeout(()=>{
-
-    boatState="READY";
-
-    renderBoatPage();
-
-    updateRescueCards();
-
-    delete completedReturnTimers[r.id];
-
-   },5000);
-  }
-
-  return{
-
-   status:"RESCUE COMPLETED",
-
-   progress:100,
-
-   distance:0,
-
-   eta:0,
-
-   stage:5,
-
-   message:
-    "Rescue simulation complete. The boat has returned to the relief camp."
-
-  };
+  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Prototype sequence ended. No real rescue, dispatch or boat movement has been confirmed."};
  }
 
  let d=Math.max(
@@ -3406,16 +3298,7 @@ function createRequestCard(r){
      📍 AREA: Not selected
     </div>`;
 
- let steps=[
-
-  "SOS SENT",
-  "ASSIGNED",
-  "ON THE WAY",
-  "ARRIVING",
-  "RESCUED",
-  "RETURN TO CAMP"
-
- ];
+ let steps=["SOS SAVED","TEAM (SIM)","BOAT (SIM)","APPROACH (SIM)","NOT CONFIRMED","RETURN (SIM)"];
 
  let progress=`
 
@@ -4055,20 +3938,9 @@ function initializeMap(){
 
  ).addTo(map);
 
- // Keep the existing map-only rescue scenarios, with clean marker labels.
- demoRescueMarkers.forEach(m=>map.removeLayer(m));
- demoRescueMarkers=[];
- demoRescuePeople.forEach(person=>{
-  const marker=L.marker([person.lat,person.lng],{icon:createCircleIcon("sos")}).addTo(map);
-  marker.bindPopup(
-   "<strong>🆘 Rescue request</strong><br><br>"+
-   "📍 "+person.area+"<br>"+
-   "Status: Awaiting rescue<br><br>"+
-   "<button class='googleMapsBtn' onclick='openGoogleMaps("+person.lat+","+person.lng+")'>OPEN IN GOOGLE MAPS</button>"
-  );
-  marker.on("click",()=>drawDirectRoute(person.lat,person.lng,person.name));
-  demoRescueMarkers.push(marker);
- });
+ // Only real SOS records with GPS coordinates appear here.
+
+ camps.forEach(c=>{
 
  camps.forEach(c=>{
 
@@ -4193,7 +4065,6 @@ function updateAllSOSMarkers(){
    </div>
   `);
 
-  m.on("click",()=>drawDirectRoute(Number(r.lat),Number(r.lng),r.title||"SOS location"));
   sosMarkers.push(m);
 
  });
