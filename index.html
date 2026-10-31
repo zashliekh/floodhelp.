@@ -3104,8 +3104,8 @@ setInterval(()=>{
 
  renderBoatPage();
 
- if(map)
-  updateAllSOSMarkers();
+ // Do not rebuild map markers on the one-second dashboard timer.
+ // Rebuilding removes an open SOS popup while someone is viewing it.
 
 },1000);
 
