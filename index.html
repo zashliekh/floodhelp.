@@ -559,6 +559,46 @@ button:active{transform:scale(.97)}
  background:#0d91ae;
  color:#fff
 }
+.campDetails{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;
+ margin:12px 0
+}
+.campDetail{
+ background:#ffffff09;
+ border:1px solid #ffffff10;
+ border-radius:10px;
+ padding:10px
+}
+.campDetail strong{
+ display:block;
+ color:#d8edf1;
+ font-size:11px;
+ margin-bottom:4px
+}
+.campDetail span{
+ color:#9bb4bd;
+ font-size:11px;
+ line-height:1.5
+}
+.campInfoNotice{
+ margin:12px 0 4px;
+ padding:12px;
+ border:1px solid #806b36;
+ background:#806b3618;
+ border-radius:12px;
+ color:#e7d9ad;
+ font-size:11px;
+ line-height:1.6
+}
+.campInfoNotice p{margin:5px 0 0;color:#c9c1a8}
+.campDataNote{
+ margin:10px 0 0;
+ color:#9bb4bd;
+ font-size:10px;
+ line-height:1.6
+}
 #map{
  height:440px;
  border-radius:18px;
@@ -1545,20 +1585,24 @@ Community Relief Camp
 <div class="campStats">
 
 <div>
-<strong id="bestVacancy">65%</strong>
-Space
+<strong id="bestVacancy">Not reported</strong>
+Capacity
 </div>
 
 <div>
-<strong>💧</strong>
-Water
+<strong>Check</strong>
+Water & food
 </div>
 
 <div>
-<strong>🍱</strong>
-Food
+<strong>Check</strong>
+Medical support
 </div>
 
+</div>
+<div class="campInfoNotice">
+<strong>Camp information status</strong>
+<p>Live vacancy, available supplies and coordinator contact details have not been connected yet. Please verify these details with local authorities before travelling.</p>
 </div>
 
 <button class="primary" id="bestRoute">
@@ -2321,7 +2365,7 @@ function updateCamps(){
  bestName.textContent=b.name;
 
  bestVacancy.textContent=
-  "Contact camp";
+  "Not reported";
 
  if(userLat!==null){
 
@@ -2363,11 +2407,16 @@ function renderCamps(list=camps){
 
   <h3>🏕️ ${c.name}</h3>
   <p>
-  📍 ${c.area||"Relief camp"}<br>
-  📏 ${d}<br>
-  Support information is available from camp coordinators.
+  📍 ${c.area||"Area details not verified"}<br>
+  📏 ${d}
   </p>
-
+  <div class="campDetails">
+   <div class="campDetail"><strong>Capacity & vacancy</strong><span>Not reported</span></div>
+   <div class="campDetail"><strong>Water & food</strong><span>Confirm with coordinator</span></div>
+   <div class="campDetail"><strong>Medical assistance</strong><span>Not confirmed</span></div>
+   <div class="campDetail"><strong>Coordinator contact</strong><span>Not configured</span></div>
+  </div>
+  <p class="campDataNote">Camp services and availability are unverified in this prototype. Contact local authorities before travelling.</p>
   <button>
   🛣️ ROUTE
   </button>
