@@ -2800,9 +2800,9 @@ let sosRequests=
 
 // Sample incidents for interface testing. These are never sent to dispatch.
 const sampleSOSRequests=[
- {id:"SIM-001",isSample:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-180000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"0000000000"},
- {id:"SIM-002",isSample:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly person",lat:11.0540,lng:76.0750,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-120000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"0000000000"},
- {id:"SIM-003",isSample:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram",time:"Recently",timestamp:Date.now()-60000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"0000000000"}
+ {id:"SIM-001",isSample:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-180000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Nishka",requesterPhone:"75580XXXXX"},
+ {id:"SIM-002",isSample:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly person",lat:11.0540,lng:76.0750,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-120000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"75580XXXXX"},
+ {id:"SIM-003",isSample:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram",time:"Recently",timestamp:Date.now()-60000,status:"SIMULATED",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"75580XXXXX"}
 ];
 function getAllSOSRequests(){return [...sosRequests,...sampleSOSRequests];}
 
@@ -3357,7 +3357,7 @@ function createRequestCard(r){
 
  👤 ${r.requesterName||"Unknown User"}<br>
 
- 📞 ${r.isSample?"0000000000 (SAMPLE · NOT CALLABLE)":(r.requesterPhone||"No number")}<br>
+ 📞 ${r.isSample?"75580XXXXX (SAMPLE · NOT CALLABLE)":(r.requesterPhone||"No number")}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3394,7 +3394,7 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
-  ${r.isSample?'<span class="callRequester" style="opacity:.65">SAMPLE · 0000000000 · NOT CALLABLE</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
+  ${r.isSample?'<span class="callRequester" style="opacity:.65">SAMPLE · 75580XXXXX · NOT CALLABLE</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
 
  ${assign}
 
