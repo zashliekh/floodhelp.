@@ -3729,7 +3729,7 @@ function viewRequest(id){
  // or a request object passed directly by another part of the app.
  let r = (id && typeof id === "object")
   ? id
-  : sosRequests.find(x => String(x.id) === String(id));
+  : getAllSOSRequests().find(x => String(x.id) === String(id));
 
  // Never fail silently if the request cannot be found.
  if(!r){
