@@ -4125,6 +4125,12 @@ function updateMapLocation(){
  }
 }
 
+function mapPopupText(value){
+ return String(value??"").replace(/[&<>"']/g,ch=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[ch]);
+}
+
 function updateAllSOSMarkers(){
 
  if(!map)
@@ -4153,6 +4159,14 @@ function updateAllSOSMarkers(){
   )
    return;
 
+  const personName=mapPopupText(r.requesterName||"Not provided");
+  const emergency=mapPopupText(r.title||"Emergency assistance required");
+  const area=mapPopupText(r.area||"Location available on map");
+  const people=Math.max(1,Number(r.people)||1);
+  const care=mapPopupText(String(r.vulnerable||"").replace(/^\\s*•\\s*/,"").trim()||"No additional needs selected");
+  const status=mapPopupText(r.status||"SOS SENT");
+  const reported=mapPopupText(r.time||"Time unavailable");
+
   let m=
    L.marker(
     [
@@ -4166,13 +4180,17 @@ function updateAllSOSMarkers(){
    .addTo(map);
 
   m.bindPopup(`
-
-  <strong>🆘 SOS Alert</strong><br><br>
-  ${r.requesterName?("👤 "+r.requesterName+"<br>"):""}
-  ${r.title}<br>
-  📍 Location: ${r.area||"Location available on map"}<br>
-  👥 People needing help: ${Number(r.people)||1}<br>
-  <br><button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
+   <div style="min-width:190px;max-width:240px;line-height:1.55">
+    <strong>🆘 Person needing help</strong><br>
+    <strong>👤 ${personName}</strong><br>
+    ${emergency}<br>
+    📍 ${area}<br>
+    👥 People: ${people}<br>
+    🩺 Additional needs: ${care}<br>
+    <span style="color:#b45309;font-weight:700">● ${status}</span><br>
+    <small>Reported: ${reported}</small><br>
+    <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
+   </div>
   `);
 
   m.on("click",()=>drawDirectRoute(Number(r.lat),Number(r.lng),r.title||"SOS location"));
