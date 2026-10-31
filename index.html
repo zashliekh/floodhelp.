@@ -1681,7 +1681,7 @@ Water stock
   <div class="legendItem"><span class="legendDot campDot"></span> Relief camp</div>
 </div>
 
-<div class="mapSafetyNote">Only SOS requests with a GPS location appear on the map. Google Maps provides the route; check local flood conditions and follow official emergency instructions.</div>
+<div class="mapSafetyNote">🧪 Test SOS markers are fictional demonstration records with test coordinates. They are not real emergencies or live locations. Real prototype SOS requests are stored only on this device.</div>
 
 </section>
 
@@ -1708,7 +1708,7 @@ RESCUE CONTROL
 </div>
 
 <p>
-Live SOS requests are automatically prioritised and linked to their location.
+SOS requests are prioritised for this prototype. 🧪 Three TEST SOS records are shown for demonstration only; they are not real emergencies.
 </p>
 
 <div class="filterBox">
@@ -2798,6 +2798,14 @@ let sosRequests=
   )||"[]"
  );
 
+// Fictional, local-only sample records for the school demonstration.
+const demoSOSRequests=[
+ {id:"DEMO-SOS-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-180000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"00000 00001"},
+ {id:"DEMO-SOS-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-120000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"00000 00002"},
+ {id:"DEMO-SOS-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-60000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"00000 00003"}
+];
+function getAllSOSRequests(){return [...sosRequests,...demoSOSRequests];}
+
 const RESCUE_DEMO_DURATION=45000;
 
 let boatState="READY";
@@ -2918,7 +2926,7 @@ async function addLiveSOS(priority){
 }
 
 function seedDemoSOSForArea(){
- // Real SOS requests only. Do not generate demo people or fake emergencies.
+ // Demo requests are kept separate from real, locally saved SOS records.
 }
 function saveSOS(){
 
@@ -3114,21 +3122,9 @@ setInterval(()=>{
    ========================================================= */
 
 function getFilteredRequests(){
-
  let area=getUserArea();
-
- if(!area)
-  return [];
-
- return sosRequests.filter(
-  r=>
-   String(r.area||"")
-   .trim()
-   .toLowerCase()===
-   String(area)
-   .trim()
-   .toLowerCase()
- );
+ const real=area?sosRequests.filter(r=>String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase()):[];
+ return [...demoSOSRequests,...real];
 }
 
 /* =========================================================
@@ -4000,7 +3996,7 @@ function updateAllSOSMarkers(){
   Only show active SOS markers.
   The Rescue dashboard remains area filtered.
  */
- sosRequests.forEach(r=>{
+ getAllSOSRequests().forEach(r=>{
 
   if(r.completed)
    return;
@@ -4018,7 +4014,7 @@ function updateAllSOSMarkers(){
   const area=mapPopupText(r.area||"Location available on map");
   const people=Math.max(1,Number(r.people)||1);
   const care=mapPopupText(String(r.vulnerable||"").replace(/^\\s*•\\s*/,"").trim()||"No additional needs selected");
-  const status=mapPopupText(r.status||"SOS SENT");
+  const status=mapPopupText(r.isDemo?"🧪 TEST ONLY — NOT REAL":(r.status||"SOS SENT"));
   const reported=mapPopupText(r.time||"Time unavailable");
 
   let m=
@@ -4035,7 +4031,7 @@ function updateAllSOSMarkers(){
 
   m.bindPopup(`
    <div style="min-width:190px;max-width:240px;line-height:1.55">
-    <strong>🆘 Person needing help</strong><br>
+    <strong>🆘 ${r.isDemo?"🧪 TEST SOS — NOT REAL":"Person needing help"}</strong><br>
     <strong>👤 ${personName}</strong><br>
     ${emergency}<br>
     📍 ${area}<br>
@@ -4043,6 +4039,7 @@ function updateAllSOSMarkers(){
     🩺 Additional needs: ${care}<br>
     <span style="color:#b45309;font-weight:700">● ${status}</span><br>
     <small>Reported: ${reported}</small><br>
+     ${r.isDemo?'<strong style="color:#b45309">FICTIONAL TEST LOCATION & NUMBER — DO NOT CALL</strong><br>':""}
     <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(r.lat)},${Number(r.lng)})">OPEN IN GOOGLE MAPS</button>
    </div>
   `);
