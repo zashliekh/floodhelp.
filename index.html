@@ -1534,20 +1534,20 @@ Your area is taken automatically from your login.
 
 <div class="grid">
 
-<button class="card optional" data-opt="children">
-👶 Children
+<button class="card optional" data-opt="child">
+👶 Child
 </button>
 
 <button class="card optional" data-opt="elderly">
 👴 Elderly
 </button>
 
-<button class="card optional" data-opt="medical">
-🏥 Medical need
+<button class="card optional" data-opt="pregnant">
+🤰 Pregnant
 </button>
 
-<button class="card optional" data-opt="special">
-♿ Special assistance
+<button class="card optional" data-opt="injured">
+🩹 Injured
 </button>
 
 </div>
@@ -2123,10 +2123,10 @@ let emergencyType="";
 let peopleCount=1;
 
 let needs={
- children:false,
+ child:false,
  elderly:false,
- medical:false,
- special:false
+ pregnant:false,
+ injured:false
 };
 
 document.querySelectorAll(".emergency")
@@ -2195,8 +2195,8 @@ function getPriorityData(){
  let p="MEDIUM";
 
  if(
-  needs.medical||
-  needs.special||
+  needs.injured||
+  
   peopleCount>=6||
   (emergencyType==="trapped"&&v)
  ){
@@ -2208,8 +2208,9 @@ function getPriorityData(){
   emergencyType==="trapped"||
   emergencyType==="medical"||
   peopleCount>=4||
-  needs.children||
-  needs.elderly
+  needs.child||
+  needs.elderly||
+  needs.pregnant
 
  ){
 
@@ -2952,10 +2953,10 @@ async function addLiveSOS(priority){
  sosNumber++;
  const names={trapped:"🌊 Person trapped by floodwater",medical:"🏥 Medical emergency",rescue:"👥 People need rescue",home:"🏠 Flooded home"};
  const v=[];
- if(needs.children)v.push("👶 Child");
+ if(needs.child)v.push("👶 Child");
  if(needs.elderly)v.push("👴 Elderly");
- if(needs.medical)v.push("🏥 Medical");
- if(needs.special)v.push("♿ Special assistance");
+ if(needs.pregnant)v.push("🤰 Pregnant");
+ if(needs.injured)v.push("🩹 Injured");
  const u=requester();
  const r={
   id:"SOS #"+sosNumber+"-"+String(Date.now()).slice(-6)+"-"+Math.random().toString(36).slice(2,6).toUpperCase(),
@@ -3886,10 +3887,10 @@ function viewRequest(id){
   if(rawCare.length) additionalCare = rawCare.join(", ");
  }else if(typeof rawCare === "object" && rawCare !== null){
   const careNames = {
-   children: "👶 Child",
+   child: "👶 Child",
    elderly: "👴 Elderly",
-   medical: "🏥 Medical",
-   special: "♿ Special assistance"
+   pregnant: "🤰 Pregnant",
+   injured: "🩹 Injured"
   };
   const selectedCare = Object.keys(careNames)
    .filter(key => rawCare[key])
