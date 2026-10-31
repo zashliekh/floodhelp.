@@ -1649,9 +1649,7 @@ Water stock
 </div>
 
 </div>
-<div class="campInfoNotice">
-<strong>Sample availability</strong>
-</div>
+<div class="campInfoNotice"><strong>Availability and supplies are not live-updated. Contact the camp to confirm before travelling.</strong></div>
 
 <button class="primary" id="bestRoute">
 🛣️ SHOW ROAD ROUTE IN APP
@@ -2446,10 +2444,9 @@ function updateCamps(){
 
  bestName.textContent=b.name;
 
- bestVacancy.textContent=
-  b.available+" / "+b.capacity+" beds · "+Math.round((b.available/b.capacity)*100)+"% free";
- document.getElementById("bestFood").textContent=b.food+"%";
- document.getElementById("bestWater").textContent=b.water+"%";
+ bestVacancy.textContent="Confirm directly with camp";
+ document.getElementById("bestFood").textContent="Not live-updated";
+ document.getElementById("bestWater").textContent="Not live-updated";
 
  if(userLat!==null){
 
@@ -2487,14 +2484,7 @@ function renderCamps(list=camps){
 
   x.className="camp";
 
-  const vacancyPct=Math.round((c.available/c.capacity)*100);
-  const metric=(label,value)=>`
-   <div class="campMetric">
-    <div class="campMetricHead"><span>${label}</span><strong>${value}%</strong></div>
-    <div class="campBar"><span style="width:${value}%"></span></div>
-   </div>`;
-
-  x.innerHTML=`
+x.innerHTML=`
   <div class="campMeta">
    
    <span class="distance">${d} away</span>
@@ -2502,12 +2492,10 @@ function renderCamps(list=camps){
   <h3>🏕️ ${c.name}</h3>
   <p>📍 ${c.area}</p>
   <div class="campDetails">
-   <div class="campDetail"><strong>Beds available</strong><span>${c.available} of ${c.capacity} (${vacancyPct}%)</span></div>
-   <div class="campDetail"><strong>Medical support</strong><span>${c.medical}% provision</span></div>
+   <div class="campDetail"><strong>Availability</strong><span>Confirm directly with camp</span></div>
+   <div class="campDetail"><strong>Food, water and medical support</strong><span>Current stock and services not live-updated</span></div>
   </div>
-  ${metric("Food stock",c.food)}
-  ${metric("Drinking water",c.water)}
-  <div class="campMeta">
+<div class="campMeta">
    <span style="font-size:11px;color:#cfe2e7">${c.contact?c.contactLabel:"Contact"}</span>
    ${c.contact?`<a class="campContactLink" href="tel:${c.contact}">☎ ${c.contact}</a>`:"<span style='font-size:11px;color:#9bb4bd'>Number not listed</span>"}
   </div>
@@ -3952,9 +3940,7 @@ function initializeMap(){
   campMarker.bindPopup(`
 
   <strong>🏕️ ${c.name}</strong><br>
-  <small>Sample figures</small><br><br>
-  Beds: ${c.available}/${c.capacity} (${Math.round(c.available/c.capacity*100)}%)<br>
-  Food: ${c.food}% · Water: ${c.water}%<br>
+  <small>Availability and supplies are not live-updated. Confirm directly with the camp.</small><br>
   ${c.contact?c.contactLabel+": "+c.contact:"Contact: Not listed"}<br><br>
   <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">GET DIRECTIONS</button>
 
@@ -4241,9 +4227,7 @@ function renderBoatPage(){
  let x=
   getRescueSimulation(r);
 
- let phone=
-  r.assignedRescuerPhone||
-  "9876543213";
+ let phone=r.assignedRescuerPhone||"";
 
  c.innerHTML=`
 
