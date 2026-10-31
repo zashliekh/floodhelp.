@@ -2800,9 +2800,9 @@ let sosRequests=
 
 // Fictional, local-only sample records for the school demonstration.
 const demoSOSRequests=[
- {id:"DEMO-SOS-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-180000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"00000 00001"},
- {id:"DEMO-SOS-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-120000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"00000 00002"},
- {id:"DEMO-SOS-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-60000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"00000 00003"}
+ {id:"DEMO-SOS-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-180000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"",demoPhone:"00000 00001"},
+ {id:"DEMO-SOS-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-120000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"",demoPhone:"00000 00002"},
+ {id:"DEMO-SOS-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-60000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"",demoPhone:"00000 00003"}
 ];
 function getAllSOSRequests(){return [...sosRequests,...demoSOSRequests];}
 
