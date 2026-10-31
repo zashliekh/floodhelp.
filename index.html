@@ -2318,21 +2318,35 @@ function distanceKm(a,b,c,d){
 const camps=[
 
  {
-  name:"Community Relief Camp",
-  lat:11.073,
-  lng:76.073,
+  name:"PPMHSS Kottukkara",
+  area:"Kottukkara, Kondotty, Malappuram",
+  lat:11.140000,
+  lng:75.982000,
+  contact:""
  },
 
  {
-  name:"Emergency Shelter Centre",
-  lat:11.079,
-  lng:76.080,
+  name:"Puthoor UP School (AMUPS Puthurpallikkal)",
+  area:"Puthur Pallikkal, Pullikkal, Malappuram",
+  lat:11.125240,
+  lng:75.918960,
+  contact:""
  },
 
  {
-  name:"Safe Haven Camp",
-  lat:11.067,
-  lng:76.064,
+  name:"GMUPS Chirayil Chungam",
+  area:"Chirayil Chungam, Karipur, Malappuram",
+  lat:11.128501,
+  lng:75.974926,
+  contact:""
+ },
+
+ {
+  name:"PKMMHSS Edarikode",
+  area:"Pottippara, Edarikode, Malappuram",
+  lat:11.001420,
+  lng:75.983970,
+  contact:""
  }
 
 ];
@@ -2414,9 +2428,9 @@ function renderCamps(list=camps){
    <div class="campDetail"><strong>Capacity & vacancy</strong><span>Not reported</span></div>
    <div class="campDetail"><strong>Water & food</strong><span>Confirm with coordinator</span></div>
    <div class="campDetail"><strong>Medical assistance</strong><span>Not confirmed</span></div>
-   <div class="campDetail"><strong>Coordinator contact</strong><span>Not configured</span></div>
+   <div class="campDetail"><strong>Camp contact number</strong><span>${c.contact?`<a href="tel:${c.contact}">${c.contact}</a>`:"Not provided"}</span></div>
   </div>
-  <p class="campDataNote">Camp services and availability are unverified in this prototype. Contact local authorities before travelling.</p>
+  <p class="campDataNote">Proposed camp location only. This school is not confirmed as an active relief camp. Capacity, supplies, medical support and camp contact number must be verified before anyone travels.</p>
   <button>
   🛣️ ROUTE
   </button>
@@ -3984,9 +3998,9 @@ function initializeMap(){
   campMarker.bindPopup(`
 
   <strong>🏕️ ${c.name}</strong><br><br>
-  📍 Relief camp<br>
+  📍 Proposed camp location — activation not confirmed<br>
   📏 ${userLat!==null?distanceKm(userLat,userLng,c.lat,c.lng).toFixed(1)+" km away":"Distance unavailable"}<br>
-  Capacity and available supplies: Contact camp coordinators.<br><br>
+  Capacity, supplies and camp contact number: Not confirmed.<br><br>
   <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">OPEN IN GOOGLE MAPS</button>
 
   `);
