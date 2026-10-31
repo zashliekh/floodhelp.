@@ -1702,7 +1702,7 @@ RESCUE CONTROL
 </div>
 
 <div class="live" id="liveStatus">
-● LIVE
+● LOCAL
 </div>
 
 </div>
@@ -2800,9 +2800,9 @@ let sosRequests=
 
 // Fictional, local-only sample records for the school demonstration.
 const demoSOSRequests=[
- {id:"DEMO-SOS-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-180000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"",demoPhone:"00000 00001"},
- {id:"DEMO-SOS-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-120000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"",demoPhone:"00000 00002"},
- {id:"DEMO-SOS-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram (TEST LOCATION)",time:"Demo record",timestamp:Date.now()-60000,status:"TEST SOS — NOT REAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"",demoPhone:"00000 00003"}
+ {id:"TRN-001",isDemo:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-180000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Adhil Rasheed",requesterPhone:"",demoPhone:"00000 00001"},
+ {id:"TRN-002",isDemo:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly",lat:11.0540,lng:76.0750,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-120000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"",demoPhone:"00000 00002"},
+ {id:"TRN-003",isDemo:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Training area · Malappuram",time:"Training record",timestamp:Date.now()-60000,status:"TRAINING RECORD — FICTIONAL",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"",demoPhone:"00000 00003"}
 ];
 function getAllSOSRequests(){return [...sosRequests,...demoSOSRequests];}
 
@@ -3348,6 +3348,7 @@ function createRequestCard(r){
 
  </div>
 
+ ${r.isDemo?'<div class="campDemoTag">TRAINING RECORD · FICTIONAL</div>':""}
  <h3>
  ${r.title}
  </h3>
@@ -3355,8 +3356,9 @@ function createRequestCard(r){
  <div class="requestInfo">
 
  👤 ${r.requesterName||"Unknown User"}<br>
+ ${r.isDemo?'<span class="campDemoTag">TRAINING RECORD · FICTIONAL</span><br>':""}
 
- 📞 ${r.requesterPhone||"No number"}<br>
+ 📞 ${r.isDemo?"Training contact · "+r.demoPhone:(r.requesterPhone||"No number")}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3393,15 +3395,7 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
- <a
- class="callRequester"
- href="${
-  r.requesterPhone
-  ?"tel:"+r.requesterPhone
-  :"#"
- }">
- 📞 CALL
- </a>
+  ${r.isDemo?'<span class="callRequester" style="opacity:.65">TRAINING CONTACT · NOT CALLABLE</span>':'<a class="callRequester" href="'+(r.requesterPhone?"tel:"+r.requesterPhone:"#")+'">📞 CALL</a>'}
 
  ${assign}
 
@@ -4295,7 +4289,7 @@ function renderBoatPage(){
  if(boatResumeBtn)boatResumeBtn.style.display=boatState==="STOPPED"?"block":"none";
  if(boatCommsStatus)boatCommsStatus.textContent="NO HARDWARE CONNECTION";
  if(boatObstacleStatus)boatObstacleStatus.textContent="NOT LINKED TO APP";
- if(boatBatteryStatus)boatBatteryStatus.textContent="82% · SIMULATED";
+ if(boatBatteryStatus)boatBatteryStatus.textContent="82% · ILLUSTRATIVE";
  if(boatMissionHistory){
   const history=sosRequests.filter(x=>x.completed||x.assigned).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0)).slice(0,3);
   boatMissionHistory.innerHTML=history.length?history.map(x=>"<div style='padding:8px 0;border-bottom:1px solid #ffffff0a'><strong>"+x.id+"</strong><br>"+x.title+"<br><span style='color:#70d5e5'>"+(x.completed?"Completed — boat returned to camp":(x.status||"Assigned rescue"))+"</span></div>").join(""):"No assigned or completed missions yet.";
