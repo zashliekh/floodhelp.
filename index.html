@@ -1650,8 +1650,7 @@ Water stock
 
 </div>
 <div class="campInfoNotice">
-<strong>DEMO MODE</strong>
-<p>Sample figures are shown for the prototype and are not live camp availability.</p>
+<strong>Sample availability</strong>
 </div>
 
 <button class="primary" id="bestRoute">
@@ -2501,7 +2500,7 @@ function renderCamps(list=camps){
 
   x.innerHTML=`
   <div class="campMeta">
-   <span class="campDemoTag">● DEMO DATA</span>
+   <span class="campDemoTag">● SAMPLE</span>
    <span class="distance">${d} away</span>
   </div>
   <h3>🏕️ ${c.name}</h3>
@@ -2517,7 +2516,7 @@ function renderCamps(list=camps){
    ${c.contact?`<a class="campContactLink" href="tel:${c.contact}">☎ ${c.contact}</a>`:"<span style='font-size:11px;color:#9bb4bd'>Number not listed</span>"}
   </div>
   <button>🛣️ GET DIRECTIONS</button>
-  <p class="campDataNote">Sample figures for prototype only · Contact shown is the school office, not a verified camp coordinator.</p>
+  
   `;
 
   x.querySelector("button")
@@ -4082,7 +4081,7 @@ function initializeMap(){
   campMarker.bindPopup(`
 
   <strong>🏕️ ${c.name}</strong><br>
-  <small>DEMO DATA</small><br><br>
+  <small>Sample figures</small><br><br>
   Beds: ${c.available}/${c.capacity} (${Math.round(c.available/c.capacity*100)}%)<br>
   Food: ${c.food}% · Water: ${c.water}%<br>
   ${c.contact?c.contactLabel+": "+c.contact:"Contact: Not listed"}<br><br>
