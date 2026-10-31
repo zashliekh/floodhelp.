@@ -3042,12 +3042,12 @@ function getRescueSimulation(r){
  ][stage];
 
  let msg=[
-  "Prototype timeline only. This request is stored on this device.",
-  "A simulated rescue team is shown; no real team was notified.",
-  "Simulated boat movement only; no hardware command was sent.",
-  "Simulated approach only; no live location is received.",
-  "Simulation finished. A real rescue has NOT been confirmed.",
-  "Simulated return sequence only; confirm rescue independently."
+  "Training record · stored on this device only.",
+  "Illustrative team assignment · no team has been notified.",
+  "Illustrative boat movement · no hardware command was sent.",
+  "Illustrative approach · no live boat location is available.",
+  "Training sequence finished · rescue not confirmed.",
+  "Illustrative return sequence · confirm rescue independently."
  ][stage];
 
  if(p>=100){
@@ -4140,7 +4140,7 @@ function renderBoatPage(){
   :boatState==="ACTIVE"
   ?"● ON RESCUE"
   :boatState==="STOPPED"
-  ?"⛔ SIMULATION PAUSED"
+  ?"⛔ MISSION PAUSED"
   :"● RETURNING TO CAMP";
 
  let c=
@@ -4369,7 +4369,7 @@ function stopBoatSimulation(){
  if(!r||r.completed){alert("There is no active mission to pause.");return;}
  r.pausedAt=Date.now();
  boatState="STOPPED";
- r.status="SIMULATED EMERGENCY STOP — MISSION PAUSED";
+ r.status="MISSION PAUSED — DISPLAY ONLY";
  saveSOS();
  renderBoatPage();
  renderRescueDashboard();
