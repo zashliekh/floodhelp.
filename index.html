@@ -3357,7 +3357,7 @@ function createRequestCard(r){
 
  👤 ${r.requesterName||"Unknown User"}<br>
 
- 📞 ${r.isSample?"123456789 (SAMPLE · NOT CALLABLE)":(r.requesterPhone||"No number")}<br>
+ 📞 ${r.isSample?"123456789":(r.requesterPhone||"No number")}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3394,7 +3394,7 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
-  ${r.isSample?'<span class="callRequester" style="opacity:.65">SAMPLE · 123456789 · NOT CALLABLE</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
+  ${r.isSample?'<span class="callRequester" style="opacity:.65">123456789</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
 
  ${assign}
 
@@ -3771,7 +3771,7 @@ function viewRequest(id){
   `${r.title || r.emergency || "Emergency assistance required"}\n\n`+
   `📍 Area: ${r.area || "Not selected"}\n\n`+
   `👤 ${r.requesterName || "Unknown User"}\n`+
-  `📞 ${r.isSample ? "123456789 (SAMPLE · NOT CALLABLE)" : (r.requesterPhone || "No number")}\n\n`+
+  `📞 ${r.requesterPhone || "No number"}\n\n`+
   `Priority: ${r.priority || r.p || "Not set"}\n`+
   `People: ${r.people ?? "Not specified"}\n`+
   `Additional Care: ${additionalCare}\n`+
