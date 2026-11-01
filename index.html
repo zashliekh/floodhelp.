@@ -2931,7 +2931,7 @@ function startRescueProgress(r){
  if(!r.rescueStartTime){
   r.rescueStartTime=Date.now();
   r.status="SOS RECEIVED";
-  r.progress=12;
+  r.progress=0;
   r.boatDistance=null;
   r.eta=null;
   r.completed=false;
@@ -2964,7 +2964,7 @@ function getRescueProgress(r){
  }
  if(r.completed)return {status:"RESCUE COMPLETED",progress:100,distance:0,eta:0,stage:5,message:"Rescue marked as completed."};
  startRescueProgress(r);
- return {status:r.status||"SOS RECEIVED",progress:Number(r.progress||12),distance:null,eta:null,stage:0,message:"SOS received and awaiting response."};
+ return {status:r.status||"SOS RECEIVED",progress:Number(r.progress??0),distance:null,eta:null,stage:0,message:"SOS received and awaiting response."};
 }
 
 setInterval(()=>{
@@ -4342,14 +4342,18 @@ function restoreRequests(){
    r.requesterPhone="";
 
   if(r.progress===undefined)
-   r.progress=12;
+   r.progress=0;
 
   if(r.cancelled===undefined)
    r.cancelled=false;
 
-  if(!r.cancelled&&!r.completed&&!r.rescueStartTime)
+  if(!r.cancelled&&!r.completed){
+   r.progress=0;
+   r.boatDistance=null;
+   r.eta=null;
+   r.status="SOS RECEIVED";
    r.rescueStartTime=Date.now();
-
+  }
 
   if(r.area===undefined)
    r.area="";});
