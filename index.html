@@ -599,7 +599,7 @@ button:active{transform:scale(.97)}
  font-size:9px;
  line-height:1.4
 }
-.campTag{
+.campDemoTag{
  display:inline-flex;
  align-items:center;
  gap:5px;
@@ -1816,7 +1816,7 @@ BOAT CONTROL
 </div>
 
 <p>
-Monitor the rescue status and select an active SOS request.
+Monitor the rescue boat and launch it toward the highest-priority active SOS.
 </p>
 
 <div class="boatStatGrid">
@@ -1868,10 +1868,15 @@ No active mission
 </div>
 
 <div class="boatStatusBox">
- <h3>🛟 System connection</h3>
- <div class="boatStatusLine"><span>Communication</span><strong id="boatCommsStatus">NOT CONNECTED</strong></div>
- <div class="boatStatusLine"><span>Obstacle sensors</span><strong id="boatObstacleStatus">NOT CONNECTED</strong></div>
- <p style="font-size:10px;margin:10px 0 0">Boat hardware is not connected to this dashboard.</p>
+ <h3>🛟 Safety & system checks</h3>
+ <div class="boatStatusLine"><span>Battery estimate</span><strong id="boatBatteryStatus" class="statusActive">82%</strong></div>
+ <div class="boatStatusLine"><span>Communication</span><strong id="boatCommsStatus">NO LIVE CONNECTION</strong></div>
+ <div class="boatStatusLine"><span>Obstacle sensors</span><strong id="boatObstacleStatus">NOT LINKED</strong></div>
+ <p style="font-size:10px;margin:10px 0 0">Communication and sensor connection status.</p>
+ <div class="boatActions">
+  <button class="secondaryBoat" id="boatStopBtn" type="button" onclick="stopBoatSimulation()">⛔ PAUSE MISSION</button>
+  <button class="primaryBoat" id="boatResumeBtn" type="button" onclick="resumeBoatSimulation()" style="display:none">▶ RESUME MISSION</button>
+ </div>
 </div>
 
 <div class="boatStatusBox">
@@ -2266,7 +2271,7 @@ let userMarker=null;
 let sosMarkers=[];
 let hazardMarkers=[];
 let pendingRoute=null;
-// SOS map markers are built only from saved SOS requests.
+const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
 
 // Only SOS records with GPS coordinates are shown on the map.
 
@@ -2795,11 +2800,19 @@ let sosRequests=
   )||"[]"
  );
 
-function getAllSOSRequests(){return sosRequests;}
+// Sample incidents for interface testing. These are never sent to dispatch.
+const sampleSOSRequests=[
+ {id:"SOS-001",isSample:true,priority:"CRITICAL",title:"🌊 Person trapped by floodwater",people:1,vulnerable:"",lat:11.0510,lng:76.0711,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-180000,status:"SOS RECEIVED",rescueStartTime:null,progress:0,boatDistance:1.8,eta:6,assigned:false,completed:false,requesterName:"Nishka",requesterPhone:"123456789"},
+ {id:"SOS-002",isSample:true,priority:"HIGH",title:"🏠 Flooded home",people:2,vulnerable:" • Elderly person",lat:11.0540,lng:76.0750,area:"Malappuram",time:"A few minutes ago",timestamp:Date.now()-120000,status:"SOS RECEIVED",rescueStartTime:null,progress:0,boatDistance:2.4,eta:8,assigned:false,completed:false,requesterName:"Nihal",requesterPhone:"123456789"},
+ {id:"SOS-003",isSample:true,priority:"MEDIUM",title:"👥 People need rescue",people:3,vulnerable:"",lat:11.0475,lng:76.0680,area:"Malappuram",time:"Recently",timestamp:Date.now()-60000,status:"SOS RECEIVED",rescueStartTime:null,progress:0,boatDistance:3.1,eta:11,assigned:false,completed:false,requesterName:"Manha",requesterPhone:"123456789"}
+];
+function getAllSOSRequests(){return [...sosRequests,...sampleSOSRequests];}
 
+const RESCUE_DEMO_DURATION=45000;
 
 let boatState="READY";
 let boatReturnRequestId=null;
+
 let completedReturnTimers={};
 
 function getStoredUser(){
@@ -2906,8 +2919,8 @@ async function addLiveSOS(priority){
   vulnerable:v.length?" • "+v.join(", "):"",
   lat:userLat,lng:userLng,area:getUserArea(),
   time:new Date().toLocaleTimeString(),timestamp:Date.now(),
-  status:"SOS RECEIVED",rescueStartTime:Date.now(),progress:0,
-  boatDistance:null,eta:null,assigned:false,completed:false,
+  status:"SOS SENT",rescueStartTime:Date.now(),progress:0,
+  boatDistance:3,eta:10,assigned:false,completed:false,
   requesterName:u.s,requesterPhone:u.p
  };
  sosRequests.unshift(r);
@@ -2915,6 +2928,9 @@ async function addLiveSOS(priority){
  return {success:true,record:r};
 }
 
+function seedDemoSOSForArea(){
+ // Demo requests are kept separate from real, locally saved SOS records.
+}
 function saveSOS(){
 
  localStorage.setItem(
@@ -2924,29 +2940,53 @@ function saveSOS(){
 }
 
 /* =========================================================
-   
+   SIMULATION
    ========================================================= */
 
-function startRescueProgress(r){
+function startRescueSimulation(r){
+
  if(!r.rescueStartTime){
+
   r.rescueStartTime=Date.now();
-  r.status="SOS RECEIVED";
+
+  r.status="SOS SENT";
+
   r.progress=0;
-  r.boatDistance=null;
-  r.eta=null;
+
+  r.boatDistance=3;
+
+  r.eta=10;
+
   r.completed=false;
-  r.cancelled=false;
+
+  r.assigned=false;
  }
 }
+
 function releaseRescuer(r){
- if(!r.assignedRescuerId)return;
- const rescuer=registeredRescuers.find(a=>a.id===r.assignedRescuerId);
- if(rescuer){
-  rescuer.status="AVAILABLE";
-  localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers));
+
+ if(!r.assignedRescuerId)
+  return;
+
+ let x=
+  registeredRescuers.find(
+   a=>a.id===r.assignedRescuerId
+  );
+
+ if(x){
+
+  x.status="AVAILABLE";
+
+  localStorage.setItem(
+   "floodhelp_registered_rescuers",
+   JSON.stringify(
+    registeredRescuers
+   )
+  );
  }
 }
-function getRescueProgress(r){
+
+function getRescueSimulation(r){
  if(r.cancelled){
   const elapsed=Date.now()-Number(r.returnStartTime||Date.now());
   const duration=8000;
@@ -2960,11 +3000,116 @@ function getRescueProgress(r){
   }
   r.progress=progress;r.boatDistance=Number((0.8*(1-progress/100)).toFixed(1));
   r.eta=Math.max(1,Math.ceil((duration-elapsed)/1000));r.status="RETURNING TO CAMP";
-  return {status:r.status,progress,distance:r.boatDistance,eta:r.eta,stage:5,message:"SOS cancelled. Return to camp in progress."};
+  return {status:r.status,progress,distance:r.boatDistance,eta:r.eta,stage:5,message:"SOS cancelled. Boat is returning to camp."};
  }
- if(r.completed)return {status:"RESCUE COMPLETED",progress:100,distance:0,eta:0,stage:5,message:"Rescue marked as completed."};
- startRescueProgress(r);
- return {status:r.status||"SOS RECEIVED",progress:Number(r.progress??0),distance:null,eta:null,stage:0,message:"SOS received and awaiting response."};
+ startRescueSimulation(r);
+
+ if(r.completed){
+
+  return{
+
+   status:"RESCUE COMPLETED — BOAT BACK AT CAMP",
+
+   progress:100,
+
+   distance:0,
+
+   eta:0,
+
+   stage:5,
+
+   message:
+    "Rescue sequence completed."
+
+  };
+ }
+
+ if(r.pausedAt){
+  return{
+   status:"MISSION PAUSED — DISPLAY ONLY",
+   progress:Number(r.progress||0),
+   distance:Number(r.boatDistance??3),
+   eta:Number(r.eta??10),
+   stage:Math.min(5,Math.floor(Number(r.progress||0)/20)),
+   message:"Mission paused. Resume to continue."
+  };
+ }
+
+ let e=
+  Date.now()-
+  Number(r.rescueStartTime);
+
+ let p=
+  Math.min(
+   100,
+   e/
+   RESCUE_DEMO_DURATION*
+   100
+  );
+
+ let stage=
+  e<5000?0:
+  e<10000?1:
+  e<20000?2:
+  e<28000?3:
+  e<36000?4:5;
+
+ let status=[
+  SOS RECEIVED","TEAM ASSIGNED","BOAT EN ROUTE","BOAT APPROACH","RESCUE COMPLETED","RETURNING TO CAMP
+ ][stage];
+
+ let msg=[
+  "SOS request received.",
+  "Rescue team assigned.",
+  "Rescue boat is on the way.",
+  "Boat is approaching the rescue location.",
+  "Rescue sequence completed.",
+  "Boat is returning to camp."
+ ][stage];
+
+ if(p>=100){
+  r.progress=100;r.boatDistance=0;r.eta=0;
+  r.status="RESCUE COMPLETED — BOAT BACK AT CAMP";
+  saveSOS();
+  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Rescue sequence completed. Boat is back at camp."};
+ }
+
+ let d=Math.max(
+  0,
+  3-3*p/100
+ );
+
+ let eta=Math.max(
+  0,
+  Math.ceil(
+   10*(1-p/100)
+  )
+ );
+
+ r.status=status;
+
+ r.progress=Math.round(p);
+
+ r.boatDistance=
+  +d.toFixed(1);
+
+ r.eta=eta;
+
+ return{
+
+  status,
+
+  progress:Math.round(p),
+
+  distance:+d.toFixed(1),
+
+  eta,
+
+  stage,
+
+  message:msg
+
+ };
 }
 
 setInterval(()=>{
@@ -2972,7 +3117,7 @@ setInterval(()=>{
  sosRequests.forEach(r=>{
 
   if(!r.completed)
-   getRescueProgress(r);
+   getRescueSimulation(r);
 
  });
 
@@ -2995,7 +3140,9 @@ setInterval(()=>{
 
 function getFilteredRequests(){
  let area=getUserArea();
- return area?sosRequests.filter(r=>String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase()):[];
+ const real=area?sosRequests.filter(r=>String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase()):[];
+ const samples=sampleSOSRequests.filter(r=>!area||String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase());
+ return [...samples,...real];
 }
 
 /* =========================================================
@@ -3018,7 +3165,9 @@ function updateRescueCounts(){
 
  list.forEach(r=>{
 
-  if(!r.cancelled&&c[r.priority]!==undefined)
+  if(
+   c[r.priority]!==undefined
+  )
    c[r.priority]++;
 
  });
@@ -3046,7 +3195,7 @@ function updateDashboardSummary(){
 
  activeRescueCount.textContent=
   list.filter(
-   r=>!r.completed&&!r.cancelled
+   r=>!r.completed
   ).length;
 
  let area=getUserArea();
@@ -3083,13 +3232,13 @@ function createRequestCard(r){
  card.className="request"+(!r.completed&&(r.newAlert||["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase()))?" request-alert":"");
 
  let x=
-  getRescueProgress(r);
+  getRescueSimulation(r);
 
- let cancelAction=r.completed
-  ?`<button class="assignBtn assigned" disabled>✓ COMPLETED</button>`
-  :r.cancelled
-  ?`<button class="cancelSosBtn" disabled>✓ SOS CANCELLED</button>`
-  :`<button class="cancelSosBtn" onclick="cancelSOS('${r.id}')">✕ CANCEL SOS</button>`;
+ let assign=r.completed
+ ?`<button class="assignBtn assigned" disabled>✓ COMPLETED</button>`
+ :r.cancelled
+ ?`<button class="cancelSosBtn" disabled>✓ SOS CANCELLED</button>`
+ :`<button class="cancelSosBtn" onclick="cancelSOS('${r.id}')">✕ CANCEL SOS</button>`;
 
  let location=
 
@@ -3119,7 +3268,7 @@ function createRequestCard(r){
      📍 AREA: Not selected
     </div>`;
 
- let steps=["SOS RECEIVED","RESPONSE","BOAT EN ROUTE","APPROACH","RESCUE","CAMP"];
+ let steps=["SOS RECEIVED","TEAM ASSIGNED","BOAT EN ROUTE","APPROACH","RESCUE","CAMP"];
 
  let progress=`
 
@@ -3131,7 +3280,11 @@ function createRequestCard(r){
  🚨 ${x.status}
  </span>
 
- <div class="progressEta">SOS STATUS</div>
+ <div class="progressEta">
+ 🚤 ${x.distance.toFixed(1)} km<br>
+ ETA:
+ <strong>~${x.eta} min</strong>
+ </div>
 
  </div>
 
@@ -3191,7 +3344,7 @@ function createRequestCard(r){
 
  👤 ${r.requesterName||"Unknown User"}<br>
 
- 📞 ${r.requesterPhone||"No number"}<br>
+ 📞 ${r.isSample?"123456789":(r.requesterPhone||"No number")}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3228,9 +3381,9 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
-  ${r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
+  ${r.isSample?'<span class="callRequester" style="opacity:.65">123456789</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
 
- ${cancelAction}
+ ${assign}
 
  </div>
 
@@ -3320,13 +3473,20 @@ function renderRescueDashboard(){
 
 }
 
+/* =========================================================
+   ASSIGN
+   ========================================================= */
+
 function cancelSOS(id){
- const r=sosRequests.find(x=>String(x.id)===String(id));
+ const r=getAllSOSRequests().find(x=>String(x.id)===String(id));
  if(!r||r.completed||r.cancelled)return;
- if(!confirm("Cancel this SOS request? The boat status will change to returning to camp."))return;
+ if(!confirm("Cancel this SOS request? The boat will return to camp."))return;
  r.cancelled=true;r.returnComplete=false;r.returnStartTime=Date.now();
  r.status="RETURNING TO CAMP";r.newAlert=false;
- if(r.assignedRescuerId)releaseRescuer(r);
+ if(r.assignedRescuerId){
+  const rescuer=registeredRescuers.find(x=>x.id===r.assignedRescuerId);
+  if(rescuer){rescuer.status="AVAILABLE";localStorage.setItem("floodhelp_registered_rescuers",JSON.stringify(registeredRescuers));}
+ }
  boatState="RETURNING";boatReturnRequestId=r.id;
  saveSOS();renderRescueDashboard();renderBoatPage();
 }
@@ -3475,10 +3635,10 @@ function viewRequest(id){
   additionalCare = String(rawCare).replace(/^\s*•\s*/, "").trim();
  }
 
- // Keep details visible even if the rescue  cannot calculate.
- let x = {status:r.status || "SOS RECEIVED"};
+ // Keep details visible even if the rescue simulation cannot calculate.
+ let x = {status:r.status || "SOS SENT", distance:Number(r.boatDistance ?? 3), eta:Number(r.eta ?? 10)};
  try{
-  if(typeof getRescueProgress === "function") x = getRescueProgress(r) || x;
+  if(typeof getRescueSimulation === "function") x = getRescueSimulation(r) || x;
  }catch(error){
   console.error("FloodHelp VIEW request details:", error);
  }
@@ -3492,7 +3652,9 @@ function viewRequest(id){
   `Priority: ${r.priority || r.p || "Not set"}\n`+
   `People: ${r.people ?? "Not specified"}\n`+
   `Additional Care: ${additionalCare}\n`+
-  `Status: ${x.status || r.status || "SOS RECEIVED"}`
+  `Status: ${x.status || r.status || "SOS SENT"}\n`+
+  `Boat distance: ${Number(x.distance ?? r.boatDistance ?? 3).toFixed(1)} km\n`+
+  `ETA: ~${x.eta ?? r.eta ?? 10} min`
  );
 }
 
@@ -3800,12 +3962,39 @@ function showSOSOnMap(id){
 
 function getActiveBoatRequest(){
  if(boatState==="RETURNING"&&boatReturnRequestId){
-  const returning=sosRequests.find(r=>r.id===boatReturnRequestId);
+  const returning=getAllSOSRequests().find(r=>r.id===boatReturnRequestId);
   if(returning)return returning;
  }
- const order={CRITICAL:1,HIGH:2,MEDIUM:3,LOW:4};
- return sosRequests.filter(r=>!r.completed&&!r.cancelled&&(!r.area||r.area===getUserArea()))
-  .sort((a,b)=>(order[a.priority]-order[b.priority])||Number(b.timestamp||0)-Number(a.timestamp||0))[0]||null;
+ let order={
+
+  CRITICAL:1,
+  HIGH:2,
+  MEDIUM:3,
+  LOW:4
+
+ };
+
+ return sosRequests
+
+ .filter(r=>
+  !r.completed&&(!r.cancelled||!r.returnComplete)&&
+  (
+   !r.area||
+   r.area===getUserArea()
+  )
+ )
+
+ .sort(
+
+  (a,b)=>
+
+   (order[a.priority]-
+    order[b.priority])||
+
+   Number(b.timestamp||0)-
+   Number(a.timestamp||0)
+
+ )[0]||null;
 }
 
 function renderBoatPage(){
@@ -3836,8 +4025,7 @@ function renderBoatPage(){
  c.innerHTML="";
 
  if(boatState==="RETURNING"){
-  const returning=getActiveBoatRequest();
-  const x=returning?getRescueProgress(returning):{progress:0,status:"RETURNING TO CAMP",message:"Returning to camp."};
+  const x=r?getRescueSimulation(r):{progress:0,status:"RETURNING TO CAMP",message:"Boat is returning to camp."};
   c.innerHTML=`
    <div class="returningMission">
     <div class="returningIcon">🚤</div>
@@ -3846,8 +4034,9 @@ function renderBoatPage(){
     <div class="progressBar"><div class="progressFill" style="width:${x.progress}%"></div></div>
     <p>${x.message}</p>
    </div>`;
-  boatMissionStatus.textContent=returning?returning.id:"Returning";
-  boatCurrentStatus.textContent="RETURNING";boatCurrentStatus.className="statusReturning";
+  boatMissionStatus.textContent=r?r.id:"Returning";
+  boatCurrentStatus.textContent="RETURNING";
+  boatCurrentStatus.className="statusReturning";
   boatCurrentLocation.textContent="Returning to camp";
   return;
  }
@@ -3890,7 +4079,7 @@ function renderBoatPage(){
  }
 
  let x=
-  getRescueProgress(r);
+  getRescueSimulation(r);
 
  let phone=r.assignedRescuerPhone||"";
 
@@ -3914,8 +4103,10 @@ function renderBoatPage(){
  👥 ${r.people} people<br>
  📏 ${getRescueDistance(r)}<br>
  🚤 ${x.status}<br>
- 🚤 Status:
- ${x.status}
+ 🚤 Boat distance:
+ ${x.distance.toFixed(1)} km<br>
+ ⏱️ ETA:
+ ~${x.eta} min
 
  </div>
 
@@ -3961,8 +4152,9 @@ function renderBoatPage(){
  boatCurrentLocation.textContent=boatState==="READY"?"Waiting at camp":boatState==="ACTIVE"?"Travelling to SOS":boatState==="STOPPED"?"Mission paused · display only":"Returning to camp";
  if(boatStopBtn)boatStopBtn.style.display=boatState==="STOPPED"?"none":"block";
  if(boatResumeBtn)boatResumeBtn.style.display=boatState==="STOPPED"?"block":"none";
- if(boatCommsStatus)boatCommsStatus.textContent="NOT CONNECTED";
- if(boatObstacleStatus)boatObstacleStatus.textContent="NOT CONNECTED";
+ if(boatCommsStatus)boatCommsStatus.textContent="NO HARDWARE CONNECTION";
+ if(boatObstacleStatus)boatObstacleStatus.textContent="NOT LINKED TO APP";
+ if(boatBatteryStatus)boatBatteryStatus.textContent="82%";
  if(boatMissionHistory){
   const history=sosRequests.filter(x=>x.completed||x.assigned).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0)).slice(0,3);
   boatMissionHistory.innerHTML=history.length?history.map(x=>"<div style='padding:8px 0;border-bottom:1px solid #ffffff0a'><strong>"+x.id+"</strong><br>"+x.title+"<br><span style='color:#70d5e5'>"+(x.completed?"Completed — boat returned to camp":(x.status||"Assigned rescue"))+"</span></div>").join(""):"No assigned or completed missions yet.";
@@ -4026,7 +4218,7 @@ async function launchBoat(id){
 
  alert(
 
-  "🚤 RESCUE STATUS UPDATED\n\n"+
+  "🚤 RESCUE BOAT LAUNCHED\n\n"+
   r.id+
   "\n"+
   r.title+
@@ -4035,6 +4227,29 @@ async function launchBoat(id){
   (r.area||"Unknown")
 
  );
+}
+
+function stopBoatSimulation(){
+ const r=getActiveBoatRequest();
+ if(!r||r.completed){alert("There is no active mission to pause.");return;}
+ r.pausedAt=Date.now();
+ boatState="STOPPED";
+ r.status="MISSION PAUSED — DISPLAY ONLY";
+ saveSOS();
+ renderBoatPage();
+ renderRescueDashboard();
+ alert("⛔ Mission paused.");
+}
+
+function resumeBoatSimulation(){
+ const r=getActiveBoatRequest();
+ if(!r||!r.pausedAt){boatState="ACTIVE";renderBoatPage();return;}
+ r.rescueStartTime=Number(r.rescueStartTime||Date.now())+(Date.now()-Number(r.pausedAt));
+ delete r.pausedAt;
+ boatState="ACTIVE";
+ saveSOS();
+ renderBoatPage();
+ renderRescueDashboard();
 }
 
 function returnBoat(){
@@ -4324,7 +4539,7 @@ logoutBtn.onclick=()=>{
 
 function restoreRequests(){
 
- sosRequests=sosRequests.filter(r=>!r.demo && !r.demoOnly && !r.isSample);
+ sosRequests=sosRequests.filter(r=>!r.demo && !r.demoOnly);
 
  sosRequests.forEach(r=>{
 
@@ -4344,15 +4559,23 @@ function restoreRequests(){
   if(r.progress===undefined)
    r.progress=0;
 
-  if(r.cancelled===undefined)
-   r.cancelled=false;
+  if(r.boatDistance===undefined)
+   r.boatDistance=3;
 
-  if(!r.cancelled&&!r.completed){
-   r.progress=0;
-   r.boatDistance=null;
-   r.eta=null;
-   r.status="SOS RECEIVED";
+  if(r.eta===undefined)
+   r.eta=10;
+
+  if(!r.rescueStartTime)
    r.rescueStartTime=Date.now();
+
+  // This is a local prototype simulation. Restart unfinished missions
+  // that were left open past the demo duration so the steps play again.
+  if(!r.completed && Date.now()-Number(r.rescueStartTime)>=RESCUE_DEMO_DURATION){
+   r.rescueStartTime=Date.now();
+   r.progress=0;
+   r.boatDistance=3;
+   r.eta=10;
+   r.status="SOS SENT";
   }
 
   if(r.area===undefined)
