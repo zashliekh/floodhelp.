@@ -1816,7 +1816,7 @@ BOAT CONTROL
 </div>
 
 <p>
-Monitor the rescue boat and launch it toward the highest-priority active SOS.
+Monitor the rescue status and select an active SOS request.
 </p>
 
 <div class="boatStatGrid">
@@ -2906,8 +2906,8 @@ async function addLiveSOS(priority){
   vulnerable:v.length?" • "+v.join(", "):"",
   lat:userLat,lng:userLng,area:getUserArea(),
   time:new Date().toLocaleTimeString(),timestamp:Date.now(),
-  status:"SOS SENT",rescueStartTime:Date.now(),progress:0,
-  boatDistance:3,eta:10,assigned:false,completed:false,
+  status:"SOS RECEIVED",rescueStartTime:Date.now(),progress:0,
+  boatDistance:null,eta:null,assigned:false,completed:false,
   requesterName:u.s,requesterPhone:u.p
  };
  sosRequests.unshift(r);
@@ -3191,7 +3191,7 @@ function createRequestCard(r){
 
  👤 ${r.requesterName||"Unknown User"}<br>
 
- 📞 ${r.isSample?"123456789":(r.requesterPhone||"No number")}<br>
+ 📞 ${r.requesterPhone||"No number"}<br>
 
  👥 ${r.people} people
  ${r.vulnerable||""}<br>
@@ -3476,7 +3476,7 @@ function viewRequest(id){
  }
 
  // Keep details visible even if the rescue  cannot calculate.
- let x = {status:r.status || "SOS SENT", distance:Number(r.boatDistance ?? 3), eta:Number(r.eta ?? 10)};
+ let x = {status:r.status || "SOS RECEIVED"};
  try{
   if(typeof getRescueProgress === "function") x = getRescueProgress(r) || x;
  }catch(error){
@@ -3492,9 +3492,7 @@ function viewRequest(id){
   `Priority: ${r.priority || r.p || "Not set"}\n`+
   `People: ${r.people ?? "Not specified"}\n`+
   `Additional Care: ${additionalCare}\n`+
-  `Status: ${x.status || r.status || "SOS SENT"}\n`+
-  `Boat distance: ${Number(x.distance ?? r.boatDistance ?? 3).toFixed(1)} km\n`+
-  `ETA: ~${x.eta ?? r.eta ?? 10} min`
+  `Status: ${x.status || r.status || "SOS RECEIVED"}`
  );
 }
 
@@ -4028,7 +4026,7 @@ async function launchBoat(id){
 
  alert(
 
-  "🚤 RESCUE BOAT LAUNCHED\n\n"+
+  "🚤 RESCUE STATUS UPDATED\n\n"+
   r.id+
   "\n"+
   r.title+
