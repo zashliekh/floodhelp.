@@ -2542,8 +2542,10 @@ if(bestGoogleRouteButton)bestGoogleRouteButton.addEventListener("click",function
    RESCUERS
    ========================================================= */
 
-// No fictitious rescue teams or phone numbers are listed as available.
-const rescuers=[];
+// Listed rescue contact. Availability and live location are not confirmed.
+const rescuers=[
+ {name:"Nisar",phone:"7558040605",status:"CONTACT",method:"contact",lat:null,lng:null}
+];
 
 let registeredRescuers=
  JSON.parse(
@@ -2561,24 +2563,13 @@ function allRescuers(){
 }
 
 function methodName(m){
-
- return m==="boat"
-  ?"🚤 Boat"
-  :m==="vehicle"
-  ?"🚑 Vehicle"
-  :"🚶 On Foot";
+ return m==="boat"?"🚤 Boat":m==="vehicle"?"🚑 Vehicle":m==="contact"?"📞 Contact":"🚶 On Foot";
 }
 
 function getRescuerDistance(r){
-
- return userLat===null
-  ?"Distance unavailable"
-  :distanceKm(
-     userLat,
-     userLng,
-     r.lat,
-     r.lng
-   ).toFixed(1)+" km away";
+ return userLat===null||r.lat===null||r.lng===null||r.lat===undefined||r.lng===undefined
+  ?"Location not shared"
+  :distanceKm(userLat,userLng,r.lat,r.lng).toFixed(1)+" km away";
 }
 
 function renderRescuers(){
@@ -2620,11 +2611,7 @@ function renderRescuers(){
   📞 CALL
   </a>
 
-  <button
-  class="locateRescuer"
-  onclick="locateRescuer(${i})">
-  🗺️ LOCATE
-  </button>
+  ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${i})">🗺️ LOCATE</button>`:""}
 
   </div>
   `;
