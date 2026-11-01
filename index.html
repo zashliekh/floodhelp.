@@ -3127,8 +3127,10 @@ setInterval(()=>{
 
 function getFilteredRequests(){
  let area=getUserArea();
+ // Keep all three map sample incidents visible on the dashboard too.
+ // Real SOS requests remain filtered to the selected area.
+ const samples=[...sampleSOSRequests];
  const real=area?sosRequests.filter(r=>String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase()):[];
- const samples=sampleSOSRequests.filter(r=>!area||String(r.area||"").trim().toLowerCase()===String(area).trim().toLowerCase());
  return [...samples,...real];
 }
 
@@ -3189,8 +3191,8 @@ function updateDashboardSummary(){
 
  filterStatus.textContent=
   area
-  ?"Showing SOS requests from "+area+"."
-  :"No area selected.";
+  ?"Showing all sample SOS and real requests from "+area+"."
+  :"Showing sample SOS. Select an area to view real requests.";
 }
 
 function getRescueDistance(r){
