@@ -2576,7 +2576,16 @@ function renderRescuers(){
 
  rescuerList.innerHTML="";
 
- allRescuers().forEach((r,i)=>{
+ // Show rescuers with a known distance first, nearest to farthest.
+ const orderedRescuers=[...allRescuers()].sort((a,b)=>{
+  const distanceA=userLat!==null&&userLng!==null&&a.lat!==null&&a.lng!==null
+   ?distanceKm(userLat,userLng,a.lat,a.lng):Infinity;
+  const distanceB=userLat!==null&&userLng!==null&&b.lat!==null&&b.lng!==null
+   ?distanceKm(userLat,userLng,b.lat,b.lng):Infinity;
+  return distanceA-distanceB;
+ });
+
+ orderedRescuers.forEach(r=>{
 
   let c=document.createElement("div");
 
@@ -2611,7 +2620,7 @@ function renderRescuers(){
   📞 CALL
   </a>
 
-  ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${i})">🗺️ LOCATE</button>`:""}
+  ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>`:""}
 
   </div>
   `;
