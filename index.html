@@ -1673,7 +1673,8 @@ Water stock
 
 <button class="back" id="backMap">← Back</button>
 <h1>🗺️ Rescue Map</h1>
-<p>Tap a red SOS marker to open the person's location in Google Maps.</p>
+<p>All active SOS locations and relief camps are shown here.</p>
+<div class="routeStatus" id="offlineMapStatus"><strong>OFFLINE MAP</strong><div id="offlineMapMessage">Map tiles are saved as you view them online. Open the areas you need before going offline.</div></div>
 
 <div id="map"></div>
 
@@ -1979,6 +1980,19 @@ CANCEL
    ========================================================= */
 
 const $=id=>document.getElementById(id);
+if("serviceWorker" in navigator && location.protocol==="https:"){
+ navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
+function updateOfflineMapStatus(){
+ const message=document.getElementById("offlineMapMessage");
+ if(!message)return;
+ message.textContent=navigator.onLine
+  ?"Online: map tiles you view are saved on this device for later offline viewing."
+  :"Offline: only previously viewed and cached map tiles can be displayed. Unvisited areas may appear blank.";
+}
+addEventListener("online",updateOfflineMapStatus);
+addEventListener("offline",updateOfflineMapStatus);
+
 
 const screens=document.querySelectorAll(".screen");
 
@@ -3736,12 +3750,13 @@ async function drawDirectRoute(lat,lng,label){
  if(!map)return;
  if(userLat===null||userLng===null){
   pendingRoute={lat:lat,lng:lng,label:label};
-  setMapRouteStatus("Waiting for your location","Allow location access to calculate a road route from your current position.","If location is unavailable, use Google Maps or check the destination manually.");
+  setMapRouteStatus("Waiting for your location","Allow location access to calculate a route from your current position.","If location is unavailable, use Google Maps or check the destination manually.");
   getLocation();return;
  }
  if(activeRouteLine)map.removeLayer(activeRouteLine);
  activeRouteMarkers.forEach(m=>map.removeLayer(m));activeRouteMarkers=[];
  const start=[Number(userLat),Number(userLng)],end=[lat,lng];
+ const cacheKey="floodhelp_roadroute_"+start.map(v=>v.toFixed(3)).join("_")+"_"+end.map(v=>v.toFixed(5)).join("_");
  setMapRouteStatus("Finding road route…","Requesting a driving route to "+label+".","Road routing does not verify flood conditions.");
  const url="https://router.project-osrm.org/route/v1/driving/"+start[1]+","+start[0]+";"+end[1]+","+end[0]+"?overview=full&geometries=geojson&steps=true";
  try{
@@ -3750,16 +3765,26 @@ async function drawDirectRoute(lat,lng,label){
   if(!response.ok)throw new Error("Routing service returned HTTP "+response.status);
   const data=await response.json();if(data.code!=="Ok"||!data.routes||!data.routes.length)throw new Error("No road route was returned.");
   const route=data.routes[0],coords=route.geometry.coordinates.map(p=>[p[1],p[0]]);
+  try{localStorage.setItem(cacheKey,JSON.stringify({coords:coords,distance:route.distance,duration:route.duration,label:label}));}catch(e){}
   activeRouteLine=L.polyline(coords,{color:"#00bfa6",weight:6,opacity:.95}).addTo(map);
   activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
   map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:16});
   const km=(route.distance/1000).toFixed(1),minutes=Math.max(1,Math.round(route.duration/60));
   setMapRouteStatus("Road route loaded — FLOOD SAFETY UNVERIFIED","Approx. "+km+" km • "+minutes+" min driving estimate. Destination: "+label+".","Check current road and flood conditions with official local sources before travelling.");
  }catch(err){
-  activeRouteLine=L.polyline([start,end],{color:"#ffb454",weight:4,dashArray:"8 8",opacity:.95}).addTo(map);
-  activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
-  map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:15});
-  setMapRouteStatus("Road routing unavailable","The dashed line is only a straight-line direction — NOT a road route.","Try Google Maps navigation. This line is not a safe evacuation route. Details: "+(err.name==="AbortError"?"routing request timed out":err.message));
+  let saved=null;try{saved=JSON.parse(localStorage.getItem(cacheKey)||"null");}catch(e){}
+  if(saved&&Array.isArray(saved.coords)&&saved.coords.length>1){
+   activeRouteLine=L.polyline(saved.coords,{color:"#00bfa6",weight:6,opacity:.95}).addTo(map);
+   activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
+   map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:16});
+   const km=(Number(saved.distance)/1000).toFixed(1),minutes=Math.max(1,Math.round(Number(saved.duration)/60));
+   setMapRouteStatus("Saved road route loaded offline","Previously saved route to "+label+" · approx. "+km+" km · "+minutes+" min.","This route may be outdated and does not verify current flood or road conditions.");
+  }else{
+   activeRouteLine=L.polyline([start,end],{color:"#ffb454",weight:4,dashArray:"8 8",opacity:.95}).addTo(map);
+   activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
+   map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:15});
+   setMapRouteStatus("No saved road route available","The dashed line is only a straight-line direction — NOT a road route.","Open this destination while online to save its road route for later offline viewing.");
+  }
  }
 }
 
@@ -3805,16 +3830,13 @@ function initializeMap(){
    13
   );
 
- L.tileLayer(
-
+ const baseTiles=L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-  {
-   attribution:
-    "© OpenStreetMap contributors"
-  }
-
+  {attribution:"© OpenStreetMap contributors"}
  ).addTo(map);
+ baseTiles.on("load",updateOfflineMapStatus);
+ baseTiles.on("tileerror",updateOfflineMapStatus);
+ updateOfflineMapStatus();
 
  // Only real SOS records with GPS coordinates appear here.
 
