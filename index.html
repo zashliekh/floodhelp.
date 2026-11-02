@@ -2542,9 +2542,14 @@ if(bestGoogleRouteButton)bestGoogleRouteButton.addEventListener("click",function
    RESCUERS
    ========================================================= */
 
-// Listed rescue contact. Availability and live location are not confirmed.
+// Nisar is the supplied contact. Other entries are presentation-only examples.
 const rescuers=[
- {name:"Nisar",phone:"7558040605",status:"CONTACT",method:"contact",lat:null,lng:null}
+ {name:"Nisar",phone:"7558040605",status:"CONTACT",method:"contact",lat:null,lng:null},
+ {id:"sample-r1",name:"Ayaan R.",phone:"98XXX 00001",status:"SAMPLE",method:"vehicle",lat:null,lng:null,presentationDistanceKm:1.2,isPresentationSample:true},
+ {id:"sample-r2",name:"Mira K.",phone:"98XXX 00002",status:"SAMPLE",method:"on-foot",lat:null,lng:null,presentationDistanceKm:2.8,isPresentationSample:true},
+ {id:"sample-r3",name:"Rihan M.",phone:"98XXX 00003",status:"SAMPLE",method:"vehicle",lat:null,lng:null,presentationDistanceKm:4.5,isPresentationSample:true},
+ {id:"sample-r4",name:"Sara P.",phone:"98XXX 00004",status:"SAMPLE",method:"on-foot",lat:null,lng:null,presentationDistanceKm:6.7,isPresentationSample:true},
+ {id:"sample-r5",name:"Adil N.",phone:"98XXX 00005",status:"SAMPLE",method:"boat",lat:null,lng:null,presentationDistanceKm:9.3,isPresentationSample:true}
 ];
 
 let registeredRescuers=
@@ -2567,6 +2572,7 @@ function methodName(m){
 }
 
 function getRescuerDistance(r){
+ if(r.isPresentationSample)return r.presentationDistanceKm.toFixed(1)+" km · sample";
  return userLat===null||r.lat===null||r.lng===null||r.lat===undefined||r.lng===undefined
   ?"Location not shared"
   :distanceKm(userLat,userLng,r.lat,r.lng).toFixed(1)+" km away";
@@ -2578,10 +2584,10 @@ function renderRescuers(){
 
  // Show rescuers with a known distance first, nearest to farthest.
  const orderedRescuers=[...allRescuers()].sort((a,b)=>{
-  const distanceA=userLat!==null&&userLng!==null&&a.lat!==null&&a.lng!==null
-   ?distanceKm(userLat,userLng,a.lat,a.lng):Infinity;
-  const distanceB=userLat!==null&&userLng!==null&&b.lat!==null&&b.lng!==null
-   ?distanceKm(userLat,userLng,b.lat,b.lng):Infinity;
+  const distanceA=a.isPresentationSample?a.presentationDistanceKm:
+   (userLat!==null&&userLng!==null&&a.lat!==null&&a.lng!==null?distanceKm(userLat,userLng,a.lat,a.lng):Infinity);
+  const distanceB=b.isPresentationSample?b.presentationDistanceKm:
+   (userLat!==null&&userLng!==null&&b.lat!==null&&b.lng!==null?distanceKm(userLat,userLng,b.lat,b.lng):Infinity);
   return distanceA-distanceB;
  });
 
@@ -2615,10 +2621,7 @@ function renderRescuers(){
 
   <div class="rescuerActions">
 
-  <a class="callRescuer"
-  href="tel:${r.phone}">
-  📞 CALL
-  </a>
+  ${r.isPresentationSample?'<span class="callRescuer" style="opacity:.65;cursor:default">SAMPLE CONTACT</span>':`<a class="callRescuer" href="tel:${r.phone}">📞 CALL</a>`}
 
   ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>`:""}
 
