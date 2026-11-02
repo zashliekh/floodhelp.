@@ -2269,6 +2269,7 @@ let activeRouteMarkers=[];
 let map=null;
 let userMarker=null;
 let sosMarkers=[];
+let rescuerMarkers=[];
 let hazardMarkers=[];
 let pendingRoute=null;
 const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
@@ -2651,7 +2652,12 @@ function locateRescuer(i){
  }
  openScreen("mapScreen");
  initializeMap();
- setTimeout(()=>drawDirectRoute(Number(r.lat),Number(r.lng),"🚑 "+r.name),350);
+ setTimeout(()=>{
+  updateRescuerMarkers();
+  const item=rescuerMarkers.find(x=>x.rescuer===r);
+  map.setView([Number(r.lat),Number(r.lng)],16);
+  if(item)item.marker.openPopup();
+ },300);
 }
 
 /* =========================================================
@@ -3684,6 +3690,8 @@ function createCircleIcon(type){
   ?"#ef4050"
   :type==="camp"
   ?"#32c779"
+  :type==="rescuer"
+  ?"#a855f7"
   :"#168dd0";
 
  return L.divIcon({
@@ -3771,6 +3779,7 @@ function initializeMap(){
 
   map.invalidateSize();
 
+  updateRescuerMarkers();
   updateAllSOSMarkers();
 
   return;
@@ -3814,20 +3823,31 @@ function initializeMap(){
    }
   ).addTo(map);
 
+  const campName=mapPopupText(c.name);
+  const campArea=mapPopupText(c.area);
   campMarker.bindPopup(`
-
-  <strong>🏕️ ${c.name}</strong><br>
-  <small>Availability and supplies are not live-updated. Confirm directly with the camp.</small><br>
-  ${c.contact?c.contactLabel+": "+c.contact:"Contact: Not listed"}<br><br>
-  <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">GET DIRECTIONS</button>
-
+   <div style="min-width:205px;line-height:1.55">
+    <strong>🏕️ ${campName}</strong><br>
+    📍 ${campArea}<br>
+    <strong>Camp details</strong>
+    <ul style="margin:5px 0 8px;padding-left:18px">
+     <li>Capacity: ${Number(c.capacity)||"Not listed"}</li>
+     <li>Vacant places: ${Number(c.available)||"Not listed"}</li>
+     <li>Food availability: ${Number(c.food)||"Not listed"}%</li>
+     <li>Water availability: ${Number(c.water)||"Not listed"}%</li>
+     <li>Medical support: ${Number(c.medical)||"Not listed"}%</li>
+    </ul>
+    <small>Prototype figures only; availability and supplies are not live-verified. Contact the camp before travelling.</small><br>
+    ${c.contact?mapPopupText(c.contactLabel)+": "+mapPopupText(c.contact):"Contact: Not listed"}<br><br>
+    <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">OPEN CAMP LOCATION</button>
+   </div>
   `);
-
-  campMarker.on("click",()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name));
+  campMarker.on("click",()=>map.setView([Number(c.lat),Number(c.lng)],16));
 
  });
 
  updateMapLocation();
+ updateRescuerMarkers();
  updateAllSOSMarkers();
 }
 
@@ -3862,6 +3882,35 @@ function mapPopupText(value){
  return String(value??"").replace(/[&<>"']/g,ch=>({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
  })[ch]);
+}
+
+function updateRescuerMarkers(){
+ if(!map)return;
+ rescuerMarkers.forEach(item=>map.removeLayer(item.marker));
+ rescuerMarkers=[];
+ if(typeof allRescuers!=="function")return;
+ allRescuers().forEach(r=>{
+  if(r.lat===null||r.lng===null||r.lat===undefined||r.lng===undefined)return;
+  const lat=Number(r.lat),lng=Number(r.lng);
+  if(!Number.isFinite(lat)||!Number.isFinite(lng))return;
+  const name=mapPopupText(r.name||"Rescuer");
+  const location=mapPopupText(r.locationLabel||"Shared location");
+  const method=mapPopupText(methodName(r.method));
+  const status=mapPopupText(r.status||"AVAILABLE");
+  const marker=L.marker([lat,lng],{icon:createCircleIcon("rescuer")}).addTo(map);
+  marker.bindPopup(`
+   <div style="min-width:185px;line-height:1.55">
+    <strong>🟣 🚑 ${name}</strong><br>
+    📍 ${location}<br>
+    ${method}<br>
+    <span>● ${status}</span><br>
+    <small>Presentation location — not live GPS.</small><br><br>
+    <button class="googleMapsBtn" onclick="openGoogleMaps(${lat},${lng})">OPEN RESCUER LOCATION</button>
+   </div>
+  `);
+  marker.on("click",()=>map.setView([lat,lng],16));
+  rescuerMarkers.push({rescuer:r,marker});
+ });
 }
 
 function updateAllSOSMarkers(){
