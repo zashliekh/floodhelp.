@@ -2623,7 +2623,7 @@ function renderRescuers(){
 
   <button type="button" class="callRescuer" onclick="showCallPreview()">📞 CALL</button>
 
-  ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>`:""}
+  <button type="button" class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>
 
   </div>
   `;
@@ -2639,6 +2639,10 @@ function showCallPreview(){
 function locateRescuer(i){
  const r=allRescuers()[i];
  if(!r)return;
+ if(r.lat===null||r.lng===null||r.lat===undefined||r.lng===undefined){
+  alert("Location has not been shared for "+r.name+" yet.");
+  return;
+ }
  openScreen("mapScreen");
  initializeMap();
  setTimeout(()=>drawDirectRoute(Number(r.lat),Number(r.lng),"🚑 "+r.name),350);
