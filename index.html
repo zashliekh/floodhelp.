@@ -2621,7 +2621,7 @@ function renderRescuers(){
 
   <div class="rescuerActions">
 
-  ${r.isPresentationSample?'<span class="callRescuer" style="opacity:.65;cursor:default">SAMPLE CONTACT</span>':`<a class="callRescuer" href="tel:${r.phone}">📞 CALL</a>`}
+  <button type="button" class="callRescuer" onclick="showCallPreview()">📞 CALL</button>
 
   ${r.lat!==null&&r.lng!==null?`<button class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>`:""}
 
@@ -2630,6 +2630,10 @@ function renderRescuers(){
 
   rescuerList.appendChild(c);
  });
+}
+
+function showCallPreview(){
+ alert("Call preview only — no phone call is placed.");
 }
 
 function locateRescuer(i){
