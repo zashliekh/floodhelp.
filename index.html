@@ -2584,6 +2584,10 @@ function renderRescuers(){
 
  // Show rescuers with a known distance first, nearest to farthest.
  const orderedRescuers=[...allRescuers()].sort((a,b)=>{
+  // Keep Nisar/Nizar pinned at the top as the primary contact.
+  const aPrimary=/^niz?ar$/i.test((a.name||"").trim());
+  const bPrimary=/^niz?ar$/i.test((b.name||"").trim());
+  if(aPrimary!==bPrimary)return aPrimary?-1:1;
   const distanceA=a.isPresentationSample?a.presentationDistanceKm:
    (userLat!==null&&userLng!==null&&a.lat!==null&&a.lng!==null?distanceKm(userLat,userLng,a.lat,a.lng):Infinity);
   const distanceB=b.isPresentationSample?b.presentationDistanceKm:
