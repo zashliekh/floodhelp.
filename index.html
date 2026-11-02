@@ -2495,9 +2495,12 @@ x.innerHTML=`
   <h3>🏕️ ${c.name}</h3>
   <p>📍 ${c.area}</p>
   <div class="campDetails">
-   <div class="campDetail"><strong>Availability</strong><span>Confirm directly with camp</span></div>
-   <div class="campDetail"><strong>Food, water and medical support</strong><span>Current stock and services not live-updated</span></div>
+   <div class="campDetail"><strong>Vacancy</strong><span>${Number(c.capacity)>0?Math.round(Number(c.available)/Number(c.capacity)*100)+"% · "+c.available+"/"+c.capacity+" places":"Not listed"}</span></div>
+   <div class="campDetail"><strong>Food</strong><span>${Number(c.food)||0}%</span></div>
+   <div class="campDetail"><strong>Drinking water</strong><span>${Number(c.water)||0}%</span></div>
+   <div class="campDetail"><strong>Medical support</strong><span>${Number(c.medical)||0}%</span></div>
   </div>
+  <p style="font-size:10px;margin:5px 0 10px;color:#8da8b1">Prototype resource estimates · confirm current availability with the camp.</p>
 <div class="campMeta">
    <span style="font-size:11px;color:#cfe2e7">${c.contact?c.contactLabel:"Contact"}</span>
    ${c.contact?`<a class="campContactLink" href="tel:${c.contact}">☎ ${c.contact}</a>`:"<span style='font-size:11px;color:#9bb4bd'>Number not listed</span>"}
