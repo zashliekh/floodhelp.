@@ -3370,7 +3370,7 @@ function createRequestCard(r){
 
  <div class="requestButtons">
 
-  ${r.isSample?'<span class="callRequester" style="opacity:.65">123456789</span>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
+  ${r.isSample?'<a class="callRequester" href="tel:123456789">📞 CALL</a>':r.requesterPhone?'<a class="callRequester" href="tel:'+r.requesterPhone+'">📞 CALL</a>':'<span class="callRequester" style="opacity:.65">NO CONTACT NUMBER</span>'}
 
  ${assign}
 
