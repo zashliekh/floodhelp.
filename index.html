@@ -2270,6 +2270,7 @@ let map=null;
 let userMarker=null;
 let sosMarkers=[];
 let rescuerMarkers=[];
+let selectedRescuerMapKey=null;
 let hazardMarkers=[];
 let pendingRoute=null;
 const demoHazards=[]; // No unverified sample incidents are shown on the real SOS map.
@@ -2500,7 +2501,6 @@ x.innerHTML=`
    <div class="campDetail"><strong>Drinking water</strong><span>${Number(c.water)||0}%</span></div>
    <div class="campDetail"><strong>Medical support</strong><span>${Number(c.medical)||0}%</span></div>
   </div>
-  <p style="font-size:10px;margin:5px 0 10px;color:#8da8b1">Prototype resource estimates · confirm current availability with the camp.</p>
 <div class="campMeta">
    <span style="font-size:11px;color:#cfe2e7">${c.contact?c.contactLabel:"Contact"}</span>
    ${c.contact?`<a class="campContactLink" href="tel:${c.contact}">☎ ${c.contact}</a>`:"<span style='font-size:11px;color:#9bb4bd'>Number not listed</span>"}
@@ -2653,6 +2653,7 @@ function locateRescuer(i){
   alert("Location has not been shared for "+r.name+" yet.");
   return;
  }
+ selectedRescuerMapKey=String(r.id||r.phone||r.name);
  openScreen("mapScreen");
  initializeMap();
  setTimeout(()=>{
@@ -3829,20 +3830,14 @@ function initializeMap(){
   const campName=mapPopupText(c.name);
   const campArea=mapPopupText(c.area);
   campMarker.bindPopup(`
-   <div style="min-width:205px;line-height:1.55">
+   <div style="width:155px;max-width:155px;font-size:11px;line-height:1.35;overflow-wrap:anywhere">
     <strong>🏕️ ${campName}</strong><br>
     📍 ${campArea}<br>
-    <strong>Camp details</strong>
-    <ul style="margin:5px 0 8px;padding-left:18px">
-     <li>Capacity: ${Number(c.capacity)||"Not listed"}</li>
-     <li>Vacant places: ${Number(c.available)||"Not listed"}</li>
-     <li>Food availability: ${Number(c.food)||"Not listed"}%</li>
-     <li>Water availability: ${Number(c.water)||"Not listed"}%</li>
-     <li>Medical support: ${Number(c.medical)||"Not listed"}%</li>
-    </ul>
-    <small>Prototype figures only; availability and supplies are not live-verified. Contact the camp before travelling.</small><br>
-    ${c.contact?mapPopupText(c.contactLabel)+": "+mapPopupText(c.contact):"Contact: Not listed"}<br><br>
-    <button class="googleMapsBtn" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">OPEN CAMP LOCATION</button>
+    <b>Vacant:</b> ${Number(c.available)||"—"} / ${Number(c.capacity)||"—"}<br>
+    <b>Food:</b> ${Number(c.food)||"—"}% · <b>Water:</b> ${Number(c.water)||"—"}%<br>
+    <b>Medical:</b> ${Number(c.medical)||"—"}%<br>
+    ${c.contact?mapPopupText(c.contactLabel)+": "+mapPopupText(c.contact):"Contact: —"}<br>
+    <button class="googleMapsBtn" style="font-size:9px;padding:6px 8px;margin-top:5px" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">DIRECTIONS</button>
    </div>
   `);
   campMarker.on("click",()=>map.setView([Number(c.lat),Number(c.lng)],16));
@@ -3891,8 +3886,8 @@ function updateRescuerMarkers(){
  if(!map)return;
  rescuerMarkers.forEach(item=>map.removeLayer(item.marker));
  rescuerMarkers=[];
- if(typeof allRescuers!=="function")return;
- allRescuers().forEach(r=>{
+ if(typeof allRescuers!=="function"||!selectedRescuerMapKey)return;
+ allRescuers().filter(r=>String(r.id||r.phone||r.name)===selectedRescuerMapKey).forEach(r=>{
   if(r.lat===null||r.lng===null||r.lat===undefined||r.lng===undefined)return;
   const lat=Number(r.lat),lng=Number(r.lng);
   if(!Number.isFinite(lat)||!Number.isFinite(lng))return;
@@ -3902,13 +3897,11 @@ function updateRescuerMarkers(){
   const status=mapPopupText(r.status||"AVAILABLE");
   const marker=L.marker([lat,lng],{icon:createCircleIcon("rescuer")}).addTo(map);
   marker.bindPopup(`
-   <div style="min-width:185px;line-height:1.55">
-    <strong>🟣 🚑 ${name}</strong><br>
+   <div style="width:145px;max-width:145px;font-size:11px;line-height:1.35;overflow-wrap:anywhere">
+    <strong>🚑 ${name}</strong><br>
     📍 ${location}<br>
-    ${method}<br>
-    <span>● ${status}</span><br>
-    <small>Presentation location — not live GPS.</small><br><br>
-    <button class="googleMapsBtn" onclick="openGoogleMaps(${lat},${lng})">OPEN RESCUER LOCATION</button>
+    ${method} · ${status}<br>
+    <button class="googleMapsBtn" style="font-size:9px;padding:6px 8px;margin-top:5px" onclick="openGoogleMaps(${lat},${lng})">DIRECTIONS</button>
    </div>
   `);
   marker.on("click",()=>map.setView([lat,lng],16));
