@@ -22,7 +22,7 @@ self.addEventListener("fetch",event=>{
  }
  if(isTile||isLeaflet){
   event.respondWith(fetch(request).then(response=>{
-   if(response&&response.ok)caches.open(MAP_CACHE).then(cache=>cache.put(request,response.clone()));
+   if(response&&(response.ok||response.type==="opaque"))caches.open(MAP_CACHE).then(cache=>cache.put(request,response.clone()));
    return response;
   }).catch(()=>caches.match(request)));
  }
