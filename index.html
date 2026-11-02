@@ -2544,13 +2544,13 @@ if(bestGoogleRouteButton)bestGoogleRouteButton.addEventListener("click",function
 
 // Nisar is the supplied contact. Other entries are presentation-only examples.
 const rescuers=[
- {name:"Nizar",phone:"7558040605",status:"SAMPLE LOCATION",method:"contact",lat:11.0415,lng:76.0810,presentationDistanceKm:0.4,isPresentationSample:true},
- {id:"sample-nishmal",name:"Nishmal",phone:"98XXX 00006",status:"SAMPLE LOCATION",method:"contact",lat:11.0505,lng:76.0920,presentationDistanceKm:1.3,isPresentationSample:true},
- {id:"sample-r1",name:"Ayaan R.",phone:"98XXX 00001",status:"SAMPLE",method:"vehicle",lat:null,lng:null,presentationDistanceKm:1.2,isPresentationSample:true},
- {id:"sample-r2",name:"Mira K.",phone:"98XXX 00002",status:"SAMPLE",method:"on-foot",lat:null,lng:null,presentationDistanceKm:2.8,isPresentationSample:true},
- {id:"sample-r3",name:"Rihan M.",phone:"98XXX 00003",status:"SAMPLE",method:"vehicle",lat:null,lng:null,presentationDistanceKm:4.5,isPresentationSample:true},
- {id:"sample-r4",name:"Sara P.",phone:"98XXX 00004",status:"SAMPLE",method:"on-foot",lat:null,lng:null,presentationDistanceKm:6.7,isPresentationSample:true},
- {id:"sample-r5",name:"Adil N.",phone:"98XXX 00005",status:"SAMPLE",method:"boat",lat:null,lng:null,presentationDistanceKm:9.3,isPresentationSample:true}
+ {name:"Nizar",phone:"7558040605",status:"SAMPLE LOCATION",method:"contact",lat:11.0022,lng:75.9840,locationLabel:"Near PKMMHSS Edarikode",presentationDistanceKm:0.4,isPresentationSample:true},
+ {id:"sample-nishmal",name:"Nishmal",phone:"98XXX 00006",status:"SAMPLE LOCATION",method:"contact",lat:11.0040,lng:75.9850,locationLabel:"Edarikode",presentationDistanceKm:1.3,isPresentationSample:true},
+ {id:"sample-r1",name:"Ayaan R.",phone:"98XXX 00001",status:"SAMPLE",method:"vehicle",lat:11.0008,lng:75.9808,locationLabel:"Pottippara, Edarikode",presentationDistanceKm:1.2,isPresentationSample:true},
+ {id:"sample-r2",name:"Mira K.",phone:"98XXX 00002",status:"SAMPLE",method:"on-foot",lat:10.9995,lng:75.9870,locationLabel:"Edarikode junction area",presentationDistanceKm:2.8,isPresentationSample:true},
+ {id:"sample-r3",name:"Rihan M.",phone:"98XXX 00003",status:"SAMPLE",method:"vehicle",lat:11.0060,lng:75.9790,locationLabel:"Valakulam, Edarikode",presentationDistanceKm:4.5,isPresentationSample:true},
+ {id:"sample-r4",name:"Sara P.",phone:"98XXX 00004",status:"SAMPLE",method:"on-foot",lat:10.9968,lng:75.9820,locationLabel:"Edarikode south",presentationDistanceKm:6.7,isPresentationSample:true},
+ {id:"sample-r5",name:"Adil N.",phone:"98XXX 00005",status:"SAMPLE",method:"boat",lat:11.0080,lng:75.9880,locationLabel:"Edarikode north",presentationDistanceKm:9.3,isPresentationSample:true}
 ];
 
 let registeredRescuers=
@@ -2620,6 +2620,7 @@ function renderRescuers(){
 
   📞 ${r.phone}<br>
   ${methodName(r.method)}<br>
+  📍 ${r.locationLabel||"Location shared"}<br>
   📏 ${getRescuerDistance(r)}
 
   </div>
