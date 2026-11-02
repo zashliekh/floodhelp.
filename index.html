@@ -2627,7 +2627,7 @@ function renderRescuers(){
 
   <div class="rescuerActions">
 
-  <button type="button" class="callRescuer" onclick="showCallPreview()">📞 CALL</button>
+  ${r.name==="Nizar"&&r.phone==="7558040605"?`<a class="callRescuer" href="tel:${r.phone}">📞 CALL</a>`:'<button type="button" class="callRescuer" onclick="showCallPreview()">📞 CALL</button>'}
 
   <button type="button" class="locateRescuer" onclick="locateRescuer(${allRescuers().indexOf(r)})">🗺️ LOCATE</button>
 
