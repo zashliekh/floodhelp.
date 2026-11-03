@@ -3832,7 +3832,7 @@ async function drawDirectRoute(lat,lng,label){
   activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
   map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:16});
   const km=(route.distance/1000).toFixed(1),minutes=Math.max(1,Math.round(route.duration/60));
-  setMapRouteStatus("Road route loaded — FLOOD SAFETY UNVERIFIED","Approx. "+km+" km • "+minutes+" min driving estimate. Destination: "+label+".","Check current road and flood conditions with official local sources before travelling.");
+
  }catch(err){
   const saved=readSavedRoute();
   if(saved){displaySavedRoute(saved);return;}
