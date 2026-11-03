@@ -4032,7 +4032,12 @@ function updateAllSOSMarkers(){
   `);
 
   m.on("click",()=>routeToSOS(Number(r.lat),Number(r.lng)));
-  sosMarkers.function showSOSOnMap(id){
+   sosMarkers.push(m);
+
+  });
+}
+
+function showSOSOnMap(id){
 
   const r=getAllSOSRequests().find(
    x=>String(x.id)===String(id)
@@ -4063,7 +4068,7 @@ function updateAllSOSMarkers(){
    map.setView([Number(r.lat),Number(r.lng)],16);
    routeToSOS(Number(r.lat),Number(r.lng));
   },300);
- }
+}
 
 /* =========================================================
    BOAT
