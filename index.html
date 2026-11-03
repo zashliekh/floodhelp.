@@ -3032,6 +3032,7 @@ function getRescueSimulation(r){
    r.status="SOS CANCELLED — BOAT AT CAMP";
    r.newAlert=false;
    r.assigned=false;
+   updateEmergencyIndicators();
    if(boatReturnRequestId===r.id){boatState="READY";boatReturnRequestId=null;}
    releaseRescuer(r);
    saveSOS();
@@ -3116,6 +3117,7 @@ function getRescueSimulation(r){
   r.assigned=false;
   r.newAlert=false;
   r.status="RESCUE COMPLETED — BOAT BACK AT CAMP";
+  updateEmergencyIndicators();
   releaseRescuer(r);
   if(boatReturnRequestId===r.id){
    boatReturnRequestId=null;
@@ -3204,6 +3206,15 @@ function getFilteredRequests(){
    RESCUE COUNTS
    ========================================================= */
 
+function updateEmergencyIndicators(){
+ const hasNewSOS=getFilteredRequests().some(r=>r.newAlert&&!r.completed&&!r.cancelled&&!r.returnComplete);
+ if(typeof navAlert!=="undefined"&&navAlert)navAlert.classList.toggle("show",hasNewSOS);
+ if(typeof liveStatus!=="undefined"&&liveStatus){
+  liveStatus.classList.toggle("alert",hasNewSOS);
+  liveStatus.textContent=hasNewSOS?"● NEW SOS":"● SYSTEM READY";
+ }
+}
+
 function updateRescueCounts(){
 
  let c={
@@ -3220,9 +3231,7 @@ function updateRescueCounts(){
 
  list.forEach(r=>{
 
-  if(
-   c[r.priority]!==undefined
-  )
+  if(!r.completed&&!r.cancelled&&!r.returnComplete&&c[r.priority]!==undefined)
    c[r.priority]++;
 
  });
@@ -3238,6 +3247,8 @@ function updateRescueCounts(){
 
  lowCount.textContent=
   c.LOW;
+
+ updateEmergencyIndicators();
 }
 
 function updateDashboardSummary(){
