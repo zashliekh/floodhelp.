@@ -3030,7 +3030,10 @@ function getRescueSimulation(r){
   if(progress>=100){
    r.returnComplete=true;r.progress=100;r.boatDistance=0;r.eta=0;
    r.status="SOS CANCELLED — BOAT AT CAMP";
+   r.newAlert=false;
+   r.assigned=false;
    if(boatReturnRequestId===r.id){boatState="READY";boatReturnRequestId=null;}
+   releaseRescuer(r);
    saveSOS();
    return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Boat returned to camp."};
   }
@@ -3104,10 +3107,24 @@ function getRescueSimulation(r){
  ][stage];
 
  if(p>=100){
-  r.progress=100;r.boatDistance=0;r.eta=0;
+  r.progress=100;
+  r.boatDistance=0;
+  r.eta=0;
+  r.completed=true;
+  r.cancelled=false;
+  r.returnComplete=true;
+  r.assigned=false;
+  r.newAlert=false;
   r.status="RESCUE COMPLETED — BOAT BACK AT CAMP";
+  releaseRescuer(r);
+  if(boatReturnRequestId===r.id){
+   boatReturnRequestId=null;
+   boatState="READY";
+  }else if(boatState!=="STOPPED"){
+   boatState="READY";
+  }
   saveSOS();
-  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Rescue sequence completed. Boat is back at camp."};
+  return {status:r.status,progress:100,distance:0,eta:0,stage:5,message:"Rescue completed. Boat has returned safely to camp."};
  }
 
  let d=Math.max(
@@ -3233,7 +3250,7 @@ function updateDashboardSummary(){
 
  activeRescueCount.textContent=
   list.filter(
-   r=>!r.completed
+   r=>!r.completed&&!r.cancelled&&!r.returnComplete
   ).length;
 
  let area=getUserArea();
@@ -3267,7 +3284,8 @@ function createRequestCard(r){
  let card=
   document.createElement("div");
 
- card.className="request"+(!r.completed&&(r.newAlert||["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase()))?" request-alert":"");
+ const isClosed=Boolean(r.completed||r.cancelled||r.returnComplete);
+ card.className="request"+(!isClosed&&(r.newAlert||["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase()))?" request-alert":"");
 
  let x=
   getRescueSimulation(r);
@@ -3471,14 +3489,16 @@ function updateRescueCards(){
   3. Completed requests always last.
  */
  const isHighlightedActive=r=>
-  !r.completed&&(
+  !r.completed&&!r.cancelled&&!r.returnComplete&&(
    r.newAlert||
    ["CRITICAL","HIGH"].includes(String(r.priority||"").toUpperCase())
   );
 
  list.sort((a,b)=>{
-  if(Boolean(a.completed)!==Boolean(b.completed))
-   return a.completed?1:-1;
+  const aClosed=Boolean(a.completed||a.cancelled||a.returnComplete);
+  const bClosed=Boolean(b.completed||b.cancelled||b.returnComplete);
+  if(aClosed!==bClosed)
+   return aClosed?1:-1;
 
   const aHighlighted=isHighlightedActive(a);
   const bHighlighted=isHighlightedActive(b);
@@ -3950,7 +3970,7 @@ function updateAllSOSMarkers(){
  */
  getAllSOSRequests().forEach(r=>{
 
-  if(r.completed)
+  if(r.completed||r.cancelled||r.returnComplete)
    return;
 
   if(
