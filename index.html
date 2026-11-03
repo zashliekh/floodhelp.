@@ -3808,8 +3808,6 @@ async function drawDirectRoute(lat,lng,label){
   activeRouteMarkers.push(L.marker(start,{icon:createCircleIcon("you")}).addTo(map).bindPopup("📍 Your current location"),L.marker(end,{icon:createCircleIcon("camp")}).addTo(map).bindPopup(label));
   map.fitBounds(activeRouteLine.getBounds(),{padding:[40,40],maxZoom:16});
   const km=(Number(saved.distance)/1000).toFixed(1),minutes=Math.max(1,Math.round(Number(saved.duration)/60));
-  const note=result.nearby?"Previously saved route from a starting point "+result.distance.toFixed(1)+" km away.":"Previously saved route.";
-  setMapRouteStatus("Saved road route loaded offline",note+" Approx. "+km+" km · "+minutes+" min when originally calculated.","This route may be outdated. It does not check live road closures or flood conditions.");
  }
  if(!navigator.onLine){
   const saved=readSavedRoute();
