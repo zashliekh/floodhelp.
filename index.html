@@ -3656,6 +3656,11 @@ async function finishSOS(){
   liveStatus.textContent=
    "● NEW SOS";
 
+  // Refresh SOS pins immediately if the map has already been opened.
+  if(map){
+   updateAllSOSMarkers();
+  }
+
   openScreen("rescue");
 
   renderRescueDashboard();
@@ -4027,43 +4032,38 @@ function updateAllSOSMarkers(){
   `);
 
   m.on("click",()=>routeToSOS(Number(r.lat),Number(r.lng)));
-  sosMarkers.push(m);
+  sosMarkers.function showSOSOnMap(id){
 
- });
-}
-
-function routeToSOS(lat,lng){
- drawDirectRoute(Number(lat),Number(lng),"🚨 SOS location");
-}
-
-function showSOSOnMap(id){
-
- let r=
-  sosRequests.find(
-   x=>x.id===id
+  const r=getAllSOSRequests().find(
+   x=>String(x.id)===String(id)
   );
 
- if(
-  !r||
-  r.lat===null
- ){
+  if(
+   !r||
+   r.lat===null||r.lat===undefined||
+   r.lng===null||r.lng===undefined||
+   !Number.isFinite(Number(r.lat))||
+   !Number.isFinite(Number(r.lng))
+  ){
 
-  alert(
-   "Exact GPS location unavailable."
-  );
+   alert(
+    "This SOS does not have GPS coordinates yet. Please allow location access on the device that sent the SOS, then send the request again."
+   );
 
-  return;
+   return;
+  }
+
+  openScreen("mapScreen");
+
+  initializeMap();
+
+  setTimeout(()=>{
+   if(!map)return;
+   updateAllSOSMarkers();
+   map.setView([Number(r.lat),Number(r.lng)],16);
+   routeToSOS(Number(r.lat),Number(r.lng));
+  },300);
  }
-
- openScreen("mapScreen");
-
- initializeMap();
-
- setTimeout(()=>{
-  map.setView([Number(r.lat),Number(r.lng)],16);
-  routeToSOS(Number(r.lat),Number(r.lng));
- },300);
-}
 
 /* =========================================================
    BOAT
