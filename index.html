@@ -3830,8 +3830,9 @@ function setMapRouteStatus(title,message,caution){
  if(caution){const note=document.createElement("div");note.className="routeCaution";note.textContent=caution;el.appendChild(note);}
 }
 function toggleHazardLayer(){
- if(!map)return;
- const visible=document.getElementById("hazardToggle").checked;
+ const toggle=document.getElementById("hazardToggle");
+ if(!map||!toggle)return;
+ const visible=toggle.checked;
  hazardMarkers.forEach(m=>{if(visible)m.addTo(map);else map.removeLayer(m);});
 }
 
