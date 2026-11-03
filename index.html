@@ -2675,10 +2675,12 @@ function locateRescuer(i){
  openScreen("mapScreen");
  initializeMap();
  setTimeout(()=>{
+  if(!map)return;
   updateRescuerMarkers();
   const item=rescuerMarkers.find(x=>x.rescuer===r);
   map.setView([Number(r.lat),Number(r.lng)],16);
   if(item)item.marker.openPopup();
+  drawDirectRoute(Number(r.lat),Number(r.lng),"🚑 "+(r.name||"Rescuer"));
  },300);
 }
 
@@ -4074,6 +4076,11 @@ function updateAllSOSMarkers(){
    sosMarkers.push(m);
 
   });
+}
+
+function routeToSOS(lat,lng){
+ // Use the same online/offline road-route handler used by camp destinations.
+ return drawDirectRoute(Number(lat),Number(lng),"🆘 SOS location");
 }
 
 function showSOSOnMap(id){
