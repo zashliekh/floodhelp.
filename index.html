@@ -1674,13 +1674,6 @@ Water stock
 <button class="back" id="backMap">← Back</button>
 <h1>🗺️ Rescue Map</h1>
 <p>All active SOS locations and relief camps are shown here.</p>
-<div class="routeStatus" id="offlineMapStatus"><strong>OFFLINE MAP</strong><div id="offlineMapMessage">Map tiles are saved as you view them online. Open the areas you need before going offline.</div></div>
-
-<div id="mapRouteStatus" class="routeStatus" aria-live="polite">
- <strong>SAFE ROUTE</strong>
- <div>Choose a camp or SOS marker to view a route.</div>
-</div>
-
 <div id="map"></div>
 
 <div class="mapLegend">
@@ -1988,17 +1981,6 @@ const $=id=>document.getElementById(id);
 if("serviceWorker" in navigator && location.protocol==="https:"){
  navigator.serviceWorker.register("./sw.js").catch(()=>{});
 }
-function updateOfflineMapStatus(){
- const message=document.getElementById("offlineMapMessage");
- if(!message)return;
- message.textContent=navigator.onLine
-  ?"Online: map tiles you view are saved on this device for later offline viewing."
-  :"Offline: only previously viewed and cached map tiles can be displayed. Unvisited areas may appear blank.";
-}
-addEventListener("online",updateOfflineMapStatus);
-addEventListener("offline",updateOfflineMapStatus);
-
-
 const screens=document.querySelectorAll(".screen");
 
 function safeText(value){
@@ -3864,10 +3846,7 @@ async function drawDirectRoute(lat,lng,label){
 }
 
 function setMapRouteStatus(title,message,caution){
- const el=document.getElementById("mapRouteStatus");if(!el)return;
- el.replaceChildren();const strong=document.createElement("strong");strong.textContent=title;
- const body=document.createElement("div");body.textContent=message;el.append(strong,body);
- if(caution){const note=document.createElement("div");note.className="routeCaution";note.textContent=caution;el.appendChild(note);}
+ // Route status messages are intentionally hidden; keep routing logic unchanged.
 }
 function toggleHazardLayer(){
  const toggle=document.getElementById("hazardToggle");
