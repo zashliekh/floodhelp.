@@ -2524,20 +2524,19 @@ x.innerHTML=`
   `;
 
   x.querySelector("button")
-  .onclick=()=>openGoogleMaps(Number(c.lat),Number(c.lng));
+  .onclick=()=>routeToCamp(c);
 
   campList.appendChild(x);
  });
 }
 
 function routeToCamp(c){
- // Open Google Maps directly from the user click. Do not require the
- // Leaflet map to be open or wait for location permission first.
  if(!c){
   alert("No relief camp is available for routing right now.");
   return;
  }
- openGoogleMaps(Number(c.lat),Number(c.lng));
+ openScreen("mapScreen");
+ setTimeout(()=>drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name),120);
 }
 
 const mapRouteButton=document.getElementById("mapRouteButton");
@@ -3862,7 +3861,10 @@ function initializeMap(){
     <button class="googleMapsBtn" style="font-size:9px;padding:6px 8px;margin-top:5px" onclick="openGoogleMaps(${Number(c.lat)},${Number(c.lng)})">DIRECTIONS</button>
    </div>
   `);
-  campMarker.on("click",()=>map.setView([Number(c.lat),Number(c.lng)],16));
+  campMarker.on("click",()=>{
+   map.setView([Number(c.lat),Number(c.lng)],16);
+   drawDirectRoute(Number(c.lat),Number(c.lng),"🏕️ "+c.name);
+  });
 
  });
 
@@ -3993,6 +3995,7 @@ function updateAllSOSMarkers(){
    </div>
   `);
 
+  m.on("click",()=>routeToSOS(Number(r.lat),Number(r.lng)));
   sosMarkers.push(m);
 
  });
@@ -4026,15 +4029,8 @@ function showSOSOnMap(id){
  initializeMap();
 
  setTimeout(()=>{
-
-  map.setView(
-   [
-    Number(r.lat),
-    Number(r.lng)
-   ],
-   16
-  );
-
+  map.setView([Number(r.lat),Number(r.lng)],16);
+  routeToSOS(Number(r.lat),Number(r.lng));
  },300);
 }
 
@@ -4260,12 +4256,8 @@ function boatGoToRescue(id){
   initializeMap();
 
   setTimeout(()=>{
-
-   map.setView(
-    [r.lat,r.lng],
-    16
-   );
-
+   map.setView([r.lat,r.lng],16);
+   routeToSOS(Number(r.lat),Number(r.lng));
   },300);
  }
 }
